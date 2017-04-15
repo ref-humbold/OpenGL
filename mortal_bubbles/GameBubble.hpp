@@ -2,11 +2,11 @@
 #define GAME_BUBBLE_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
+#include <list>
 #include <tuple>
 #include <vector>
-#include <list>
 #include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,7 +16,7 @@ using namespace glm;
 
 class GameBubble
 {
-    private:
+private:
     const GLfloat vbDataBubble[728];
     GLfloat cbDataBubble[728];
     GLfloat nbDataBubble[728];
@@ -32,7 +32,7 @@ class GameBubble
     GLfloat velocity;
     std::vector<vec3> coloring;
 
-    public:
+public:
     int countElems;
     std::tuple<GLfloat, vec3, vec3> endGameBubble;
     std::list< std::tuple<GLfloat, vec3, vec3, int> > elements;
@@ -610,18 +610,18 @@ class GameBubble
                      151, 171, 152, 172, 153, 173, 154, 174, 155, 175, 156, 176, 157, 177, 158, 178, 159, 179, 160, 180,
                      141, 161,
                      181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 180},  //358
-        sc{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        rt{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        tr{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
+        sc{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        rt{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        tr{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
         velocity{0.5f},
         coloring{vec3(0.5f, 0.0f, 0.0f),
                  vec3(0.6f, 0.0f, 0.0f),
@@ -656,8 +656,8 @@ class GameBubble
         countElems{1}
     {
         countNormals();
-        endGameBubble = std::make_tuple( 0.025f, vec3(-0.475, -0.475, -0.475),
-            vec3(0.0f, 0.0f, 0.0f) );
+        endGameBubble = std::make_tuple(0.025f, vec3(-0.475, -0.475, -0.475),
+            vec3(0.0f, 0.0f, 0.0f));
 
         glGenBuffers(1, &vertexBufferBubble);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferBubble);

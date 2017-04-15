@@ -5,7 +5,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include "GLSLloader.hpp"
 #include "GameElement.hpp"
 
@@ -82,7 +81,7 @@ int main(int argc, char * argv[])
 
     createVertexArray();
 
-    srand( time(0) );
+    srand(time(NULL));
 
     GameControler * ctrl = new GameControler();
     GameBoard * board = new GameBoard();

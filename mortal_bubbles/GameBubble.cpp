@@ -6,13 +6,13 @@ void GameBubble::drawAllBubbles(GLuint pID, mat4 worldToCamera, mat4 cameraToCli
 {
     for(auto & b : elements)
     {
-        setColor( std::get<2>(b) );
-        drawBubble( pID, worldToCamera, cameraToClip, lightSource, std::get<0>(b), std::get<1>(b) );
+        setColor(std::get<2>(b));
+        drawBubble(pID, worldToCamera, cameraToClip, lightSource, std::get<0>(b), std::get<1>(b));
     }
 
-    setColor( std::get<2>(endGameBubble) );
-    drawBubble( pID, worldToCamera, cameraToClip, lightSource, std::get<0>(endGameBubble),
-        std::get<1>(endGameBubble) );
+    setColor(std::get<2>(endGameBubble));
+    drawBubble(pID, worldToCamera, cameraToClip, lightSource, std::get<0>(endGameBubble),
+        std::get<1>(endGameBubble));
 }
 
 void GameBubble::drawBubble(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, vec4 lightSource,
@@ -46,17 +46,17 @@ void GameBubble::drawBubble(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
     GLint cameraToClipMat = glGetUniformLocation(pID, "cameraToClipMat");
     GLint lightSourcePos = glGetUniformLocation(pID, "lightSourcePos");
 
-    glUniformMatrix4fv( objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0] );
-    glUniformMatrix4fv( worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0] );
-    glUniformMatrix4fv( cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0] );
-    glUniform4fv( lightSourcePos, 1, &lightSource[0] );
+    glUniformMatrix4fv(objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0]);
+    glUniformMatrix4fv(worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0]);
+    glUniformMatrix4fv(cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0]);
+    glUniform4fv(lightSourcePos, 1, &lightSource[0]);
 
     glDrawElements(GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)0);
 
     for(int i = 0; i < 8; ++i)
-        glDrawElements( GL_TRIANGLE_STRIP, 42, GL_UNSIGNED_SHORT, (void*)( (42*i+22)*sizeof(unsigned short) ) );
+        glDrawElements(GL_TRIANGLE_STRIP, 42, GL_UNSIGNED_SHORT, (void*)((42*i+22)*sizeof(unsigned short)));
 
-    glDrawElements( GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)( 358*sizeof(unsigned short) ) );
+    glDrawElements(GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)(358*sizeof(unsigned short)));
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -92,21 +92,21 @@ void GameBubble::showUp(GLfloat side)
     do
     {
         rad = (rand()%11+5)/100.0;
-        pos = vec3( (rand()%mxMod-mxMod/2)/10.0, -side, (rand()%mxMod-mxMod/2)/10.0 );
+        pos = vec3((rand()%mxMod-mxMod/2)/10.0, -side, (rand()%mxMod-mxMod/2)/10.0);
     }
-    while( collides(rad, pos) );
+    while(collides(rad, pos));
 
     ++countElems;
 
     if(extra)
     {
         col = vec3(1.0f, 1.0f, 1.0f);
-        elements.push_back( std::make_tuple(rad, pos, col, countElems) );
+        elements.push_back(std::make_tuple(rad, pos, col, countElems));
     }
     else
     {
         col = coloring[rand()%coloring.size()];
-        elements.push_back( std::make_tuple(rad, pos, col, -countElems) );
+        elements.push_back(std::make_tuple(rad, pos, col, -countElems));
     }
 }
 
@@ -131,13 +131,13 @@ void GameBubble::move(GLfloat delta, GLfloat side)
 
 vec3 GameBubble::normalVec(GLushort i1, GLushort i2, GLushort i3)
 {
-    vec3 u1 = vec3( vbDataBubble[4*i1], vbDataBubble[4*i1+1], vbDataBubble[4*i1+2] );
-    vec3 u2 = vec3( vbDataBubble[4*i2], vbDataBubble[4*i2+1], vbDataBubble[4*i2+2] );
-    vec3 u3 = vec3( vbDataBubble[4*i3], vbDataBubble[4*i3+1], vbDataBubble[4*i3+2] );
+    vec3 u1 = vec3(vbDataBubble[4*i1], vbDataBubble[4*i1+1], vbDataBubble[4*i1+2]);
+    vec3 u2 = vec3(vbDataBubble[4*i2], vbDataBubble[4*i2+1], vbDataBubble[4*i2+2]);
+    vec3 u3 = vec3(vbDataBubble[4*i3], vbDataBubble[4*i3+1], vbDataBubble[4*i3+2]);
     vec3 u12 = u2-u1;
     vec3 u13 = u3-u1;
 
-    return normalize( cross(u12, u13) );
+    return normalize(cross(u12, u13));
 }
 
 void GameBubble::countNormals()
@@ -177,7 +177,7 @@ void GameBubble::countNormals()
 
     for(int i = 0; i < 182; ++i)
     {
-        vec3 n = normalize( vec3( nbDataBubble[4*i], nbDataBubble[4*i+1], nbDataBubble[4*i+2] ) );
+        vec3 n = normalize(vec3(nbDataBubble[4*i], nbDataBubble[4*i+1], nbDataBubble[4*i+2]));
 
         nbDataBubble[4*i] = n[0];
         nbDataBubble[4*i+1] = n[1];

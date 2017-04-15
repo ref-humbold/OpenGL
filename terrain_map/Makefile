@@ -9,18 +9,18 @@ MATH = -lm
 COMMAND = $(CXX) $(CXXFLAGS) $(USR) $(ANL)
 LIBS = -lstdc++ $(GL) $(KALETA) $(MATH)
 
-all : Teren
+all : TerrainMap
 
 clean :
 	rm -f *.o
 
 refresh : clean all
 
-Teren : Teren.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o
-	$(COMMAND) Teren.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o -o Teren $(LIBS)
+TerrainMap : TerrainMap.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o
+	$(COMMAND) TerrainMap.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o -o TerrainMap $(LIBS)
 
-Teren.o : Teren.cpp GLSLloader.hpp Area.hpp Camera.hpp Detailing.hpp Earth.hpp
-	$(COMMAND) -c Teren.cpp -o Teren.o $(LIBS)
+TerrainMap.o : TerrainMap.cpp GLSLloader.hpp Area.hpp Camera.hpp Detailing.hpp Earth.hpp
+	$(COMMAND) -c TerrainMap.cpp -o TerrainMap.o $(LIBS)
 
 Camera.o : Camera.cpp Camera.hpp Area.hpp Detailing.hpp Earth.hpp
 	$(COMMAND) -c Camera.cpp -o Camera.o $(LIBS)

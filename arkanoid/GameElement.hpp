@@ -2,8 +2,8 @@
 #define GAME_ELEMENT_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +17,7 @@ void loadBuffer(GLuint vb, GLuint cb);
 
 class GameBoard
 {
-    private:
+private:
     const GLfloat vbDataHexagon[16];
     const GLfloat cbDataHexagon[24];
     const GLfloat vbDataTriangle[6];
@@ -31,7 +31,7 @@ class GameBoard
     mat2 rt;
     vec2 tr;
 
-    public:
+public:
     std::vector<vec2> normVecs;
 
     GameBoard() :
@@ -57,14 +57,14 @@ class GameBoard
         cbDataTriangle{0.0f, 0.0f, 0.0f,
                        0.0f, 0.0f, 0.0f,
                        0.0f, 0.0f, 0.0f},
-        sc{mat2( vec2(1.0f, 0.0f), vec2(0.0f, 1.0f) )},
-        rt{mat2( vec2(1.0f, 0.0f), vec2(0.0f, 1.0f) )},
+        sc{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+        rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
         tr{vec2(0.0f, 0.0f)}
     {
-        vertexBufferHexagon = createVertexBuffer( vbDataHexagon, sizeof(vbDataHexagon) );
-        colorBufferHexagon = createVertexBuffer( cbDataHexagon, sizeof(cbDataHexagon) );
-        vertexBufferTriangle = createVertexBuffer( vbDataTriangle, sizeof(vbDataTriangle) );
-        colorBufferTriangle = createVertexBuffer( cbDataTriangle, sizeof(cbDataTriangle) );
+        vertexBufferHexagon = createVertexBuffer(vbDataHexagon, sizeof(vbDataHexagon));
+        colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
+        vertexBufferTriangle = createVertexBuffer(vbDataTriangle, sizeof(vbDataTriangle));
+        colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
         normVecs.resize(5);
     }
 
@@ -72,13 +72,13 @@ class GameBoard
     void drawBorderTriangles(GLuint pID);
     void countNormalVectors();
 
-    private:
+private:
     void drawOneTriangle(GLuint pID);
 };
 
 class GameBrick
 {
-    private:
+private:
     const GLfloat vbDataRect[8];
     GLfloat cbDataRect[12];
     const GLfloat cbDataRectBorder[12];
@@ -91,7 +91,7 @@ class GameBrick
     vec2 tr;
     bool modeHard;
 
-    public:
+public:
     std::vector< std::vector<bool> > isVisible;
     int bricksLeft;
 
@@ -108,14 +108,14 @@ class GameBrick
                          0.0f, 0.0f, 0.0f,
                          0.0f, 0.0f, 0.0f,
                          0.0f, 0.0f, 0.0f},
-        sc{mat2( vec2(0.1f, 0.0f), vec2(0.0f, 0.1f) )},
-        rt{mat2( vec2(1.0f, 0.0f), vec2(0.0f, 1.0f) )},
+        sc{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
+        rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
         tr{vec2(0.0f, 0.0f)},
         modeHard{modeHard}
     {
-        vertexBufferRect = createVertexBuffer( vbDataRect, sizeof(vbDataRect) );
-        colorBufferRect = createVertexBuffer( cbDataRect, sizeof(cbDataRect) );
-        colorBufferRectBorder = createVertexBuffer( cbDataRectBorder, sizeof(cbDataRectBorder) );
+        vertexBufferRect = createVertexBuffer(vbDataRect, sizeof(vbDataRect));
+        colorBufferRect = createVertexBuffer(cbDataRect, sizeof(cbDataRect));
+        colorBufferRectBorder = createVertexBuffer(cbDataRectBorder, sizeof(cbDataRectBorder));
 
         if(modeHard)
         {
@@ -140,14 +140,14 @@ class GameBrick
 
     void drawAllBricks(GLuint pID);
 
-    private:
+private:
     void drawRect(GLuint pID, int col);
     void drawRectBorder(GLuint pID);
 };
 
 class GamePaddle
 {
-    private:
+private:
     const GLfloat vbDataPaddle[20];
     const GLfloat cbDataPaddle[30];
     GLuint vertexBufferPaddle;
@@ -158,7 +158,7 @@ class GamePaddle
     vec2 tr;
     GLfloat velocity;
 
-    public:
+public:
     GamePaddle() :
         vbDataPaddle{0.0f, 0.0f,
                      0.4f, -0.05f,
@@ -170,13 +170,13 @@ class GamePaddle
                      0.2f, 0.2f, 0.2f,
                      0.2f, 0.2f, 0.2f,
                      0.8f, 0.8f, 0.8f},
-        sc{mat2( vec2(0.1f, 0.0f), vec2(0.0f, 0.1f) )},
-        rt{mat2( vec2(1.0f, 0.0f), vec2(0.0f, 1.0f) )},
+        sc{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
+        rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
         tr{vec2(0.0f, -0.95f)},
         velocity{1.0f}
     {
-        vertexBufferPaddle = createVertexBuffer( vbDataPaddle, sizeof(vbDataPaddle) );
-        colorBufferPaddle = createVertexBuffer( cbDataPaddle, sizeof(cbDataPaddle) );
+        vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
+        colorBufferPaddle = createVertexBuffer(cbDataPaddle, sizeof(cbDataPaddle));
     }
 
     void restart();
@@ -189,7 +189,7 @@ class GamePaddle
 
 class GameBall
 {
-    private:
+private:
     const GLfloat vbDataBall[28];
     const GLfloat cbDataBall[42];
     const GLfloat vbDataCross[8];
@@ -211,7 +211,7 @@ class GameBall
     bool startingShot;
     std::vector< std::vector< std::pair<bool, bool> > > collided;
 
-    public:
+public:
     GameBall() :
         vbDataBall{0.0f, 0.0f,
                    0.05f, 0.18660254f,
@@ -249,29 +249,29 @@ class GameBall
                     0.0f, 0.0f, 0.0f,
                     0.0f, 0.0f, 0.0f,
                     0.0f, 0.0f, 0.0f},
-        sc{mat2( vec2(0.08f, 0.0f), vec2(0.0f, 0.08f) )},
-        rt{mat2( vec2(1.0f, 0.0f), vec2(0.0f, 1.0f) )},
+        sc{mat2(vec2(0.08f, 0.0f), vec2(0.0f, 0.08f))},
+        rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
         tr{vec2(0.0f, -0.9f)},
         vNorm{vec2(0.0f, 0.0f)},
         angleMult{0},
-        radius{length( sc*vec2(0.13660254f, 0.13660254f) )},
+        radius{length(sc*vec2(0.13660254f, 0.13660254f))},
         separator{1.25f*radius},
         velDist{50.0f*radius},
         startingShot{true}
     {
-        vertexBufferBall = createVertexBuffer( vbDataBall, sizeof(vbDataBall) );
-        colorBufferBall = createVertexBuffer( cbDataBall, sizeof(cbDataBall) );
-        vertexBufferCross = createVertexBuffer( vbDataCross, sizeof(vbDataCross) );
-        colorBufferCross = createVertexBuffer( cbDataCross, sizeof(cbDataCross) );
+        vertexBufferBall = createVertexBuffer(vbDataBall, sizeof(vbDataBall));
+        colorBufferBall = createVertexBuffer(cbDataBall, sizeof(cbDataBall));
+        vertexBufferCross = createVertexBuffer(vbDataCross, sizeof(vbDataCross));
+        colorBufferCross = createVertexBuffer(cbDataCross, sizeof(cbDataCross));
 
-        velocity = velDist*normalize( vec2( (-10.0f+rand()%21)/10.0f, 1.0f) );
+        velocity = velDist*normalize(vec2((-10.0f+rand()%21)/10.0f, 1.0f));
         collided.resize(7);
 
         for(int i = 0; i < 5; ++i)
-            collided[i].resize( 13, std::make_pair(false, false) );
+            collided[i].resize(13, std::make_pair(false, false));
 
-        collided[5].resize( 5, std::make_pair(false, false) );
-        collided[6].resize( 1, std::make_pair(false, false) );
+        collided[5].resize(5, std::make_pair(false, false));
+        collided[6].resize(1, std::make_pair(false, false));
     }
 
     void restart();
@@ -289,7 +289,7 @@ class GameBall
 
 class GameControler
 {
-    public:
+public:
     GameControler()
     {
     }

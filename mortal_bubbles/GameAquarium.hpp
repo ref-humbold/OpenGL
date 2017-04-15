@@ -2,8 +2,8 @@
 #define GAME_AQUARIUM_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -12,7 +12,7 @@ using namespace glm;
 
 class GameAquarium
 {
-    private:
+private:
     const GLfloat vbDataCube[56];
     const GLfloat cbDataCube[56];
     GLfloat nbDataCube[56];
@@ -26,7 +26,7 @@ class GameAquarium
     mat4 rt;
     mat4 tr;
 
-    public:
+public:
     GameAquarium() :
         vbDataCube{0.5f, 0.5f, 0.5f, 1.0f,    //0
                    -0.5f, 0.5f, 0.5f, 1.0f,
@@ -76,18 +76,18 @@ class GameAquarium
                    11, 6, 2, 3, 7, 6,
                    12, 0, 4, 7, 3, 0,
                    13, 5, 1, 2, 6, 5},
-        sc{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        rt{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        tr{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )}
+        sc{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        rt{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        tr{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))}
     {
         countNormals();
 

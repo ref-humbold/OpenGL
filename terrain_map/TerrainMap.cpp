@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
 #include <cmath>
 #include <cstring>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -17,7 +17,7 @@
 
 using namespace glm;
 
-std::vector<std::string> readConfig(char * filename)
+std::vector<std::string> readConfig(const char * filename)
 {
     std::vector<std::string> result;
     FILE * file = fopen(filename, "r");
@@ -30,7 +30,7 @@ std::vector<std::string> readConfig(char * filename)
         if(read == EOF)
             break;
 
-        result.push_back( std::string(str) );
+        result.push_back(std::string(str));
     }
 
     return result;
@@ -123,17 +123,17 @@ int main(int argc, char * argv[])
             std::vector<std::string> names = readConfig(argv[1]);
 
             for(auto str : names)
-                terrain.push_back( new Area(str.c_str()) );
+                terrain.push_back(new Area(str.c_str()));
 
             hgtBegin = 2;
         }
 
         for(int i = hgtBegin; i < argc; ++i)
-            terrain.push_back( new Area(argv[i]) );
+            terrain.push_back(new Area(argv[i]));
     }
     else
     {
-        std::cerr << "ERROR: No configuration file\n";
+        std::cerr << "ERROR: No files specified\n";
         return -1;
     }
 
@@ -169,7 +169,7 @@ int main(int argc, char * argv[])
                     ++nextLevel;
                     details->setLOD(details->getLOD()-1);
                 }
-                else if( nextLevel != levels.begin() && cam->getZoom() < *(nextLevel-1) )
+                else if(nextLevel != levels.begin() && cam->getZoom() < *(nextLevel-1))
                     --nextLevel;
 
                 if(frames < 10 && lastFrames < 10)
@@ -252,7 +252,7 @@ int main(int argc, char * argv[])
 
                     case GLFW_KEY_UP:
                         if(cam->getDims() == 2)
-                            cam->viewTranslate( vec3(0.0f, 0.25f, 0.0f) );
+                            cam->viewTranslate(vec3(0.0f, 0.25f, 0.0f));
                         else
                             cam->viewRotate(0.25f, false);
 
@@ -261,7 +261,7 @@ int main(int argc, char * argv[])
 
                     case GLFW_KEY_DOWN:
                         if(cam->getDims() == 2)
-                            cam->viewTranslate( vec3(0.0f, -0.25f, 0.0f) );
+                            cam->viewTranslate(vec3(0.0f, -0.25f, 0.0f));
                         else
                             cam->viewRotate(-0.25f, false);
 
@@ -270,7 +270,7 @@ int main(int argc, char * argv[])
 
                     case GLFW_KEY_LEFT:
                         if(cam->getDims() == 2)
-                            cam->viewTranslate( vec3(-0.25f, 0.0f, 0.0f) );
+                            cam->viewTranslate(vec3(-0.25f, 0.0f, 0.0f));
                         else
                             cam->viewRotate(-0.5f, true);
 
@@ -279,7 +279,7 @@ int main(int argc, char * argv[])
 
                     case GLFW_KEY_RIGHT:
                         if(cam->getDims() == 2)
-                            cam->viewTranslate( vec3(0.25f, 0.0f, 0.0f) );
+                            cam->viewTranslate(vec3(0.25f, 0.0f, 0.0f));
                         else
                             cam->viewRotate(0.5f, true);
 

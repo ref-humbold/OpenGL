@@ -74,7 +74,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    srand( time(0) );
+    srand(time(NULL));
 
     GameControler * ctrl = new GameControler(window);
     std::vector<int> keys = {GLFW_KEY_TAB, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_E, GLFW_KEY_Z,
@@ -103,8 +103,8 @@ int main()
             std::vector<bool> pressed = ctrl->checkKeyPress(window, keys);
 
             for(unsigned int i = 0; i < pressed.size(); ++i)
-                if( pressed[i] )
-                    switch( keys[i] )
+                if(pressed[i])
+                    switch(keys[i])
                     {
                         case GLFW_KEY_TAB:
                             ctrl->checkTabReleased(window);
@@ -144,30 +144,30 @@ int main()
                             break;
                     }
 
-            if( !mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS) )
+            if(!mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS))
             {
                 mouseBegin = ctrl->getMousePos(window);
                 mouseClicked = true;
             }
 
-            if( mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS) )
+            if(mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS))
             {
                 mouseEnd = ctrl->getMousePos(window);
 
-                if( vecDifferent(mouseBegin, mouseEnd) )
+                if(vecDifferent(mouseBegin, mouseEnd))
                 {
                     vec3 normBegin = normalize(mouseBegin);
                     vec3 normEnd = normalize(mouseEnd);
                     GLfloat cosine = dot(normBegin, normEnd);
-                    GLfloat angleRad = acos( min(cosine, 1.0f) );
-                    vec3 axis = normalize( cross(normBegin, normEnd) );
+                    GLfloat angleRad = acos(min(cosine, 1.0f));
+                    vec3 axis = normalize(cross(normBegin, normEnd));
 
                     ctrl->viewRotate(angleRad, axis);
                     mouseBegin = mouseEnd;
                 }
             }
 
-            if( ctrl->checkMouseAction(window, GLFW_RELEASE) )
+            if(ctrl->checkMouseAction(window, GLFW_RELEASE))
                mouseClicked = false;
 
             int bubleNumber = ctrl->checkCollisionBubble();

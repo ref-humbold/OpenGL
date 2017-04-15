@@ -10,7 +10,7 @@ GameController::GameController(const std::pair<int, int> & size, int numColors, 
            0.0f, 0.7f, -0.7f, -0.7f, 0.7f, -0.7f},              // triangle
     size{size}
 {
-    srand( time(NULL) );
+    srand(time(NULL));
 
     std::vector<bool> isSet(size.first*size.second, false);
     int elemSet = 0;
@@ -21,7 +21,7 @@ GameController::GameController(const std::pair<int, int> & size, int numColors, 
 
     for(float i = -size.first+1; i <= size.first; i += 2)
         for(float j = -size.second+1; j <= size.second; j += 2)
-            transforms.push_back( std::make_pair(i, j) );
+            transforms.push_back(std::make_pair(i, j));
 
     while(elemSet != (int)isSet.size())
     {
@@ -29,7 +29,7 @@ GameController::GameController(const std::pair<int, int> & size, int numColors, 
 
         do
             i = rand()%isSet.size();
-        while( isSet[i] );
+        while(isSet[i]);
 
         do
             j = rand()%isSet.size();
@@ -75,7 +75,7 @@ void GameController::drawGame(GLuint pID, const std::pair<int, int> & pos, bool 
     drawSquares(pID, 10, transforms[pos.second], 4);
 
     for(int i = 0; i < size.first*size.second; i++)
-        if( visible[i] || i == pos.first || (isCurVisible && i == pos.second) )
+        if(visible[i] || i == pos.first || (isCurVisible && i == pos.second))
         {
             drawSquares(pID, colorCodes[i], transforms[i], 0);
             drawSign(pID, i);
@@ -232,7 +232,7 @@ void GameController::drawSign(GLuint pID, int i)
     glUniform2f(transform, transforms[i].second, transforms[i].first);
     glUniform3f(color, 0.0f, 0.0f, 0.0f);
 
-    switch( signCodes[i] )
+    switch(signCodes[i])
     {
         case 0:
             glDrawArrays(GL_LINES, 8, 2);

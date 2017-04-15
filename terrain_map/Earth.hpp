@@ -2,8 +2,8 @@
 #define EARTH_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,7 +13,7 @@ using namespace glm;
 
 class Earth
 {
-    private:
+private:
     std::vector<GLfloat> vbData;
     std::vector<GLuint> ibData;
     GLuint vertexBuffer;
@@ -22,7 +22,7 @@ class Earth
     int numLongs;
     int numLats;
 
-    public:
+public:
     Earth();
 
     void draw(GLuint pID, mat4 worldToCamera);

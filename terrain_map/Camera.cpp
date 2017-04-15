@@ -14,17 +14,17 @@ void Camera::changeDims()
 
     if(dims == 2)
     {
-        view = lookAt( vec3(cameraMapPos[0], cameraMapPos[1], 0.0f),
+        view = lookAt(vec3(cameraMapPos[0], cameraMapPos[1], 0.0f),
                        vec3(cameraMapPos[0], cameraMapPos[1], -1.0f),
-                       vec3(0.0f, 1.0f, 0.0f) );
-        sc = mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                   vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f) );
+                       vec3(0.0f, 1.0f, 0.0f));
+        sc = mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                   vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f));
         cameraCoeffs[0] = degrees(cameraMapPos[0]/MERCATOR);
-        cameraCoeffs[1] = degrees(2.0f*atan( exp(cameraMapPos[1]/MERCATOR) )-PI_CONST/2);
+        cameraCoeffs[1] = degrees(2.0f*atan(exp(cameraMapPos[1]/MERCATOR))-PI_CONST/2);
     }
     else
     {
-        view = lookAt(cameraEarthPos, cameraDir3D(), vec3(0.0f, 1.0f, 0.0f) );
+        view = lookAt(cameraEarthPos, cameraDir3D(), vec3(0.0f, 1.0f, 0.0f));
         fov = PI_CONST/3;
         proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persLength);
     }
@@ -42,7 +42,7 @@ void Camera::drawTerrain(GLuint pID, const std::vector<Area *> & areas, Detailin
     mat4 cameraMat = dims == 2 ? sc*view : proj*view;
 
     for(auto ar : areas)
-        if( areaInside(ar, cameraMat) )
+        if(areaInside(ar, cameraMat))
             ar->draw(pID, cameraMat, details, dims);
 }
 
@@ -52,7 +52,7 @@ long long int Camera::getTriangles(const std::vector<Area *> & areas, Detailing 
     mat4 cameraMat = dims == 2 ? sc*view : proj*view;
 
     for(auto ar : areas)
-        if( areaInside(ar, cameraMat) )
+        if(areaInside(ar, cameraMat))
             totalTriangles += details->getTriangles();
 
     return totalTriangles;
@@ -65,7 +65,7 @@ vec2 Camera::getGeoCenter()
 
 GLfloat Camera::getZoom()
 {
-    return dims == 2 ? log( sc[0][0] ) : -9.6f/PI_CONST*fov+3.2;
+    return dims == 2 ? log(sc[0][0]) : -9.6f/PI_CONST*fov+3.2;
 }
 
 void Camera::viewScale(GLfloat zoom)
@@ -97,7 +97,7 @@ void Camera::viewRotate(GLfloat angleDeg, bool latitudeAlong)
 {
     if(dims == 3 && latitudeAlong)
     {
-        view = rotate( view, -angleDeg, vec3(0.0f, 1.0f, 0.0f) );
+        view = rotate(view, -angleDeg, vec3(0.0f, 1.0f, 0.0f));
         cameraCoeffs[0] += angleDeg;
 
         if(cameraCoeffs[0] > 180.0f)
@@ -113,7 +113,7 @@ void Camera::viewRotate(GLfloat angleDeg, bool latitudeAlong)
             GLfloat lng = radians(cameraCoeffs[0]);
 
             cameraCoeffs[1] += angleDeg;
-            view = rotate( view, angleDeg, vec3( cos(lng), 0.0f, -sin(lng) ) );
+            view = rotate(view, angleDeg, vec3(cos(lng), 0.0f, -sin(lng)));
         }
     }
 }
@@ -122,11 +122,11 @@ void Camera::cameraRotate(GLfloat angleDeg)
 {
     if(dims == 3)
     {
-        GLfloat camPosX = distance*cos( radians(cameraCoeffs[1]) )*sin( radians(cameraCoeffs[0]) );
-        GLfloat camPosY = distance*sin( radians(cameraCoeffs[1]) );
-        GLfloat camPosZ = distance*cos( radians(cameraCoeffs[1]) )*cos( radians(cameraCoeffs[0]) );
+        GLfloat camPosX = distance*cos(radians(cameraCoeffs[1]))*sin(radians(cameraCoeffs[0]));
+        GLfloat camPosY = distance*sin(radians(cameraCoeffs[1]));
+        GLfloat camPosZ = distance*cos(radians(cameraCoeffs[1]))*cos(radians(cameraCoeffs[0]));
 
-        view = rotate( view, -angleDeg, vec3(camPosX, camPosY, camPosZ) );
+        view = rotate(view, -angleDeg, vec3(camPosX, camPosY, camPosZ));
     }
 }
 
@@ -138,7 +138,7 @@ void Camera::viewTranslate(vec3 trans)
         cameraMapPos[0] += trans[0];
         cameraMapPos[1] += trans[1];
         cameraCoeffs[0] = degrees(cameraMapPos[0]/MERCATOR);
-        cameraCoeffs[1] = degrees(2.0f*atan( exp(cameraMapPos[1]/MERCATOR) )-PI_CONST/2);
+        cameraCoeffs[1] = degrees(2.0f*atan(exp(cameraMapPos[1]/MERCATOR))-PI_CONST/2);
         view = translate(view, -trans);
     }
 }

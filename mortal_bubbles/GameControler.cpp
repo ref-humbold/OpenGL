@@ -11,7 +11,7 @@ void GameControler::drawGame(GLuint pID)
 
 void GameControler::restart()
 {
-    player->restart( 0.9f*aqua->getSide() );
+    player->restart(0.9f*aqua->getSide());
     bubble->elements.clear();
     setCamera();
 }
@@ -19,12 +19,12 @@ void GameControler::restart()
 void GameControler::restartMoves()
 {
     playerMoves.clear();
-    playerMoves.push_back( vec4(0.0f, 0.0f, -1.0f, 1.0f) ); //W
-    playerMoves.push_back( vec4(0.0f, 0.0f, 1.0f, 1.0f) );  //X
-    playerMoves.push_back( vec4(0.0f, 1.0f, 0.0f, 1.0f) );  //E
-    playerMoves.push_back( vec4(0.0f, -1.0f, 0.0f, 1.0f) ); //Z
-    playerMoves.push_back( vec4(-1.0f, 0.0f, 0.0f, 1.0f) ); //A
-    playerMoves.push_back( vec4(1.0f, 0.0f, 0.0f, 1.0f) );  //D
+    playerMoves.push_back(vec4(0.0f, 0.0f, -1.0f, 1.0f)); //W
+    playerMoves.push_back(vec4(0.0f, 0.0f, 1.0f, 1.0f));  //X
+    playerMoves.push_back(vec4(0.0f, 1.0f, 0.0f, 1.0f));  //E
+    playerMoves.push_back(vec4(0.0f, -1.0f, 0.0f, 1.0f)); //Z
+    playerMoves.push_back(vec4(-1.0f, 0.0f, 0.0f, 1.0f)); //A
+    playerMoves.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f));  //D
 }
 
 void GameControler::setCamera()
@@ -33,8 +33,8 @@ void GameControler::setCamera()
     {
         vec3 p = player->getRadPos().second;
 
-        cameraPos = vec3( p[0], p[1], p[2]+0.1f );
-        cameraDir = vec3( p[0], p[1], p[2] );
+        cameraPos = vec3(p[0], p[1], p[2]+0.1f);
+        cameraDir = vec3(p[0], p[1], p[2]);
         persBegin = 0.05f;
         persStep = 2.0f;
     }
@@ -47,7 +47,7 @@ void GameControler::setCamera()
     }
 
     fov = PI_CONST/4;
-    view = lookAt( cameraPos, cameraDir, vec3(0.0f, 1.0f, 0.0f) );
+    view = lookAt(cameraPos, cameraDir, vec3(0.0f, 1.0f, 0.0f));
     proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persBegin+persStep);
     restartMoves();
 }
@@ -70,12 +70,12 @@ void GameControler::viewRotate(GLfloat angleRad, vec3 axis)
 {
     if(viewInside)
     {
-        mat4 tr1 = mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
-            vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.1f, 1.0f) );
-        mat4 rt = toMat4( angleAxis(angleRad, axis) );
-        mat4 rtMv = toMat4( angleAxis(-angleRad, axis) );
-        mat4 tr2 = mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
-            vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, -0.1f, 1.0f) );
+        mat4 tr1 = mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
+            vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.1f, 1.0f));
+        mat4 rt = toMat4(angleAxis(angleRad, axis));
+        mat4 rtMv = toMat4(angleAxis(-angleRad, axis));
+        mat4 tr2 = mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
+            vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, -0.1f, 1.0f));
 
         auto rtMove = [=](vec4 v)
             {
@@ -90,7 +90,7 @@ void GameControler::viewRotate(GLfloat angleRad, vec3 axis)
         vec4 axisObj4 = inverse(view)*vec4(axis[0], axis[1], axis[2], 0.0f);
         vec3 axisObj = vec3(axisObj4[0], axisObj4[1], axisObj4[2]);
 
-        view = view*toMat4( angleAxis(angleRad, axisObj) );
+        view = view*toMat4(angleAxis(angleRad, axisObj));
     }
 }
 
@@ -145,7 +145,7 @@ void GameControler::movePlayer(GLfloat delta, std::vector<bool> movesMask)
     vec3 mvPlayer = vec3(0.0f, 0.0f, 0.0f);
 
     for(unsigned int i = 0; i < movesMask.size(); ++i)
-        if( movesMask[i] )
+        if(movesMask[i])
         {
             mvPlayer[0] += playerMoves[i][0];
             mvPlayer[1] += playerMoves[i][1];
@@ -175,7 +175,7 @@ vec3 GameControler::getMousePos(GLFWwindow * window)
 
     glfwGetCursorPos(window, &x, &y);
 
-    vec3 res = vec3( 2.0f*x/windowW-1.0f, -(2.0f*y/windowH-1.0f), 0.0f );
+    vec3 res = vec3(2.0f*x/windowW-1.0f, -(2.0f*y/windowH-1.0f), 0.0f);
     GLfloat ln = res[0]*res[0]+res[1]*res[1];
 
     if(ln <= 1.0f)

@@ -2,14 +2,14 @@
 #define CAMERA_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 #include "Area.hpp"
 #include "Detailing.hpp"
@@ -19,7 +19,7 @@ using namespace glm;
 
 class Camera
 {
-    private:
+private:
     static constexpr GLfloat PI_CONST = M_PI;
     static constexpr GLfloat MERCATOR = 360.0f/(2*PI_CONST);
     static constexpr GLfloat RADIUS = 6400000.0f;
@@ -37,14 +37,14 @@ class Camera
     int windowW;
     int windowH;
 
-    public:
+public:
     int dims;
 
     Camera(GLFWwindow * window) :
-        sc{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
+        sc{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
         distance{1.005f*RADIUS},
         cameraCoeffs{vec2(0.0f, 0.0f)},
         cameraMapPos{vec2(0.0f, 0.0f)},
@@ -55,7 +55,7 @@ class Camera
         dims{2}
     {
         glfwGetWindowSize(window, &windowW, &windowH);
-        view = lookAt( vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f) );
+        view = lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f));
         proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persLength);
     }
 
@@ -73,7 +73,7 @@ class Camera
     void viewTranslate(vec3 trans);
     std::vector <bool> checkKeyPress(GLFWwindow * window, std::vector <int> & keys);
 
-    private:
+private:
     vec3 cameraDir3D();
     bool areaInside(Area * area, mat4 scview);
 };

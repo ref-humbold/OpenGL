@@ -2,9 +2,9 @@
 #define GLSL_LOADER_HPP
 
 #include <cstdlib>
-#include <iostream>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>

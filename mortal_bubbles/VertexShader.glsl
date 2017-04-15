@@ -24,7 +24,7 @@ void main()
     vec4 sourcePosCamera = worldToCameraMat*lightSourcePos;
 
     fragmentColor = vertexColor;
-    normVecCamera = transpose( inverse(mvMat) )*vertexNormal;
+    normVecCamera = transpose(inverse(mvMat))*vertexNormal;
     observeDirCamera = -vPosCamera;
     sourceDirCamera = sourcePosCamera+observeDirCamera;
 

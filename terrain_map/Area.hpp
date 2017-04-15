@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <GL/glew.h>
@@ -17,7 +17,7 @@ using namespace glm;
 
 class Area
 {
-    private:
+private:
     static constexpr int SIDE = 1201;
     static constexpr GLfloat PI_CONST = M_PI;
     static constexpr GLfloat MERCATOR = 360.0f/(2*PI_CONST);
@@ -28,13 +28,13 @@ class Area
 
     vec2 geoCoeffs;
 
-    public:
+public:
     Area(const char * filename);
 
     void draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims);
     std::pair<vec4, vec4> getCorners(int dims);
 
-    private:
+private:
     GLfloat countMapPosX(GLfloat longitude);
     GLfloat countMapPosY(GLfloat latitude);
     GLfloat countEarthPosX(GLfloat longitude, GLfloat latitude);

@@ -48,7 +48,7 @@ GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
     {
         std::vector<char> ProgramErrorMessage(InfoLogLength+1);
 
-        glGetProgramInfoLog( ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0] );
+        glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         std::cout << &ProgramErrorMessage[0] << "\n";
     }
 
@@ -65,7 +65,7 @@ GLuint prepareShader(const char * file_path, GLenum shader_type)
     {
         std::string Line = "";
 
-        while( getline(shaderStream, Line) )
+        while(getline(shaderStream, Line))
             shaderCode += "\n" + Line;
 
         shaderStream.close();

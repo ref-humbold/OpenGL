@@ -45,43 +45,43 @@ int main(int argc, char * argv[])
     switch(argc)
     {
         case 5:
-            numSigns = atoi( argv[4] );
+            numSigns = atoi(argv[4]);
 
         case 4:
-            numColors = atoi( argv[3] );
+            numColors = atoi(argv[3]);
 
         case 3:
-            numColumns = atoi( argv[2] );
+            numColumns = atoi(argv[2]);
 
         case 2:
-            numRows = atoi( argv[1] );
+            numRows = atoi(argv[1]);
     }
 
-    if( !isInRange(numRows, 1, 12) )
+    if(!isInRange(numRows, 1, 12))
     {
         std::cerr << "FAILURE! INCORRECT NUMBER OF ROWS\n";
         return -1;
     }
 
-    if( !isInRange(numColumns, 1, 12) )
+    if(!isInRange(numColumns, 1, 12))
     {
         std::cerr << "FAILURE! INCORRECT NUMBER OF COLUMNS\n";
         return -1;
     }
 
-    if( !isInRange(numColors, 2, 6) )
+    if(!isInRange(numColors, 2, 6))
     {
         std::cerr << "FAILURE! INCORRECT NUMBER OF CARD COLORS\n";
         return -1;
     }
 
-    if( !isInRange(numSigns, 1, 3) )
+    if(!isInRange(numSigns, 1, 3))
     {
         std::cerr << "FAILURE! INCORRECT NUMBER OF CARD SIGNS\n";
         return -1;
     }
 
-    if( (numRows*numColumns)%2 != 0)
+    if((numRows*numColumns)%2 != 0)
     {
         std::cerr << "FAILURE! ODD NUMBER OF CARDS\n";
         return -1;
@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
 
-        ctrl->drawGame( programID, std::make_pair(prev, cur), (check || goToNext) );
+        ctrl->drawGame(programID, std::make_pair(prev, cur), (check || goToNext));
 
         glfwSwapBuffers(window);
 
@@ -140,7 +140,7 @@ int main(int argc, char * argv[])
             glfwPollEvents();
         else if(check)
         {
-            if( ctrl->checkSame(prev, cur) )
+            if(ctrl->checkSame(prev, cur))
             {
                 ctrl->setVisible(prev);
                 ctrl->setVisible(cur);
@@ -177,7 +177,7 @@ int main(int argc, char * argv[])
                 }
             }
 
-            if(keyCode == 0 && !ctrl->isVisible(cur) )
+            if(keyCode == 0 && !ctrl->isVisible(cur))
             {
                 if(prev == -1)
                     prev = cur;

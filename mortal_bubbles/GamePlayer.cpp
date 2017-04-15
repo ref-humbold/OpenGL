@@ -25,10 +25,10 @@ void GamePlayer::drawPlayer(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
     GLint cameraToClipMat = glGetUniformLocation(pID, "cameraToClipMat");
     GLint lightSourcePos = glGetUniformLocation(pID, "lightSourcePos");
 
-    glUniformMatrix4fv( objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0] );
-    glUniformMatrix4fv( worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0] );
-    glUniformMatrix4fv( cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0] );
-    glUniform4fv( lightSourcePos, 1, &lightSource[0] );
+    glUniformMatrix4fv(objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0]);
+    glUniformMatrix4fv(worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0]);
+    glUniformMatrix4fv(cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0]);
+    glUniform4fv(lightSourcePos, 1, &lightSource[0]);
 
     glDrawElements(GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)0);
 
@@ -39,7 +39,7 @@ void GamePlayer::drawPlayer(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
         glDrawElements(GL_TRIANGLE_STRIP, 42, GL_UNSIGNED_SHORT, (void*)ix);
     }
 
-    glDrawElements( GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)( 358*sizeof(unsigned short) ) );
+    glDrawElements(GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void*)(358*sizeof(unsigned short)));
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -62,18 +62,18 @@ void GamePlayer::move(vec3 v)
 
 std::pair<GLfloat, vec3> GamePlayer::getRadPos()
 {
-    return std::make_pair(sc[0][0], vec3( tr[3][0], tr[3][1], tr[3][2] ) );
+    return std::make_pair(sc[0][0], vec3(tr[3][0], tr[3][1], tr[3][2]));
 }
 
 vec3 GamePlayer::normalVec(GLushort i1, GLushort i2, GLushort i3)
 {
-    vec3 u1 = vec3( vbDataPlayer[4*i1], vbDataPlayer[4*i1+1], vbDataPlayer[4*i1+2] );
-    vec3 u2 = vec3( vbDataPlayer[4*i2], vbDataPlayer[4*i2+1], vbDataPlayer[4*i2+2] );
-    vec3 u3 = vec3( vbDataPlayer[4*i3], vbDataPlayer[4*i3+1], vbDataPlayer[4*i3+2] );
+    vec3 u1 = vec3(vbDataPlayer[4*i1], vbDataPlayer[4*i1+1], vbDataPlayer[4*i1+2]);
+    vec3 u2 = vec3(vbDataPlayer[4*i2], vbDataPlayer[4*i2+1], vbDataPlayer[4*i2+2]);
+    vec3 u3 = vec3(vbDataPlayer[4*i3], vbDataPlayer[4*i3+1], vbDataPlayer[4*i3+2]);
     vec3 u12 = u2-u1;
     vec3 u13 = u3-u1;
 
-    return normalize( cross(u12, u13) );
+    return normalize(cross(u12, u13));
 }
 
 void GamePlayer::countNormals()
@@ -113,7 +113,7 @@ void GamePlayer::countNormals()
 
     for(int i = 0; i < 182; ++i)
     {
-        vec3 n = normalize( vec3( nbDataPlayer[4*i], nbDataPlayer[4*i+1], nbDataPlayer[4*i+2] ) );
+        vec3 n = normalize(vec3(nbDataPlayer[4*i], nbDataPlayer[4*i+1], nbDataPlayer[4*i+2]));
 
         nbDataPlayer[4*i] = n[0];
         nbDataPlayer[4*i+1] = n[1];

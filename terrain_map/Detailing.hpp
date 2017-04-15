@@ -2,8 +2,8 @@
 #define DETAILING_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <GL/glew.h>
@@ -12,7 +12,7 @@
 
 class Detailing
 {
-    private:
+private:
     static constexpr int SIDE = 1201;
 
     std::vector<GLfloat> vbData;
@@ -24,7 +24,7 @@ class Detailing
     std::vector<long long int> triangles;
     std::vector<int> detailsSteps;
 
-    public:
+public:
     Detailing();
 
     long long int getTriangles();

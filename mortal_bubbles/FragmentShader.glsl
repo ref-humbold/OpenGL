@@ -20,8 +20,8 @@ void main()
     vec4 lightDirSource = normalize(sourceDirCamera);
     vec4 lightDirObserve = normalize(-observeDirCamera);
 
-    vec4 reflDirSource = normalize( reflect(-lightDirSource, normalVector) );
-    vec4 reflDirObserve = normalize( reflect(-lightDirObserve, normalVector) );
+    vec4 reflDirSource = normalize(reflect(-lightDirSource, normalVector));
+    vec4 reflDirObserve = normalize(reflect(-lightDirObserve, normalVector));
 
     float cosineLightSource = max(dot(normalVector, lightDirSource), 0);
     float cosineReflSource = max(dot(eyeVector, reflDirSource), 0);

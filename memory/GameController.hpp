@@ -12,7 +12,7 @@ using namespace glm;
 
 class GameController
 {
-    private:
+private:
     const GLfloat vbData[34];
     GLuint vertexBuffer;
     std::pair<int, int> size;
@@ -21,7 +21,7 @@ class GameController
     std::vector< std::pair<int, int> > transforms;
     std::vector<bool> visible;
 
-    public:
+public:
     GameController(const std::pair<int, int> & size, int numColors, int numSigns);
 
     bool isVisible(int i);
@@ -32,7 +32,7 @@ class GameController
     int moveFrame(int key, int cur);
     bool checkSame(int prev, int cur);
 
-    private:
+private:
     void drawSquares(GLuint pID, int col, std::pair<int, int> tr, int frameOffset);
     void drawSign(GLuint pID, int i);
 };

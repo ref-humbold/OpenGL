@@ -25,10 +25,10 @@ void GameAquarium::drawCube(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
     GLint cameraToClipMat = glGetUniformLocation(pID, "cameraToClipMat");
     GLint lightSourcePos = glGetUniformLocation(pID, "lightSourcePos");
 
-    glUniformMatrix4fv( objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0] );
-    glUniformMatrix4fv( worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0] );
-    glUniformMatrix4fv( cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0] );
-    glUniform4fv( lightSourcePos, 1, &lightSource[0] );
+    glUniformMatrix4fv(objectToWorldMat, 1, GL_FALSE, &objectToWorld[0][0]);
+    glUniformMatrix4fv(worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0]);
+    glUniformMatrix4fv(cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0]);
+    glUniform4fv(lightSourcePos, 1, &lightSource[0]);
 
     for(int i = 0; i < 6; ++i)
     {
@@ -49,13 +49,13 @@ GLfloat GameAquarium::getSide()
 
 vec3 GameAquarium::normalVec(GLushort i1, GLushort i2, GLushort i3)
 {
-    vec3 u1 = vec3( vbDataCube[4*i1], vbDataCube[4*i1+1], vbDataCube[4*i1+2] );
-    vec3 u2 = vec3( vbDataCube[4*i2], vbDataCube[4*i2+1], vbDataCube[4*i2+2] );
-    vec3 u3 = vec3( vbDataCube[4*i3], vbDataCube[4*i3+1], vbDataCube[4*i3+2] );
+    vec3 u1 = vec3(vbDataCube[4*i1], vbDataCube[4*i1+1], vbDataCube[4*i1+2]);
+    vec3 u2 = vec3(vbDataCube[4*i2], vbDataCube[4*i2+1], vbDataCube[4*i2+2]);
+    vec3 u3 = vec3(vbDataCube[4*i3], vbDataCube[4*i3+1], vbDataCube[4*i3+2]);
     vec3 u12 = u2-u1;
     vec3 u13 = u3-u1;
 
-    return normalize( cross(u12, u13) );
+    return normalize(cross(u12, u13));
 }
 
 void GameAquarium::countNormals()
@@ -79,7 +79,7 @@ void GameAquarium::countNormals()
 
     for(int i = 0; i < 14; ++i)
     {
-        vec3 n = normalize( vec3( nbDataCube[4*i], nbDataCube[4*i+1], nbDataCube[4*i+2] ) );
+        vec3 n = normalize(vec3(nbDataCube[4*i], nbDataCube[4*i+1], nbDataCube[4*i+2]));
 
         nbDataCube[4*i] = n[0];
         nbDataCube[4*i+1] = n[1];

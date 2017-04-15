@@ -78,22 +78,22 @@ GLfloat Area::countMapPosX(GLfloat longitude)
 
 GLfloat Area::countMapPosY(GLfloat latitude)
 {
-    return MERCATOR*log( tan(PI_CONST/4+radians(latitude)/2) );
+    return MERCATOR*log(tan(PI_CONST/4+radians(latitude)/2));
 }
 
 GLfloat Area::countEarthPosX(GLfloat longitude, GLfloat latitude)
 {
-    return RADIUS*cos( radians(latitude) )*sin( radians(longitude) );
+    return RADIUS*cos(radians(latitude))*sin(radians(longitude));
 }
 
 GLfloat Area::countEarthPosY(GLfloat latitude)
 {
-    return RADIUS*sin( radians(latitude) );
+    return RADIUS*sin(radians(latitude));
 }
 
 GLfloat Area::countEarthPosZ(GLfloat longitude, GLfloat latitude)
 {
-    return RADIUS*cos( radians(latitude) )*cos( radians(longitude) );
+    return RADIUS*cos(radians(latitude))*cos(radians(longitude));
 }
 
 void Area::countCoefficients(const char * filename)
@@ -154,7 +154,7 @@ void Area::readHeights(const char * filename)
 
         GLshort height = (b1<<8)|b2;
 
-        hbData.push_back( (GLfloat)height );
+        hbData.push_back((GLfloat)height);
     }
 
     fclose(file);

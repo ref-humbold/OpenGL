@@ -2,8 +2,8 @@
 #define GAME_PLAYER_HPP
 
 #include <cstdlib>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,7 +13,7 @@ using namespace glm;
 
 class GamePlayer
 {
-    private:
+private:
     const GLfloat vbDataPlayer[728];
     const GLfloat cbDataPlayer[728];
     GLfloat nbDataPlayer[728];
@@ -28,7 +28,7 @@ class GamePlayer
     mat4 tr;
     GLfloat velocity;
 
-    public:
+public:
     GamePlayer() :
         vbDataPlayer{0.0f,          1.0f,           0.0f, 1.0f,             //0
                      0.309017f,     0.9510565,      0.0f, 1.0f,             //1
@@ -602,18 +602,18 @@ class GamePlayer
                      151, 171, 152, 172, 153, 173, 154, 174, 155, 175, 156, 176, 157, 177, 158, 178, 159, 179, 160, 180,
                      141, 161,
                      181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 180},  //358
-        sc{mat4( vec4(0.01f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.01f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.01f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        rt{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
-        tr{mat4( vec4(1.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 1.0f, 0.0f),
-                 vec4(0.0f, 0.0f, 0.0f, 1.0f) )},
+        sc{mat4(vec4(0.01f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.01f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.01f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        rt{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+        tr{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f),
+                vec4(0.0f, 1.0f, 0.0f, 0.0f),
+                vec4(0.0f, 0.0f, 1.0f, 0.0f),
+                vec4(0.0f, 0.0f, 0.0f, 1.0f))},
         velocity{0.3f}
     {
         countNormals();
