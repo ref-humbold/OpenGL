@@ -16,20 +16,20 @@ clean :
 
 refresh : clean all
 
-ObjBrowser : ObjBrowser.o GraphicObject.o Camera.o FileReader.o GLSLloader.o
-	$(COMMAND) ObjBrowser.o GraphicObject.o Camera.o FileReader.o GLSLloader.o -o ObjBrowser $(LIBS)
+ObjBrowser : GLSLloader.o GraphicObject.o Camera.o FileReader.o ObjBrowser.o
+	$(COMMAND) GLSLloader.o GraphicObject.o Camera.o FileReader.o ObjBrowser.o -o ObjBrowser $(LIBS)
 
-ObjBrowser.o : ObjBrowser.cpp GraphicObject.hpp Camera.hpp FileReader.hpp GLSLloader.hpp
+ObjBrowser.o : ObjBrowser.cpp
 	$(COMMAND) -c ObjBrowser.cpp -o ObjBrowser.o $(LIBS)
 
-GraphicObject.o : GraphicObject.cpp GraphicObject.hpp
+GraphicObject.o : GraphicObject.cpp
 	$(COMMAND) -c GraphicObject.cpp -o GraphicObject.o $(LIBS)
 
-Camera.o : Camera.cpp Camera.hpp GraphicObject.hpp
+Camera.o : Camera.cpp
 	$(COMMAND) -c Camera.cpp -o Camera.o $(LIBS)
 
-FileReader.o : FileReader.cpp FileReader.hpp GraphicObject.hpp
+FileReader.o : FileReader.cpp
 	$(COMMAND) -c FileReader.cpp -o FileReader.o $(LIBS)
 
-GLSLloader.o : GLSLloader.cpp GLSLloader.hpp
+GLSLloader.o : GLSLloader.cpp
 	$(COMMAND) -c GLSLloader.cpp -o GLSLloader.o $(LIBS)

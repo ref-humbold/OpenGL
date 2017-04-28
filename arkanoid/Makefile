@@ -15,15 +15,15 @@ clean :
 
 refresh : clean all
 
-Arkanoid : Arkanoid.o GLSLloader.o GameElement.o
-	$(COMMAND) Arkanoid.o GLSLloader.o GameElement.o -o Arkanoid $(LIBS)
+Arkanoid : GLSLloader.o GameElement.o Arkanoid.o
+	$(COMMAND) GLSLloader.o GameElement.o Arkanoid.o -o Arkanoid $(LIBS)
 
-Arkanoid.o : Arkanoid.cpp GLSLloader.hpp GameElement.hpp
+Arkanoid.o : Arkanoid.cpp
 	$(COMMAND) -c Arkanoid.cpp -o Arkanoid.o $(LIBS)
 
-GameElement.o : GameElement.cpp GameElement.hpp
+GameElement.o : GameElement.cpp
 	$(COMMAND) -c GameElement.cpp -o GameElement.o $(LIBS)
 
-GLSLloader.o : GLSLloader.cpp GLSLloader.hpp
+GLSLloader.o : GLSLloader.cpp
 	$(COMMAND) -c GLSLloader.cpp -o GLSLloader.o $(LIBS)
 

@@ -16,23 +16,23 @@ clean :
 
 refresh : clean all
 
-TerrainMap : TerrainMap.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o
-	$(COMMAND) TerrainMap.o GLSLloader.o Area.o Camera.o Detailing.o Earth.o -o TerrainMap $(LIBS)
+TerrainMap : GLSLloader.o Area.o Camera.o Detailing.o Earth.o TerrainMap.o
+	$(COMMAND) GLSLloader.o Area.o Camera.o Detailing.o Earth.o TerrainMap.o -o TerrainMap $(LIBS)
 
-TerrainMap.o : TerrainMap.cpp GLSLloader.hpp Area.hpp Camera.hpp Detailing.hpp Earth.hpp
+TerrainMap.o : TerrainMap.cpp
 	$(COMMAND) -c TerrainMap.cpp -o TerrainMap.o $(LIBS)
 
-Camera.o : Camera.cpp Camera.hpp Area.hpp Detailing.hpp Earth.hpp
+Camera.o : Camera.cpp
 	$(COMMAND) -c Camera.cpp -o Camera.o $(LIBS)
 
-Area.o : Area.cpp Area.hpp Detailing.hpp
+Area.o : Area.cpp
 	$(COMMAND) -c Area.cpp -o Area.o $(LIBS)
 
-Detailing.o : Detailing.cpp Detailing.hpp
+Detailing.o : Detailing.cpp
 	$(COMMAND) -c Detailing.cpp -o Detailing.o $(LIBS)
 
-Earth.o : Earth.cpp Earth.hpp
+Earth.o : Earth.cpp
 	$(COMMAND) -c Earth.cpp -o Earth.o $(LIBS)
 
-GLSLloader.o : GLSLloader.cpp GLSLloader.hpp
+GLSLloader.o : GLSLloader.cpp
 	$(COMMAND) -c GLSLloader.cpp -o GLSLloader.o $(LIBS)
