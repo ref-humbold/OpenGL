@@ -1,11 +1,11 @@
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -32,7 +32,7 @@ void compileShader(GLuint ShaderID, std::string ShaderCode, char const * file_pa
 
     if(InfoLogLength > 0)
     {
-        std::vector<char> ShaderErrorMessage(InfoLogLength+1);
+        std::vector<char> ShaderErrorMessage(InfoLogLength + 1);
 
         glGetShaderInfoLog(ShaderID, InfoLogLength, NULL, &ShaderErrorMessage[0]);
         std::cerr << &ShaderErrorMessage[0] << "\n";
@@ -58,7 +58,7 @@ GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
 
     if(InfoLogLength > 0)
     {
-        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 
         glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         std::cout << &ProgramErrorMessage[0] << "\n";

@@ -9,37 +9,36 @@ int Camera::getDims()
 
 void Camera::changeDims()
 {
-    dims = 5-dims;
+    dims = 5 - dims;
     cameraCoeffs = vec2(0.0f, 0.0f);
 
     if(dims == 2)
     {
         view = lookAt(vec3(cameraMapPos[0], cameraMapPos[1], 0.0f),
-                       vec3(cameraMapPos[0], cameraMapPos[1], -1.0f),
-                       vec3(0.0f, 1.0f, 0.0f));
+                      vec3(cameraMapPos[0], cameraMapPos[1], -1.0f), vec3(0.0f, 1.0f, 0.0f));
         sc = mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
-                   vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f));
-        cameraCoeffs[0] = degrees(cameraMapPos[0]/MERCATOR);
-        cameraCoeffs[1] = degrees(2.0f*atan(exp(cameraMapPos[1]/MERCATOR))-PI_CONST/2);
+                  vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        cameraCoeffs[0] = degrees(cameraMapPos[0] / MERCATOR);
+        cameraCoeffs[1] = degrees(2.0f * atan(exp(cameraMapPos[1] / MERCATOR)) - PI_CONST / 2);
     }
     else
     {
         view = lookAt(cameraEarthPos, cameraDir3D(), vec3(0.0f, 1.0f, 0.0f));
-        fov = PI_CONST/3;
-        proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persLength);
+        fov = PI_CONST / 3;
+        proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
     }
 }
 
 void Camera::drawEarth(GLuint pID, Earth * earth)
 {
-    mat4 cameraMat = proj*view;
+    mat4 cameraMat = proj * view;
 
     earth->draw(pID, cameraMat);
 }
 
 void Camera::drawTerrain(GLuint pID, const std::vector<Area *> & areas, Detailing * details)
 {
-    mat4 cameraMat = dims == 2 ? sc*view : proj*view;
+    mat4 cameraMat = dims == 2 ? sc * view : proj * view;
 
     for(auto ar : areas)
         if(areaInside(ar, cameraMat))
@@ -49,7 +48,7 @@ void Camera::drawTerrain(GLuint pID, const std::vector<Area *> & areas, Detailin
 long long int Camera::getTriangles(const std::vector<Area *> & areas, Detailing * details)
 {
     long long int totalTriangles = 0LL;
-    mat4 cameraMat = dims == 2 ? sc*view : proj*view;
+    mat4 cameraMat = dims == 2 ? sc * view : proj * view;
 
     for(auto ar : areas)
         if(areaInside(ar, cameraMat))
@@ -65,7 +64,7 @@ vec2 Camera::getGeoCenter()
 
 GLfloat Camera::getZoom()
 {
-    return dims == 2 ? log(sc[0][0]) : -9.6f/PI_CONST*fov+3.2;
+    return dims == 2 ? log(sc[0][0]) : -9.6f / PI_CONST * fov + 3.2;
 }
 
 void Camera::viewScale(GLfloat zoom)
@@ -78,19 +77,19 @@ void Camera::viewScale(GLfloat zoom)
     else
     {
         fov *= zoom;
-        fov = std::min(fov, PI_CONST/2);
-        fov = std::max(fov, PI_CONST/6);
-        proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persLength);
+        fov = std::min(fov, PI_CONST / 2);
+        fov = std::max(fov, PI_CONST / 6);
+        proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
     }
 }
 
 void Camera::resetScale()
 {
-    fov = PI_CONST/3;
-    proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persLength);
+    fov = PI_CONST / 3;
+    proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
 
     for(int i = 0; i < 3; ++i)
-            sc[i][i] = 1.0f;
+        sc[i][i] = 1.0f;
 }
 
 void Camera::viewRotate(GLfloat angleDeg, bool latitudeAlong)
@@ -108,7 +107,7 @@ void Camera::viewRotate(GLfloat angleDeg, bool latitudeAlong)
     }
     else if(dims == 3 && !latitudeAlong)
     {
-        if(abs(cameraCoeffs[1]+angleDeg) <= 80.0f)
+        if(abs(cameraCoeffs[1] + angleDeg) <= 80.0f)
         {
             GLfloat lng = radians(cameraCoeffs[0]);
 
@@ -122,9 +121,9 @@ void Camera::cameraRotate(GLfloat angleDeg)
 {
     if(dims == 3)
     {
-        GLfloat camPosX = distance*cos(radians(cameraCoeffs[1]))*sin(radians(cameraCoeffs[0]));
-        GLfloat camPosY = distance*sin(radians(cameraCoeffs[1]));
-        GLfloat camPosZ = distance*cos(radians(cameraCoeffs[1]))*cos(radians(cameraCoeffs[0]));
+        GLfloat camPosX = distance * cos(radians(cameraCoeffs[1])) * sin(radians(cameraCoeffs[0]));
+        GLfloat camPosY = distance * sin(radians(cameraCoeffs[1]));
+        GLfloat camPosZ = distance * cos(radians(cameraCoeffs[1])) * cos(radians(cameraCoeffs[0]));
 
         view = rotate(view, -angleDeg, vec3(camPosX, camPosY, camPosZ));
     }
@@ -137,20 +136,17 @@ void Camera::viewTranslate(vec3 trans)
         trans /= sc[0][0];
         cameraMapPos[0] += trans[0];
         cameraMapPos[1] += trans[1];
-        cameraCoeffs[0] = degrees(cameraMapPos[0]/MERCATOR);
-        cameraCoeffs[1] = degrees(2.0f*atan(exp(cameraMapPos[1]/MERCATOR))-PI_CONST/2);
+        cameraCoeffs[0] = degrees(cameraMapPos[0] / MERCATOR);
+        cameraCoeffs[1] = degrees(2.0f * atan(exp(cameraMapPos[1] / MERCATOR)) - PI_CONST / 2);
         view = translate(view, -trans);
     }
 }
 
-std::vector <bool> Camera::checkKeyPress(GLFWwindow * window, std::vector <int> & keys)
+std::vector<bool> Camera::checkKeyPress(GLFWwindow * window, std::vector<int> & keys)
 {
-    std::vector <bool> result(keys.size());
+    std::vector<bool> result(keys.size());
 
-    auto pressed = [=](int k) -> bool
-        {
-            return glfwGetKey(window, k) == GLFW_PRESS;
-        };
+    auto pressed = [=](int k) -> bool { return glfwGetKey(window, k) == GLFW_PRESS; };
 
     std::transform(keys.begin(), keys.end(), result.begin(), pressed);
 
@@ -165,8 +161,8 @@ vec3 Camera::cameraDir3D()
 bool Camera::areaInside(Area * area, mat4 cameraMat)
 {
     std::pair<vec4, vec4> corners = area->getCorners(dims);
-    vec4 leftdown = cameraMat*corners.first;
-    vec4 rightup = cameraMat*corners.second;
+    vec4 leftdown = cameraMat * corners.first;
+    vec4 rightup = cameraMat * corners.second;
 
     if(dims == 2)
         return std::min(rightup[0], rightup[3]) >= std::max(leftdown[0], -leftdown[3])

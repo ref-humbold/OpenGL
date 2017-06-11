@@ -5,8 +5,8 @@
 #include <cstdio>
 #include <cmath>
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -20,7 +20,7 @@ class Area
 private:
     static constexpr int SIDE = 1201;
     static constexpr GLfloat PI_CONST = M_PI;
-    static constexpr GLfloat MERCATOR = 360.0f/(2*PI_CONST);
+    static constexpr GLfloat MERCATOR = 360.0f / (2 * PI_CONST);
     static constexpr GLfloat RADIUS = 6400000.0f;
 
     std::vector<GLfloat> hbData;
@@ -29,7 +29,15 @@ private:
     vec2 geoCoeffs;
 
 public:
-    Area(const char * filename);
+    explicit Area(const char * filename) : geoCoeffs{vec2(0.0f, 0.0f)}
+    {
+        countCoefficients(filename);
+        readHeights(filename);
+
+        glGenBuffers(1, &heightBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, heightBuffer);
+        glBufferData(GL_ARRAY_BUFFER, hbData.size() * sizeof(GLfloat), &hbData[0], GL_STATIC_DRAW);
+    }
 
     void draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims);
     std::pair<vec4, vec4> getCorners(int dims);

@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -16,7 +16,7 @@ private:
     static constexpr int SIDE = 1201;
 
     std::vector<GLfloat> vbData;
-    std::vector< std::vector<GLuint> > ibData;
+    std::vector<std::vector<GLuint>> ibData;
     GLuint vertexBuffer;
     GLuint indexBuffer;
 

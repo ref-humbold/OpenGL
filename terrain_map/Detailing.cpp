@@ -1,16 +1,14 @@
 #include "Detailing.hpp"
 
-Detailing::Detailing() :
-    detailsLevel{0},
-    detailsSteps{1, 3, 6, 10, 15, 20, 30, 40, 60}
+Detailing::Detailing() : detailsLevel{0}, detailsSteps{1, 3, 6, 10, 15, 20, 30, 40, 60}
 {
-    vbData.reserve(SIDE*SIDE);
+    vbData.reserve(SIDE * SIDE);
 
-    for(int lt = SIDE-1; lt >= 0; --lt)
+    for(int lt = SIDE - 1; lt >= 0; --lt)
         for(int lg = 0; lg < SIDE; ++lg)
         {
-            vbData.push_back(lg/1200.0f);
-            vbData.push_back(lt/1200.0f);
+            vbData.push_back(lg / 1200.0f);
+            vbData.push_back(lt / 1200.0f);
         }
 
     for(int step : detailsSteps)
@@ -22,8 +20,8 @@ Detailing::Detailing() :
         {
             for(int j = 0; j < SIDE; j += step)
             {
-                indices.push_back(SIDE*(i-step)+j);
-                indices.push_back(SIDE*i+j);
+                indices.push_back(SIDE * (i - step) + j);
+                indices.push_back(SIDE * i + j);
                 trinum += 2LL;
             }
 
@@ -36,12 +34,12 @@ Detailing::Detailing() :
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vbData.size()*sizeof(GLfloat), &vbData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vbData.size() * sizeof(GLfloat), &vbData[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData[detailsLevel].size()*sizeof(GLuint),
-        &ibData[detailsLevel][0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData[detailsLevel].size() * sizeof(GLuint),
+                 &ibData[detailsLevel][0], GL_STATIC_DRAW);
 }
 
 long long int Detailing::getTriangles()
@@ -56,7 +54,7 @@ int Detailing::getLOD()
 
 void Detailing::setLOD(int degLOD)
 {
-    int levelsMaxNum = detailsSteps.size()-1;
+    int levelsMaxNum = detailsSteps.size() - 1;
     int oldLOD = detailsLevel;
 
     detailsLevel = degLOD;
@@ -66,8 +64,8 @@ void Detailing::setLOD(int degLOD)
     if(detailsLevel != oldLOD)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData[detailsLevel].size()*sizeof(GLuint),
-            &ibData[detailsLevel][0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData[detailsLevel].size() * sizeof(GLuint),
+                     &ibData[detailsLevel][0], GL_STATIC_DRAW);
     }
 }
 

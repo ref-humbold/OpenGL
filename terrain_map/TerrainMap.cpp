@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <cstdio>
-#include <cmath>
 #include <cstring>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,11 +9,11 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "GLSLloader.hpp"
 #include "Area.hpp"
 #include "Camera.hpp"
 #include "Detailing.hpp"
 #include "Earth.hpp"
+#include "GLSLloader.hpp"
 
 using namespace glm;
 
@@ -32,6 +32,8 @@ std::vector<std::string> readConfig(const char * filename)
 
         result.push_back(std::string(str));
     }
+
+    fclose(file);
 
     return result;
 }
@@ -118,7 +120,7 @@ int main(int argc, char * argv[])
     {
         int fstlen = strlen(argv[1]), hgtBegin = 1;
 
-        if(fstlen > 4 && strcmp(argv[1]+fstlen-4, ".hgt") != 0)
+        if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".hgt") != 0)
         {
             std::vector<std::string> names = readConfig(argv[1]);
 
@@ -137,13 +139,14 @@ int main(int argc, char * argv[])
         return -1;
     }
 
-    std::vector <int> keys = {GLFW_KEY_TAB, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT,
-        GLFW_KEY_RIGHT, GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_A, GLFW_KEY_Q, GLFW_KEY_W, GLFW_KEY_1,
-        GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8,
-        GLFW_KEY_9, GLFW_KEY_0};
+    std::vector<int> keys = {GLFW_KEY_TAB,   GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT,
+                             GLFW_KEY_RIGHT, GLFW_KEY_Z,  GLFW_KEY_X,    GLFW_KEY_A,
+                             GLFW_KEY_Q,     GLFW_KEY_W,  GLFW_KEY_1,    GLFW_KEY_2,
+                             GLFW_KEY_3,     GLFW_KEY_4,  GLFW_KEY_5,    GLFW_KEY_6,
+                             GLFW_KEY_7,     GLFW_KEY_8,  GLFW_KEY_9,    GLFW_KEY_0};
     std::vector<GLfloat> levels = {-1.2f, -0.8f, -0.4f, -0.01f, 0.4f, 0.8f, 1.2f};
     auto nextLevel = std::find_if(levels.begin(), levels.end(),
-        [=](GLfloat lvl){return lvl >= cam->getZoom();});
+                                  [=](GLfloat lvl) { return lvl >= cam->getZoom(); });
     int frames = 0, lastFrames = 0;
     bool autoLOD = true;
     GLfloat time_start = glfwGetTime();
@@ -158,7 +161,7 @@ int main(int argc, char * argv[])
 
         if(time_end - time_start >= 1.0)
         {
-            std::cout << "\t\t" << frames << " FPS - " << 1000.0f/frames << " ms per frame";
+            std::cout << "\t\t" << frames << " FPS - " << 1000.0f / frames << " ms per frame";
             std::cout << " >> LOD " << details->getLOD() << " - step " << details->getStep();
             std::cout << " >> TRIANGLES " << cam->getTriangles(terrain, details) << "\n";
 
@@ -167,15 +170,15 @@ int main(int argc, char * argv[])
                 if(nextLevel != levels.end() && cam->getZoom() > *nextLevel)
                 {
                     ++nextLevel;
-                    details->setLOD(details->getLOD()-1);
+                    details->setLOD(details->getLOD() - 1);
                 }
-                else if(nextLevel != levels.begin() && cam->getZoom() < *(nextLevel-1))
+                else if(nextLevel != levels.begin() && cam->getZoom() < *(nextLevel - 1))
                     --nextLevel;
 
                 if(frames < 10 && lastFrames < 10)
-                    details->setLOD(details->getLOD()+1);
+                    details->setLOD(details->getLOD() + 1);
                 else if(frames >= 30 && lastFrames >= 30)
-                    details->setLOD(details->getLOD()-1);
+                    details->setLOD(details->getLOD() - 1);
             }
 
             lastFrames = frames;
@@ -197,13 +200,13 @@ int main(int argc, char * argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::vector <bool> pressed = cam->checkKeyPress(window, keys);
+        std::vector<bool> pressed = cam->checkKeyPress(window, keys);
 
         for(unsigned int i = 0; i < pressed.size(); ++i)
-        {
-            int loop_start;
-
             if(pressed[i])
+            {
+                int loop_start;
+
                 switch(keys[i])
                 {
                     case GLFW_KEY_TAB:
@@ -212,7 +215,7 @@ int main(int argc, char * argv[])
                         while(glfwGetKey(window, GLFW_KEY_TAB) != GLFW_RELEASE)
                             glfwPollEvents();
 
-                        time_start = glfwGetTime()-loop_start+time_start;
+                        time_start = glfwGetTime() - loop_start + time_start;
                         cam->changeDims();
                         std::cout << "DIMENSIONS = " << cam->getDims() << "\n";
 
@@ -256,7 +259,8 @@ int main(int argc, char * argv[])
                         else
                             cam->viewRotate(0.25f, false);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0] << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
+                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_DOWN:
@@ -265,7 +269,8 @@ int main(int argc, char * argv[])
                         else
                             cam->viewRotate(-0.25f, false);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0] << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
+                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_LEFT:
@@ -274,7 +279,8 @@ int main(int argc, char * argv[])
                         else
                             cam->viewRotate(-0.5f, true);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0] << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
+                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_RIGHT:
@@ -283,7 +289,8 @@ int main(int argc, char * argv[])
                         else
                             cam->viewRotate(0.5f, true);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0] << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
+                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_0:
@@ -336,9 +343,9 @@ int main(int argc, char * argv[])
                         details->setLOD(8);
                         break;
                 }
-        }
-    }
-    while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+            }
+    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(window) == 0);
 
     for(unsigned int i = 0; i < terrain.size(); ++i)
         delete terrain[i];

@@ -2,15 +2,12 @@
 
 using namespace glm;
 
-Earth::Earth() :
-    numLongs{36},
-    numLats{17}
+Earth::Earth() : numLongs{36}, numLats{17}
 {
-    auto push_point = [=](GLfloat longitude, GLfloat latitude)
-        {
-            vbData.push_back(longitude);
-            vbData.push_back(latitude);
-        };
+    auto push_point = [=](GLfloat longitude, GLfloat latitude) {
+        vbData.push_back(longitude);
+        vbData.push_back(latitude);
+    };
 
     push_point(0.0f, 90.0f);
 
@@ -22,25 +19,26 @@ Earth::Earth() :
 
     for(int i = 0; i < numLats; ++i)
         for(int j = 1; j <= numLongs; ++j)
-            ibData.push_back(numLongs*i+j);
+            ibData.push_back(numLongs * i + j);
 
     for(int j = 1; j <= numLongs; ++j)
     {
         ibData.push_back(0);
 
         for(int i = 0; i < numLats; ++i)
-            ibData.push_back(numLongs*i+j);
+            ibData.push_back(numLongs * i + j);
 
-        ibData.push_back(numLongs*numLats+1);
+        ibData.push_back(numLongs * numLats + 1);
     }
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vbData.size()*sizeof(GLfloat), &vbData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vbData.size() * sizeof(GLfloat), &vbData[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData.size()*sizeof(GLuint), &ibData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibData.size() * sizeof(GLuint), &ibData[0],
+                 GL_STATIC_DRAW);
 }
 
 void Earth::draw(GLuint pID, mat4 worldToCamera)
@@ -57,18 +55,18 @@ void Earth::draw(GLuint pID, mat4 worldToCamera)
 
     for(int i = 0; i < numLats; ++i)
     {
-        int ix = i*numLongs*sizeof(GLuint);
+        int ix = i * numLongs * sizeof(GLuint);
 
-        glDrawElements(GL_LINE_LOOP, numLongs, GL_UNSIGNED_INT, (void*)ix);
+        glDrawElements(GL_LINE_LOOP, numLongs, GL_UNSIGNED_INT, (void *)ix);
     }
 
-    int longitsStart = numLongs*numLats*sizeof(GLuint);
+    int longitsStart = numLongs * numLats * sizeof(GLuint);
 
     for(int i = 0; i < numLongs; ++i)
     {
-        int ix = longitsStart+i*(numLats+2)*sizeof(GLuint);
+        int ix = longitsStart + i * (numLats + 2) * sizeof(GLuint);
 
-        glDrawElements(GL_LINE_STRIP, numLats+2, GL_UNSIGNED_INT, (void*)ix);
+        glDrawElements(GL_LINE_STRIP, numLats + 2, GL_UNSIGNED_INT, (void *)ix);
     }
 
     glDisableVertexAttribArray(0);
