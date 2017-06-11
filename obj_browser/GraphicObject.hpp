@@ -3,9 +3,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -45,6 +45,5 @@ public:
     void createBuffers();
     void draw(GLuint pID, mat4 cameraMat, mat4 clipMat);
 };
-
 
 #endif

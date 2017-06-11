@@ -6,9 +6,9 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

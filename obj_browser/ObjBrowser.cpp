@@ -8,10 +8,10 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "GraphicObject.hpp"
 #include "Camera.hpp"
 #include "FileReader.hpp"
 #include "GLSLloader.hpp"
+#include "GraphicObject.hpp"
 
 using namespace glm;
 
@@ -45,6 +45,8 @@ std::vector<std::string> readConfig(const char * filename)
 
         result.push_back(std::string(str));
     }
+
+    fclose(file);
 
     return result;
 }
@@ -111,7 +113,7 @@ int main(int argc, char * argv[])
     {
         int fstlen = strlen(argv[1]), objBegin = 1;
 
-        if(fstlen > 4 && strcmp(argv[1]+fstlen-4, ".obj") != 0)
+        if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".obj") != 0)
         {
             std::vector<std::string> names = readConfig(argv[1]);
 
@@ -130,7 +132,7 @@ int main(int argc, char * argv[])
         return -1;
     }
 
-    std::vector <int> keys = {GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_Z, GLFW_KEY_X};
+    std::vector<int> keys = {GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_Z, GLFW_KEY_X};
     Camera * cam = new Camera(window);
     auto objIter = objects.begin();
     int iterationClicked = 0;
@@ -147,7 +149,7 @@ int main(int argc, char * argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::vector <bool> pressed = cam->checkKeyPress(window, keys);
+        std::vector<bool> pressed = cam->checkKeyPress(window, keys);
 
         for(unsigned int i = 0; i < pressed.size(); ++i)
         {
@@ -169,7 +171,7 @@ int main(int argc, char * argv[])
                         break;
 
                     case GLFW_KEY_RIGHT:
-                        if(objIter != objects.end()-1)
+                        if(objIter != objects.end() - 1)
                         {
                             if(iterationClicked >= 3)
                             {
@@ -217,8 +219,8 @@ int main(int argc, char * argv[])
 
         if(cam->checkMouseAction(window, GLFW_RELEASE))
             mouseClicked = false;
-    }
-    while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(window) == 0);
 
     glfwTerminate();
 

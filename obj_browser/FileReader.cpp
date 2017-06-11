@@ -1,12 +1,12 @@
-#include <stdexcept>
 #include <exception>
+#include <stdexcept>
 
 #include "FileReader.hpp"
 
 vec3 normalVec(vec3 vt1, vec3 vt2, vec3 vt3)
 {
-    vec3 vt12 = vt2-vt1;
-    vec3 vt13 = vt3-vt1;
+    vec3 vt12 = vt2 - vt1;
+    vec3 vt13 = vt3 - vt1;
 
     return normalize(cross(vt12, vt13));
 }
@@ -22,8 +22,8 @@ std::vector<std::string> split(const std::string & str, const std::string & deli
 
         if(endPos != std::string::npos)
         {
-            splitted.push_back(str.substr(beginPos, endPos-beginPos));
-            beginPos = endPos+delim.size();
+            splitted.push_back(str.substr(beginPos, endPos - beginPos));
+            beginPos = endPos + delim.size();
         }
         else
         {
@@ -43,11 +43,10 @@ std::vector<GLuint> parse(const std::string & str, const std::string & delim)
     parsed.resize(splitted.size());
 
     std::transform(splitted.begin(), splitted.end(), parsed.begin(),
-                   [](std::string s){ return s == "" ? 0 : stoul(s); });
+                   [](std::string s) { return s == "" ? 0 : stoul(s); });
 
     return parsed;
 }
-
 
 void readOBJ(GraphicObject * grobj, const char * filename)
 {
@@ -110,37 +109,38 @@ void readOBJ(GraphicObject * grobj, const char * filename)
             if(line.size() < 4)
                 throw std::runtime_error("Expected three sets of indices for vertices");
 
-            std::transform(line.begin()+1, line.begin()+4, indx.begin(),
-                           [](const std::string & s){ return parse(s, "/"); });
+            std::transform(line.begin() + 1, line.begin() + 4, indx.begin(),
+                           [](const std::string & s) { return parse(s, "/"); });
 
-            vec3 countedNormal = normalVec(vertRead[indx[0][0]-1], vertRead[indx[1][0]-1],
-                vertRead[indx[2][0]-1]);
+            vec3 countedNormal = normalVec(vertRead[indx[0][0] - 1], vertRead[indx[1][0] - 1],
+                                           vertRead[indx[2][0] - 1]);
 
-            if(std::any_of(indx.begin(), indx.end(),
-               [](const std::vector<GLuint> & vc){ return vc.size() < 3 || vc[2] == 0; }))
+            if(std::any_of(indx.begin(), indx.end(), [](const std::vector<GLuint> & vc) {
+                   return vc.size() < 3 || vc[2] == 0;
+               }))
             {
                 normRead.push_back(countedNormal);
             }
 
             for(auto vc : indx)
             {
-                vertIndices.push_back(vc[0]-1);
+                vertIndices.push_back(vc[0] - 1);
 
                 if(vc.size() >= 2)
                 {
                     if(vc[1] > 0)
-                        uvIndices.push_back(vc[1]-1);
+                        uvIndices.push_back(vc[1] - 1);
 
                     if(vc.size() >= 3)
                     {
                         if(vc[2] > 0)
-                            normIndices.push_back(vc[2]-1);
+                            normIndices.push_back(vc[2] - 1);
                         else
-                            normIndices.push_back(normRead.size()-1);
+                            normIndices.push_back(normRead.size() - 1);
                     }
                 }
                 else
-                    normIndices.push_back(normRead.size()-1);
+                    normIndices.push_back(normRead.size() - 1);
             }
         }
     }
