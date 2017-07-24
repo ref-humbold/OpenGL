@@ -4,15 +4,15 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 #include <tuple>
 #include <vector>
-#include <algorithm>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <glm/glm.hpp>
 
 #include "GameAquarium.hpp"
 #include "GameBubble.hpp"
@@ -45,31 +45,7 @@ private:
 public:
     double points;
 
-    GameControler(GLFWwindow * window) :
-        aqua{new GameAquarium()},
-        player{new GamePlayer()},
-        bubble{new GameBubble()},
-        cameraPos{vec3(0.0f, 0.0f, 3.0f)},
-        cameraDir{vec3(0.0f, 0.0f, 0.0f)},
-        viewInside{false},
-        fov{PI_CONST/4},
-        persBegin{1.0f},
-        persStep{4.0f},
-        points{1.0}
-    {
-        playerMoves.push_back(vec4(0.0f, 0.0f, -1.0f, 0.0f)); //W
-        playerMoves.push_back(vec4(0.0f, 0.0f, 1.0f, 0.0f));  //X
-        playerMoves.push_back(vec4(0.0f, 1.0f, 0.0f, 0.0f));  //E
-        playerMoves.push_back(vec4(0.0f, -1.0f, 0.0f, 0.0f)); //Z
-        playerMoves.push_back(vec4(-1.0f, 0.0f, 0.0f, 0.0f)); //A
-        playerMoves.push_back(vec4(1.0f, 0.0f, 0.0f, 0.0f));  //D
-
-        lightSource = vec4(0.0f, aqua->getSide(), 0.0f, 1.0f);
-
-        glfwGetWindowSize(window, &windowW, &windowH);
-        view = lookAt(cameraPos, cameraDir, vec3(0.0f, 1.0f, 0.0f);
-        proj = perspective(fov, (1.0f*windowW)/windowH, persBegin, persBegin+persStep);
-    }
+    explicit GameControler(GLFWwindow * window);
 
     ~GameControler()
     {

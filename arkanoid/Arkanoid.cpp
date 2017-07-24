@@ -5,7 +5,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
 #include "GLSLloader.hpp"
+#include "GameController.hpp"
 #include "GameElement.hpp"
 
 using namespace glm;
@@ -13,6 +15,7 @@ using namespace glm;
 void createVertexArray()
 {
     GLuint vertexArrayID;
+
     glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
 }
@@ -56,9 +59,9 @@ int main(int argc, char * argv[])
 
     glfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "Arkanoid", NULL, NULL);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "Arkanoid", nullptr, nullptr);
 
-    if(window == NULL)
+    if(window == nullptr)
     {
         std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
@@ -81,9 +84,9 @@ int main(int argc, char * argv[])
 
     createVertexArray();
 
-    srand(time(NULL));
+    srand(time(nullptr));
 
-    GameControler * ctrl = new GameControler();
+    GameController * ctrl = new GameController();
     GameBoard * board = new GameBoard();
     GameBall * ball = new GameBall();
     GameBrick * brick = new GameBrick(modeHard);
@@ -118,11 +121,11 @@ int main(int argc, char * argv[])
                     break;
 
                 case 1:
-                    paddle->moveLeft(glfwGetTime()-timer);
+                    paddle->moveLeft(glfwGetTime() - timer);
                     break;
 
                 case 2:
-                    paddle->moveRight(glfwGetTime()-timer);
+                    paddle->moveRight(glfwGetTime() - timer);
                     break;
             }
 
@@ -145,7 +148,7 @@ int main(int argc, char * argv[])
 
                 ball->checkCollisionBoard(board);
 
-                GLfloat delta = gamePhase == 0 ? pauseTime-timer : glfwGetTime()-timer;
+                GLfloat delta = gamePhase == 0 ? pauseTime - timer : glfwGetTime() - timer;
                 timer = glfwGetTime();
 
                 ball->moveBall(delta);
@@ -173,8 +176,8 @@ int main(int argc, char * argv[])
                 std::cout << "\tGRAMY!!\n\n";
             }
         }
-    }
-    while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(window) == 0);
 
     if(brick->bricksLeft != 0)
         std::cout << "PRZERWANO GRĘ\n\n";
@@ -188,4 +191,3 @@ int main(int argc, char * argv[])
 
     return 0;
 }
-

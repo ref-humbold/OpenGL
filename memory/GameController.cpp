@@ -2,54 +2,54 @@
 
 using namespace glm;
 
-GameController::GameController(const std::pair<int, int> & size, int numColors, int numSigns) :
-    vbData{-0.9f, -0.9f, 0.9f, -0.9f, 0.9f, 0.9f, -0.9f, 0.9f,  // square
-           -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f,  // frame
-           0.0f, 0.7f, 0.0f, -0.7f,                             // pipe
-           -0.7f, -0.7f, 0.7f, 0.7f, 0.7f, -0.7f, -0.7f, 0.7f,  // cross
-           0.0f, 0.7f, -0.7f, -0.7f, 0.7f, -0.7f},              // triangle
-    size{size}
+GameController::GameController(const std::pair<int, int> & size, int numColors, int numSigns)
+    : vbData{-0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,    // square
+             -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,    // frame
+             0.0f,  0.7f,  0.0f,  -0.7f,    // pipe
+             -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,    // cross
+             0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f},    // triangle
+      size{size}
 {
-    srand(time(NULL));
+    srand(time(nullptr));
 
-    std::vector<bool> isSet(size.first*size.second, false);
+    std::vector<bool> isSet(size.first * size.second, false);
     int elemSet = 0;
 
-    visible.resize(size.first*size.second, false);
-    colorCodes.resize(size.first*size.second);
-    signCodes.resize(size.first*size.second);
+    visible.resize(size.first * size.second, false);
+    colorCodes.resize(size.first * size.second);
+    signCodes.resize(size.first * size.second);
 
-    for(float i = -size.first+1; i <= size.first; i += 2)
-        for(float j = -size.second+1; j <= size.second; j += 2)
+    for(float i = -size.first + 1; i <= size.first; i += 2)
+        for(float j = -size.second + 1; j <= size.second; j += 2)
             transforms.push_back(std::make_pair(i, j));
 
     while(elemSet != (int)isSet.size())
     {
-        int i, j, col = rand()%numColors+1, sgn = rand()%numSigns;
+        int i, j, col = rand() % numColors + 1, sgn = rand() % numSigns;
 
         do
-            i = rand()%isSet.size();
+            i = rand() % isSet.size();
         while(isSet[i]);
 
         do
-            j = rand()%isSet.size();
+            j = rand() % isSet.size();
         while(isSet[j] || j == i);
 
         colorCodes[i] = col;
         signCodes[i] = sgn;
-        colorCodes[j]= col;
+        colorCodes[j] = col;
         signCodes[j] = sgn;
         isSet[i] = true;
         isSet[j] = true;
         elemSet += 2;
     }
 
-    static const GLfloat vertexBufferData[] =
-    {-0.9f, -0.9f, 0.9f, -0.9f, 0.9f, 0.9f, -0.9f, 0.9f,    // square
-    -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f,     // frame
-    0.0f, 0.7f, 0.0f, -0.7f,                                // pipe
-    -0.7f, -0.7f, 0.7f, 0.7f, 0.7f, -0.7f, -0.7f, 0.7f,     // cross
-    0.0f, 0.7f, -0.7f, -0.7f, 0.7f, -0.7f};                 // triangle
+    static const GLfloat vertexBufferData[] = {
+        -0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,    // square
+        -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,    // frame
+        0.0f,  0.7f,  0.0f,  -0.7f,    // pipe
+        -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,    // cross
+        0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f};    // triangle
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -74,7 +74,7 @@ void GameController::drawGame(GLuint pID, const std::pair<int, int> & pos, bool 
 
     drawSquares(pID, 10, transforms[pos.second], 4);
 
-    for(int i = 0; i < size.first*size.second; i++)
+    for(int i = 0; i < size.first * size.second; i++)
         if(visible[i] || i == pos.first || (isCurVisible && i == pos.second))
         {
             drawSquares(pID, colorCodes[i], transforms[i], 0);
@@ -146,24 +146,24 @@ void GameController::checkKeyRelease(GLFWwindow * window, int key)
 
 int GameController::moveFrame(int key, int cur)
 {
-    int rw = cur/size.second, cl = cur%size.second;
+    int rw = cur / size.second, cl = cur % size.second;
 
     switch(key)
     {
         case 1:
-            cur = (rw+1)%size.first*size.second+cl;
+            cur = (rw + 1) % size.first * size.second + cl;
             break;
 
         case 2:
-            cur = (rw-1+size.first)%size.first*size.second+cl;
+            cur = (rw - 1 + size.first) % size.first * size.second + cl;
             break;
 
         case 3:
-            cur = rw*size.second+(cl-1+size.second)%size.second;
+            cur = rw * size.second + (cl - 1 + size.second) % size.second;
             break;
 
         case 4:
-            cur = rw*size.second+(cl+1)%size.second;
+            cur = rw * size.second + (cl + 1) % size.second;
             break;
     }
 
@@ -181,41 +181,41 @@ void GameController::drawSquares(GLuint pID, int col, std::pair<int, int> tr, in
     GLint transform = glGetUniformLocation(pID, "transform");
     GLint color = glGetUniformLocation(pID, "fragmentColor");
 
-    glUniform2f(scale, 0.8f/size.second, 0.8f/size.first);
+    glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
     glUniform2f(transform, tr.second, tr.first);
 
     switch(col)
     {
         case 4:
-            glUniform3f(color, 1.0f, 0.0f, 0.0f); //red
+            glUniform3f(color, 1.0f, 0.0f, 0.0f);    // red
             break;
 
         case 2:
-            glUniform3f(color, 0.0f, 1.0f, 0.0f); //green
+            glUniform3f(color, 0.0f, 1.0f, 0.0f);    // green
             break;
 
         case 1:
-            glUniform3f(color, 0.0f, 0.0f, 1.0f); //blue
+            glUniform3f(color, 0.0f, 0.0f, 1.0f);    // blue
             break;
 
         case 3:
-            glUniform3f(color, 0.0f, 1.0f, 1.0f); //cyan
+            glUniform3f(color, 0.0f, 1.0f, 1.0f);    // cyan
             break;
 
         case 5:
-            glUniform3f(color, 1.0f, 0.0f, 1.0f); //magenta
+            glUniform3f(color, 1.0f, 0.0f, 1.0f);    // magenta
             break;
 
         case 6:
-            glUniform3f(color, 1.0f, 1.0f, 0.0f); //yellow
+            glUniform3f(color, 1.0f, 1.0f, 0.0f);    // yellow
             break;
 
         case 0:
-            glUniform3f(color, 0.0f, 0.0f, 0.0f); //black
+            glUniform3f(color, 0.0f, 0.0f, 0.0f);    // black
             break;
 
         case 10:
-            glUniform3f(color, 0.5f, 0.5f, 0.5f); //grey
+            glUniform3f(color, 0.5f, 0.5f, 0.5f);    // grey
             break;
     }
 
@@ -228,7 +228,7 @@ void GameController::drawSign(GLuint pID, int i)
     GLint transform = glGetUniformLocation(pID, "transform");
     GLint color = glGetUniformLocation(pID, "fragmentColor");
 
-    glUniform2f(scale, 0.8f/size.second, 0.8f/size.first);
+    glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
     glUniform2f(transform, transforms[i].second, transforms[i].first);
     glUniform3f(color, 0.0f, 0.0f, 0.0f);
 

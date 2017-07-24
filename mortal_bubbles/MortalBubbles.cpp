@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "GLSLloader.hpp"
-#include "GameControler.hpp"
+#include "GameController.hpp"
 
 using namespace glm;
 
@@ -41,9 +41,9 @@ int main()
 
     glfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "Mortal Bubbles", NULL, NULL);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "Mortal Bubbles", nullptr, nullptr);
 
-    if(window == NULL)
+    if(window == nullptr)
     {
         std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
@@ -74,11 +74,11 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    srand(time(NULL));
+    srand(time(nullptr));
 
-    GameControler * ctrl = new GameControler(window);
-    std::vector<int> keys = {GLFW_KEY_TAB, GLFW_KEY_W, GLFW_KEY_X, GLFW_KEY_E, GLFW_KEY_Z,
-        GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_UP, GLFW_KEY_DOWN};
+    GameController * ctrl = new GameController(window);
+    std::vector<int> keys = {GLFW_KEY_TAB, GLFW_KEY_W, GLFW_KEY_X,  GLFW_KEY_E,   GLFW_KEY_Z,
+                             GLFW_KEY_A,   GLFW_KEY_D, GLFW_KEY_UP, GLFW_KEY_DOWN};
     vec3 mouseBegin, mouseEnd;
     int gameLevel = -1;
     bool isRestarted = true, mouseClicked = false;
@@ -168,7 +168,7 @@ int main()
             }
 
             if(ctrl->checkMouseAction(window, GLFW_RELEASE))
-               mouseClicked = false;
+                mouseClicked = false;
 
             int bubleNumber = ctrl->checkCollisionBubble();
 
@@ -187,7 +187,7 @@ int main()
             }
             else if(ctrl->checkEndRound())
             {
-                gameLevel = -gameLevel-1;
+                gameLevel = -gameLevel - 1;
                 counter = 0.0f;
                 ctrl->points += 10.0;
                 std::cout << "\tZA WYGRANIE RUNDY DOSTAJESZ 10 PUNKTÓW.\n";
@@ -196,7 +196,7 @@ int main()
             }
             else
             {
-                GLfloat delta = glfwGetTime()-timer;
+                GLfloat delta = glfwGetTime() - timer;
                 timer = glfwGetTime();
                 counter += delta;
                 counter = ctrl->moveBubbles(delta, counter, gameLevel);
@@ -207,7 +207,7 @@ int main()
         {
             if(counter < 2.0f)
             {
-                GLfloat delta = glfwGetTime()-timer;
+                GLfloat delta = glfwGetTime() - timer;
                 counter += delta;
                 timer = glfwGetTime();
             }
@@ -229,11 +229,11 @@ int main()
                 ctrl->restart();
             }
 
-            counter += glfwGetTime()-timer;
+            counter += glfwGetTime() - timer;
             timer = glfwGetTime();
         }
-    }
-    while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(window) == 0);
 
     std::cout << "\tKONIEC GRY: PUNKTY = " << ctrl->points << "\n\n";
     glfwTerminate();

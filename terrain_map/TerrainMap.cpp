@@ -66,9 +66,9 @@ int main(int argc, char * argv[])
 
     glfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "TerrainMap", NULL, NULL);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "TerrainMap", nullptr, nullptr);
 
-    if(window == NULL)
+    if(window == nullptr)
     {
         std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();

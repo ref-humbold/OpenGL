@@ -1,4 +1,4 @@
-suzanne.obj
-cube.obj
-cylinder.obj
-room.obj
+obj_files/suzanne.obj
+obj_files/cube.obj
+obj_files/cylinder.obj
+obj_files/room.obj

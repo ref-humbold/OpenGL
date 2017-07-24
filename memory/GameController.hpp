@@ -18,7 +18,7 @@ private:
     std::pair<int, int> size;
     std::vector<int> colorCodes;
     std::vector<int> signCodes;
-    std::vector< std::pair<int, int> > transforms;
+    std::vector<std::pair<int, int>> transforms;
     std::vector<bool> visible;
 
 public:
@@ -38,4 +38,3 @@ private:
 };
 
 #endif
-

@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
         return -1;
     }
 
-    if((numRows*numColumns)%2 != 0)
+    if((numRows * numColumns) % 2 != 0)
     {
         std::cerr << "FAILURE! ODD NUMBER OF CARDS\n";
         return -1;
@@ -95,9 +95,9 @@ int main(int argc, char * argv[])
 
     glfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "Memory Game", NULL, NULL);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "Memory Game", nullptr, nullptr);
 
-    if(window == NULL)
+    if(window == nullptr)
     {
         std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
 
     GameController * ctrl =
         new GameController(std::make_pair(numRows, numColumns), numColors, numSigns);
-    int cardsLeft = numRows*numColumns;
+    int cardsLeft = numRows * numColumns;
     bool goToNext = false;
 
     printRound(round);
@@ -187,8 +187,8 @@ int main(int argc, char * argv[])
             else if(keyCode > 0)
                 cur = ctrl->moveFrame(keyCode, cur);
         }
-    }
-    while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(window) == 0);
 
     if(cardsLeft != 0)
         std::cout << "PRZERWANO GRĘ\n\n";
@@ -198,4 +198,3 @@ int main(int argc, char * argv[])
 
     return 0;
 }
-
