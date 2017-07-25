@@ -1,12 +1,10 @@
 CXX = g++ -std=c++11
 CXXFLAGS = -Wall -Wextra
-INCLUDES = -I/usr/include -L/usr/lib
-GL = -lglfw3 -lGL -lGLU -lGLEW -lX11 -lXxf86vm -lXrandr -lpthread -lXi
-ADDITIONALS = -ldl -lXinerama -lXcursor
-MATH = -lm
+INCLUDE = -I/usr/local/include -L/usr/local/lib
+GLBASE = -lglfw3 -lGL -lGLU -lGLEW -lX11 -lXxf86vm -lXrandr -lpthread -lXi
+GLADD = -ldl -lXinerama -lXcursor
 CMPL = $(CXX) $(CXXFLAGS)
-LIBS = -lstdc++ $(GL) $(ADDITIONALS) $(MATH)
-#LIBS = $(INCLUDES) -lstdc++ $(GL) $(ADDITIONALS) $(MATH)
+LIBS = $(INCLUDE) -lstdc++ $(GLBASE) $(GLADD) -lm
 
 
 all : MortalBubbles
