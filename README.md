@@ -1,2 +1,2 @@
 # OpenGL
-Projects written with OpenGL library.
+Projects using OpenGL library.
