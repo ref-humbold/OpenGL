@@ -1,2 +1,7 @@
 # OpenGL
-Projects using OpenGL library.
+Software projects written with OpenGL library.
+
+----
+
+OpenGL should be installed in directory
+*/usr/local/lib*
