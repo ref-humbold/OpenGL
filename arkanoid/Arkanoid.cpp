@@ -33,19 +33,7 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    bool modeHard = true;
-
-    if(argc == 2)
-    {
-        std::string modeArg = argv[1];
-
-        if(modeArg == "0" || modeArg == "E" || modeArg == "e")
-            modeHard = false;
-        else if(modeArg != "1" && modeArg != "H" && modeArg == "h")
-            throw std::runtime_error(std::string("NIEPOPRAWNY ARGUMENT.") + modeArg);
-    }
-    else if(argc >= 3)
-        throw std::runtime_error("ZA DUŻO ARGUMENTÓW.");
+    std::string glsl_dir = argc == 2 ? argv[1] : ".";
 
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
@@ -69,7 +57,8 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    GLuint programID = loadShaders("VertexShader.glsl", "FragmentShader.glsl");
+    GLuint programID =
+        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 
@@ -78,7 +67,7 @@ int main(int argc, char * argv[])
     GameController * ctrl = new GameController();
     GameBoard * board = new GameBoard();
     GameBall * ball = new GameBall();
-    GameBrick * brick = new GameBrick(modeHard);
+    GameBrick * brick = new GameBrick();
     GamePaddle * paddle = new GamePaddle();
 
     int gamePhase = 0, tryings = 0;
@@ -129,12 +118,7 @@ int main(int argc, char * argv[])
             else
             {
                 ball->checkCollisionPaddle(paddle);
-
-                if(modeHard)
-                    ball->checkCollisionBrickHard(brick);
-                else
-                    ball->checkCollisionBrickEasy(brick);
-
+                ball->checkCollisionBrick(brick);
                 ball->checkCollisionBoard(board);
 
                 GLfloat delta = gamePhase == 0 ? pauseTime - timer : glfwGetTime() - timer;

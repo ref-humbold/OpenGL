@@ -145,33 +145,16 @@ void GameBoard::drawOneTriangle(GLuint pID)
 
 void GameBrick::drawAllBricks(GLuint pID)
 {
-    if(modeHard)
-    {
-        for(int col = 0; col <= 5; ++col)
-        {
-            for(int i = 0; i <= 12; ++i)
-            {
-                tr = vec2(0.1f * (i - 6), 0.6f + 0.05f * col);
-
-                if(isVisible[col][i])
-                {
-                    drawRect(pID, col + 1);
-                    drawRectBorder(pID);
-                }
-            }
-        }
-    }
-    else
+    for(int col = 0; col <= 5; ++col)
         for(int i = 0; i <= 12; ++i)
         {
-            tr = vec2(0.1f * (i - 6), 0.725f);
+            tr = vec2(0.1f * (i - 6), 0.6f + 0.05f * col);
 
-            if(isVisible[0][i])
-                drawRect(pID, 4);
-            else
-                drawRect(pID, 3);
-
-            drawRectBorder(pID);
+            if(isVisible[col][i])
+            {
+                drawRect(pID, col + 1);
+                drawRectBorder(pID);
+            }
         }
 }
 
@@ -416,7 +399,7 @@ void GameBall::checkCollisionPaddle(GamePaddle * paddle)
     }
 }
 
-void GameBall::checkCollisionBrickHard(GameBrick * brick)
+void GameBall::checkCollisionBrick(GameBrick * brick)
 {
     std::vector<std::pair<GLfloat, GLfloat>> bricksHit;
 
@@ -644,28 +627,6 @@ void GameBall::checkCollisionBrickHard(GameBrick * brick)
 
     for(auto & b : bricksHit)
         brick->isVisible[b.first][b.second] = false;
-}
-
-void GameBall::checkCollisionBrickEasy(GameBrick * brick)
-{
-    if(tr[1] > 0.6f)
-    {
-        int brIdx = (int)(floor(10 * tr[0] + 0.5f) + 6.0f);
-        GLfloat dist = abs(0.7f - tr[1]);
-
-        if(dist <= separator && !collided[0][brIdx].second)
-        {
-            vNorm += normalize(vec2(0.0f, -1.0f));
-            collided[0][brIdx].second = true;
-
-            if(isInRange(brIdx, 0, 12) && brick->isVisible[0][brIdx])
-            {
-                --brick->bricksLeft;
-                brick->isVisible[0][brIdx] = false;
-                std::cout << "TRAFIŁEŚ CEGŁĘ!! Zostało: " << brick->bricksLeft << "...\n\n";
-            }
-        }
-    }
 }
 
 void GameBall::moveBall(GLfloat delta)

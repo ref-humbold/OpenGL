@@ -73,44 +73,33 @@ private:
     mat2 sc;
     mat2 rt;
     vec2 tr;
-    bool modeHard;
 
 public:
     std::vector<std::vector<bool>> isVisible;
     int bricksLeft;
 
-    explicit GameBrick(bool modeHard)
+    GameBrick()
         : vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
           cbDataRect{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
           cbDataRectBorder{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
           sc{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
           rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-          tr{vec2(0.0f, 0.0f)},
-          modeHard{modeHard}
+          tr{vec2(0.0f, 0.0f)}
     {
         vertexBufferRect = createVertexBuffer(vbDataRect, sizeof(vbDataRect));
         colorBufferRect = createVertexBuffer(cbDataRect, sizeof(cbDataRect));
         colorBufferRectBorder = createVertexBuffer(cbDataRectBorder, sizeof(cbDataRectBorder));
 
-        if(modeHard)
-        {
-            bricksLeft = 74;
-            isVisible.resize(6);
+        bricksLeft = 74;
+        isVisible.resize(6);
 
-            for(auto & vc : isVisible)
-                vc.resize(13, true);
+        for(auto & vc : isVisible)
+            vc.resize(13, true);
 
-            isVisible[4][0] = false;
-            isVisible[4][12] = false;
-            isVisible[5][0] = false;
-            isVisible[5][12] = false;
-        }
-        else
-        {
-            bricksLeft = 13;
-            isVisible.resize(1);
-            isVisible[0].resize(13, true);
-        }
+        isVisible[4][0] = false;
+        isVisible[4][12] = false;
+        isVisible[5][0] = false;
+        isVisible[5][12] = false;
     }
 
     void drawAllBricks(GLuint pID);
@@ -227,8 +216,7 @@ public:
     bool checkOutside();
     void checkCollisionBoard(GameBoard * board);
     void checkCollisionPaddle(GamePaddle * paddle);
-    void checkCollisionBrickHard(GameBrick * brick);
-    void checkCollisionBrickEasy(GameBrick * brick);
+    void checkCollisionBrick(GameBrick * brick);
     void moveBall(GLfloat delta);
 };
 
