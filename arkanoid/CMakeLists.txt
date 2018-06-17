@@ -14,8 +14,12 @@ include_directories(${GLFW_INCLUDE_DIRS}
 link_libraries(${GLFW_LIBRARY_DIRS})
 
 # SOURCES
-include_directories(${PROJECT_SOURCE_DIR})
-file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
+include_directories("${PROJECT_SOURCE_DIR}/include")
+set(SOURCES
+    "${PROJECT_SOURCE_DIR}/src/GLSLloader.cpp"
+    "${PROJECT_SOURCE_DIR}/src/GameElement.cpp"
+    "${PROJECT_SOURCE_DIR}/src/GameController.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Arkanoid.cpp")
 
 # COMPILER
 set(CMAKE_CXX_STANDARD 11)
