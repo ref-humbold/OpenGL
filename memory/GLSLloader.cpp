@@ -2,7 +2,7 @@
 
 using namespace glm;
 
-void compileShader(GLuint ShaderID, std::string ShaderCode, char const * file_path)
+void compileShader(GLuint ShaderID, std::string ShaderCode)
 {
     GLint result = GL_FALSE;
     int InfoLogLength;
@@ -10,7 +10,6 @@ void compileShader(GLuint ShaderID, std::string ShaderCode, char const * file_pa
     // Compile shader
     char const * SourcePointer = ShaderCode.c_str();
 
-    std::cout << "Compiling shader : " << file_path << "\n";
     glShaderSource(ShaderID, 1, &SourcePointer, nullptr);
     glCompileShader(ShaderID);
 
@@ -55,7 +54,7 @@ GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
     return ProgramID;
 }
 
-GLuint prepareShader(const char * file_path, GLenum shader_type)
+GLuint prepareShader(std::string file_path, GLenum shader_type)
 {
     // Read the shader code from the file
     std::string shaderCode;
@@ -74,12 +73,14 @@ GLuint prepareShader(const char * file_path, GLenum shader_type)
         throw std::runtime_error(std::string("Impossible to open ") + file_path);
 
     GLuint shaderID = glCreateShader(shader_type);
-    compileShader(shaderID, shaderCode, file_path);
+
+    std::cout << "Compiling shader : " << file_path << "\n";
+    compileShader(shaderID, shaderCode);
 
     return shaderID;
 }
 
-GLuint loadShaders(const char * vertex_file_path, const char * fragment_file_path)
+GLuint loadShaders(std::string vertex_file_path, std::string fragment_file_path)
 {
     // Create and compile shaders
     GLuint VertexShaderID = prepareShader(vertex_file_path, GL_VERTEX_SHADER);
