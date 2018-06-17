@@ -94,5 +94,7 @@ GLuint loadShaders(std::string vertex_file_path, std::string fragment_file_path)
     glDeleteShader(VertexShaderID);
     glDeleteShader(FragmentShaderID);
 
+    std::cout << "Shaders loaded!\n";
+
     return ProgramID;
 }

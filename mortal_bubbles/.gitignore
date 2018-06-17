@@ -1,6 +1,3 @@
 # C++ and CMake output
 bin
 build
-
-# sample OBJ files
-obj_files

@@ -26,7 +26,7 @@ std::vector<std::string> readConfig(const char * filename)
 
     while(true)
     {
-        char str[20];
+        char str[50];
         int read = fscanf(file, "%s", str);
 
         if(read == EOF)
@@ -66,8 +66,6 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    // inicjalizacja OpenGL
-
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
@@ -91,42 +89,33 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    GLuint AreaVertexShaderID = prepareShader("VertexShaderArea.glsl", GL_VERTEX_SHADER);
-    GLuint EarthVertexShaderID = prepareShader("VertexShaderEarth.glsl", GL_VERTEX_SHADER);
-    GLuint FragmentShaderID = prepareShader("FragmentShader.glsl", GL_FRAGMENT_SHADER);
+    if(argc <= 1)
+        throw std::runtime_error("No directory with shaders specified");
 
-    GLuint areaProgramID = linkProgram(AreaVertexShaderID, FragmentShaderID);
-    GLuint earthProgramID = linkProgram(EarthVertexShaderID, FragmentShaderID);
+    GLuint areaProgramID, earthProgramID;
+    std::string glsl_dir = argv[1];
 
-    glDetachShader(areaProgramID, AreaVertexShaderID);
-    glDetachShader(areaProgramID, FragmentShaderID);
-    glDetachShader(earthProgramID, EarthVertexShaderID);
-    glDetachShader(earthProgramID, FragmentShaderID);
-
-    glDeleteShader(AreaVertexShaderID);
-    glDeleteShader(EarthVertexShaderID);
-    glDeleteShader(FragmentShaderID);
+    std::tie(areaProgramID, earthProgramID) =
+        loadShaders(glsl_dir + "/VertexShaderArea.glsl", glsl_dir + "/VertexShaderEarth.glsl",
+                    glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    // inicjalizacja terenu
-
     Camera * cam = new Camera(window);
     Detailing * details = new Detailing();
     Earth * earth = nullptr;
     std::vector<Area *> terrain;
+    int hgtBegin = 2;
 
-    if(argc <= 1)
-        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
+    if(argc <= hgtBegin)
+        throw std::runtime_error("No HGT files specified");
 
-    int fstlen = strlen(argv[1]), hgtBegin = 1;
-
-    if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".hgt") != 0)
+    if(strcmp(argv[hgtBegin], "config.txt") == 0)
     {
-        std::vector<std::string> names = readConfig(argv[1]);
+        std::vector<std::string> names = readConfig(argv[hgtBegin]);
 
         for(auto str : names)
         {

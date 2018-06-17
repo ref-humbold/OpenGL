@@ -1,3 +1,6 @@
+# C++ and CMake output
+bin
+build
+
 # sample HGT files
 hgt_files
-config.txt

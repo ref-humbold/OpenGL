@@ -33,8 +33,6 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    std::string glsl_dir = argc == 2 ? argv[1] : ".";
-
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
@@ -57,6 +55,7 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    std::string glsl_dir = argc == 2 ? argv[1] : ".";
     GLuint programID =
         loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 

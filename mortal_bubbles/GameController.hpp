@@ -1,5 +1,5 @@
-#ifndef GAME_CONTROLER_HPP
-#define GAME_CONTROLER_HPP
+#ifndef GAME_Controller_HPP
+#define GAME_Controller_HPP
 
 #include <cstdlib>
 #include <cmath>
@@ -20,7 +20,7 @@
 
 using namespace glm;
 
-class GameControler
+class GameController
 {
 private:
     static constexpr GLfloat PI_CONST = M_PI;
@@ -45,9 +45,9 @@ private:
 public:
     double points;
 
-    explicit GameControler(GLFWwindow * window);
+    explicit GameController(GLFWwindow * window);
 
-    ~GameControler()
+    ~GameController()
     {
         delete aqua;
         delete player;

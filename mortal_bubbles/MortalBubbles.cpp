@@ -33,7 +33,7 @@ void glfwHints()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-int main()
+int main(int argc, char * argv[])
 {
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
@@ -58,7 +58,8 @@ int main()
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    GLuint programID = loadShaders("VertexShader.glsl", "FragmentShader.glsl");
+    std::string glsl_dir = argc == 2 ? argv[1] : ".";
+    GLuint programID = loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 

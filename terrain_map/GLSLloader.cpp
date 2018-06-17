@@ -80,19 +80,28 @@ GLuint prepareShader(std::string file_path, GLenum shader_type)
     return shaderID;
 }
 
-GLuint loadShaders(std::string vertex_file_path, std::string fragment_file_path)
+std::tuple<GLuint, GLuint> loadShaders(std::string area_vertex_file_path,
+                                       std::string earth_vertex_file_path,
+                                       std::string fragment_file_path)
 {
     // Create and compile shaders
-    GLuint VertexShaderID = prepareShader(vertex_file_path, GL_VERTEX_SHADER);
+    GLuint AreaVertexShaderID = prepareShader(area_vertex_file_path, GL_VERTEX_SHADER);
+    GLuint EarthVertexShaderID = prepareShader(earth_vertex_file_path, GL_VERTEX_SHADER);
     GLuint FragmentShaderID = prepareShader(fragment_file_path, GL_FRAGMENT_SHADER);
 
-    GLuint ProgramID = linkProgram(VertexShaderID, FragmentShaderID);
+    GLuint areaProgramID = linkProgram(AreaVertexShaderID, FragmentShaderID);
+    GLuint earthProgramID = linkProgram(EarthVertexShaderID, FragmentShaderID);
 
-    glDetachShader(ProgramID, VertexShaderID);
-    glDetachShader(ProgramID, FragmentShaderID);
+    glDetachShader(areaProgramID, AreaVertexShaderID);
+    glDetachShader(areaProgramID, FragmentShaderID);
+    glDetachShader(earthProgramID, EarthVertexShaderID);
+    glDetachShader(earthProgramID, FragmentShaderID);
 
-    glDeleteShader(VertexShaderID);
+    glDeleteShader(AreaVertexShaderID);
+    glDeleteShader(EarthVertexShaderID);
     glDeleteShader(FragmentShaderID);
 
-    return ProgramID;
+    std::cout << "Shaders loaded!\n";
+
+    return std::make_tuple(areaProgramID, earthProgramID);
 }

@@ -39,7 +39,7 @@ std::vector<std::string> readConfig(const char * filename)
 
     while(true)
     {
-        char str[20];
+        char str[50];
         int read = fscanf(file, "%s", str);
 
         if(read == EOF)
@@ -102,7 +102,12 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    GLuint programID = loadShaders("VertexShader.glsl", "FragmentShader.glsl");
+    if(argc <= 1)
+        throw std::runtime_error("No directory with shaders specified");
+
+    std::string glsl_dir = argv[1];
+    GLuint programID =
+        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 
@@ -111,18 +116,19 @@ int main(int argc, char * argv[])
     glDepthFunc(GL_LESS);
 
     std::vector<GraphicObject *> objects;
-    int objBegin = 1;
+    int objBegin = 2;
 
-    if(argc <= 1)
-        throw std::runtime_error("No files specified");
+    if(argc <= objBegin)
+        throw std::runtime_error("No OBJ files specified");
 
-    if(strcmp(argv[1], "config.txt") == 0)
+    if(strcmp(argv[objBegin], "config.txt") == 0)
     {
-        std::vector<std::string> names = readConfig(argv[1]);
+        std::vector<std::string> names = readConfig(argv[objBegin]);
 
         for(auto str : names)
         {
             checkFile(str.c_str());
+            std::cout << "Adding file " << str << "\n";
             objects.push_back(prepareGraphic(str.c_str()));
         }
 
@@ -132,6 +138,7 @@ int main(int argc, char * argv[])
     for(int i = objBegin; i < argc; ++i)
     {
         checkFile(argv[i]);
+        std::cout << "Adding file " << argv[i] << "\n";
         objects.push_back(prepareGraphic(argv[i]));
     }
 
