@@ -43,20 +43,24 @@ int main(int argc, char * argv[])
     int numRows = 4, numColumns = 4, numColours = 6, numSigns = 3;
     int round = 1, cur = 0, prev = -1;
     bool check = false;
+    std::string glsl_dir = ".";
 
     switch(argc)
     {
+        case 6:
+            numSigns = atoi(argv[5]);
+
         case 5:
-            numSigns = atoi(argv[4]);
+            numColours = atoi(argv[4]);
 
         case 4:
-            numColours = atoi(argv[3]);
+            numColumns = atoi(argv[3]);
 
         case 3:
-            numColumns = atoi(argv[2]);
+            numRows = atoi(argv[2]);
 
         case 2:
-            numRows = atoi(argv[1]);
+            glsl_dir = argv[1];
     }
 
     if(!isInRange(numRows, 1, 12))
@@ -100,7 +104,8 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    GLuint programID = loadShaders("VertexShader.glsl", "FragmentShader.glsl");
+    GLuint programID =
+        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 
