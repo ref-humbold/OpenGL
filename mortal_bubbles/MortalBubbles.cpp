@@ -1,5 +1,7 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -34,10 +36,7 @@ void glfwHints()
 int main()
 {
     if(!glfwInit())
-    {
-        std::cerr << "FAILED TO INITIALIZE GLFW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
     glfwHints();
 
@@ -45,19 +44,15 @@ int main()
 
     if(window == nullptr)
     {
-        std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-    {
-        std::cerr << "FAILED TO INITIALIZE GLEW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);

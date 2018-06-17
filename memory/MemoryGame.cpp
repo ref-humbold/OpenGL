@@ -1,5 +1,7 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -38,7 +40,7 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    int numRows = 4, numColumns = 4, numColors = 6, numSigns = 3;
+    int numRows = 4, numColumns = 4, numColours = 6, numSigns = 3;
     int round = 1, cur = 0, prev = -1;
     bool check = false;
 
@@ -48,7 +50,7 @@ int main(int argc, char * argv[])
             numSigns = atoi(argv[4]);
 
         case 4:
-            numColors = atoi(argv[3]);
+            numColours = atoi(argv[3]);
 
         case 3:
             numColumns = atoi(argv[2]);
@@ -58,40 +60,26 @@ int main(int argc, char * argv[])
     }
 
     if(!isInRange(numRows, 1, 12))
-    {
-        std::cerr << "FAILURE! INCORRECT NUMBER OF ROWS\n";
-        return -1;
-    }
+        throw std::runtime_error("INCORRECT NUMBER OF ROWS, MINIMUM 1, MAXIMUM 12, GOT "
+                                 + std::to_string(numRows));
 
     if(!isInRange(numColumns, 1, 12))
-    {
-        std::cerr << "FAILURE! INCORRECT NUMBER OF COLUMNS\n";
-        return -1;
-    }
+        throw std::runtime_error("INCORRECT NUMBER OF COLUMNS, MINIMUM 1, MAXIMUM 12, GOT "
+                                 + std::to_string(numColumns));
 
-    if(!isInRange(numColors, 2, 6))
-    {
-        std::cerr << "FAILURE! INCORRECT NUMBER OF CARD COLORS\n";
-        return -1;
-    }
+    if(!isInRange(numColours, 2, 6))
+        throw std::runtime_error("INCORRECT NUMBER OF CARD COLOURS, MINIMUM 2, MAXIMUM 6, GOT "
+                                 + std::to_string(numColours));
 
     if(!isInRange(numSigns, 1, 3))
-    {
-        std::cerr << "FAILURE! INCORRECT NUMBER OF CARD SIGNS\n";
-        return -1;
-    }
+        throw std::runtime_error("INCORRECT NUMBER OF CARD SIGNS, MINIMUM 1, MAXIMUM 3, GOT "
+                                 + std::to_string(numSigns));
 
     if((numRows * numColumns) % 2 != 0)
-    {
-        std::cerr << "FAILURE! ODD NUMBER OF CARDS\n";
-        return -1;
-    }
+        throw std::runtime_error("ODD NUMBER OF CARDS");
 
     if(!glfwInit())
-    {
-        std::cerr << "FAILED TO INITIALIZE GLFW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
     glfwHints();
 
@@ -99,19 +87,15 @@ int main(int argc, char * argv[])
 
     if(window == nullptr)
     {
-        std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-    {
-        std::cerr << "FAILED TO INITIALIZE GLEW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -121,7 +105,7 @@ int main(int argc, char * argv[])
     createVertexArray();
 
     GameController * ctrl =
-        new GameController(std::make_pair(numRows, numColumns), numColors, numSigns);
+        new GameController(std::make_pair(numRows, numColumns), numColours, numSigns);
     int cardsLeft = numRows * numColumns;
     bool goToNext = false;
 

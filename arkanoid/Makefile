@@ -1,11 +1,10 @@
 CXX = g++ -std=c++11
 CXXFLAGS = -Wall -Wextra
+CMPL = $(CXX) $(CXXFLAGS)
 INCLUDE = -I/usr/local/include -L/usr/local/lib
 GLBASE = -lglfw3 -lGL -lGLU -lGLEW -lX11 -lXxf86vm -lXrandr -lpthread -lXi
 GLADD = -ldl -lXinerama -lXcursor
-CMPL = $(CXX) $(CXXFLAGS)
 LIBS = $(INCLUDE) -lstdc++ $(GLBASE) $(GLADD) -lm
-
 
 all : Arkanoid
 
@@ -13,7 +12,6 @@ clean :
 	rm -f *.o
 
 refresh : clean all
-
 
 Arkanoid : GLSLloader.o GameElement.o GameController.o Arkanoid.o
 	$(CMPL) GLSLloader.o GameElement.o GameController.o Arkanoid.o -o Arkanoid $(LIBS)

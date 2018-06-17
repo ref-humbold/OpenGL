@@ -3,8 +3,10 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <algorithm>
 #include <string>
 #include <vector>

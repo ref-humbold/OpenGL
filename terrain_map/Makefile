@@ -1,11 +1,10 @@
 CXX = g++ -std=c++11
 CXXFLAGS = -Wall -Wextra
+CMPL = $(CXX) $(CXXFLAGS)
 INCLUDE = -I/usr/local/include -L/usr/local/lib
 GLBASE = -lglfw3 -lGL -lGLU -lGLEW -lX11 -lXxf86vm -lXrandr -lpthread -lXi
 GLADD = -ldl -lXinerama -lXcursor
-CMPL = $(CXX) $(CXXFLAGS)
 LIBS = $(INCLUDE) -lstdc++ $(GLBASE) $(GLADD) -lm
-
 
 all : TerrainMap
 
@@ -13,7 +12,6 @@ clean :
 	rm -f *.o
 
 refresh : clean all
-
 
 TerrainMap : GLSLloader.o Area.o Camera.o Detailing.o Earth.o TerrainMap.o
 	$(CMPL) GLSLloader.o Area.o Camera.o Detailing.o Earth.o TerrainMap.o -o TerrainMap $(LIBS)

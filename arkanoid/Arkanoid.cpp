@@ -1,5 +1,7 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -40,22 +42,13 @@ int main(int argc, char * argv[])
         if(modeArg == "0" || modeArg == "E" || modeArg == "e")
             modeHard = false;
         else if(modeArg != "1" && modeArg != "H" && modeArg == "h")
-        {
-            std::cerr << "BŁĄD! NIEPOPRAWNY ARGUMENT.\n";
-            return -1;
-        }
+            throw std::runtime_error(std::string("NIEPOPRAWNY ARGUMENT.") + modeArg);
     }
     else if(argc >= 3)
-    {
-        std::cerr << "BŁĄD! ZA DUŻO ARGUMENTÓW.\n";
-        return -1;
-    }
+        throw std::runtime_error("ZA DUŻO ARGUMENTÓW.");
 
     if(!glfwInit())
-    {
-        std::cerr << "FAILED TO INITIALIZE GLFW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
     glfwHints();
 
@@ -63,19 +56,15 @@ int main(int argc, char * argv[])
 
     if(window == nullptr)
     {
-        std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-    {
-        std::cerr << "FAILED TO INITIALIZE GLEW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

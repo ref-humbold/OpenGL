@@ -23,7 +23,7 @@ void compileShader(GLuint ShaderID, std::string ShaderCode, char const * file_pa
         std::vector<char> ShaderErrorMessage(InfoLogLength + 1);
 
         glGetShaderInfoLog(ShaderID, InfoLogLength, nullptr, &ShaderErrorMessage[0]);
-        std::cerr << &ShaderErrorMessage[0] << "\n";
+        throw std::runtime_error(&ShaderErrorMessage[0]);
     }
 }
 
@@ -63,18 +63,15 @@ GLuint prepareShader(const char * file_path, GLenum shader_type)
 
     if(shaderStream.is_open())
     {
-        std::string line = "";
+        std::string Line = "";
 
-        while(getline(shaderStream, line))
-            shaderCode += "\n" + line;
+        while(getline(shaderStream, Line))
+            shaderCode += "\n" + Line;
 
         shaderStream.close();
     }
     else
-    {
-        std::cerr << "ERROR: Impossible to open " << file_path;
-        return -1;
-    }
+        throw std::runtime_error(std::string("Impossible to open ") + file_path);
 
     GLuint shaderID = glCreateShader(shader_type);
     compileShader(shaderID, shaderCode, file_path);

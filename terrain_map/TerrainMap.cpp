@@ -1,8 +1,10 @@
 #include <cstdlib>
 #include <cstdio>
-#include <cstring>
 #include <cmath>
+#include <cstring>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -38,6 +40,14 @@ std::vector<std::string> readConfig(const char * filename)
     return result;
 }
 
+void checkFile(const char * filename)
+{
+    int length = strlen(filename);
+
+    if(length <= 4 || strcmp(filename + length - 4, ".hgt") != 0)
+        throw std::runtime_error(std::string(filename) + " is not an HGT file.");
+}
+
 void createVertexArray()
 {
     GLuint vertexArrayID;
@@ -59,10 +69,7 @@ int main(int argc, char * argv[])
     // inicjalizacja OpenGL
 
     if(!glfwInit())
-    {
-        std::cerr << "FAILED TO INITIALIZE GLFW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
     glfwHints();
 
@@ -70,19 +77,15 @@ int main(int argc, char * argv[])
 
     if(window == nullptr)
     {
-        std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-    {
-        std::cerr << "FAILED TO INITIALIZE GLEW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
@@ -116,27 +119,28 @@ int main(int argc, char * argv[])
     Earth * earth = nullptr;
     std::vector<Area *> terrain;
 
-    if(argc > 1)
+    if(argc <= 1)
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
+
+    int fstlen = strlen(argv[1]), hgtBegin = 1;
+
+    if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".hgt") != 0)
     {
-        int fstlen = strlen(argv[1]), hgtBegin = 1;
+        std::vector<std::string> names = readConfig(argv[1]);
 
-        if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".hgt") != 0)
+        for(auto str : names)
         {
-            std::vector<std::string> names = readConfig(argv[1]);
-
-            for(auto str : names)
-                terrain.push_back(new Area(str.c_str()));
-
-            hgtBegin = 2;
+            checkFile(str.c_str());
+            terrain.push_back(new Area(str.c_str()));
         }
 
-        for(int i = hgtBegin; i < argc; ++i)
-            terrain.push_back(new Area(argv[i]));
+        ++hgtBegin;
     }
-    else
+
+    for(int i = hgtBegin; i < argc; ++i)
     {
-        std::cerr << "ERROR: No files specified\n";
-        return -1;
+        checkFile(argv[i]);
+        terrain.push_back(new Area(argv[i]));
     }
 
     std::vector<int> keys = {GLFW_KEY_TAB,   GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT,

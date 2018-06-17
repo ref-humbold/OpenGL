@@ -1,7 +1,9 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <exception>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -51,6 +53,14 @@ std::vector<std::string> readConfig(const char * filename)
     return result;
 }
 
+void checkFile(const char * filename)
+{
+    int length = strlen(filename);
+
+    if(length <= 4 || strcmp(filename + length - 4, ".obj") != 0)
+        throw std::runtime_error(std::string(filename) + " is not an OBJ file.");
+}
+
 void createVertexArray()
 {
     GLuint vertexArrayID;
@@ -70,10 +80,7 @@ void glfwHints()
 int main(int argc, char * argv[])
 {
     if(!glfwInit())
-    {
-        std::cerr << "FAILED TO INITIALIZE GLFW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
     glfwHints();
 
@@ -81,19 +88,15 @@ int main(int argc, char * argv[])
 
     if(window == nullptr)
     {
-        std::cerr << "FAILED TO OPEN A NEW WINDOW\n";
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-    {
-        std::cerr << "FAILED TO INITIALIZE GLEW\n";
-        return -1;
-    }
+        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
@@ -108,28 +111,28 @@ int main(int argc, char * argv[])
     glDepthFunc(GL_LESS);
 
     std::vector<GraphicObject *> objects;
+    int objBegin = 1;
 
-    if(argc > 1)
+    if(argc <= 1)
+        throw std::runtime_error("No files specified");
+
+    if(strcmp(argv[1], "config.txt") == 0)
     {
-        int fstlen = strlen(argv[1]), objBegin = 1;
+        std::vector<std::string> names = readConfig(argv[1]);
 
-        if(fstlen > 4 && strcmp(argv[1] + fstlen - 4, ".obj") != 0)
+        for(auto str : names)
         {
-            std::vector<std::string> names = readConfig(argv[1]);
-
-            for(auto str : names)
-                objects.push_back(prepareGraphic(str.c_str()));
-
-            objBegin = 2;
+            checkFile(str.c_str());
+            objects.push_back(prepareGraphic(str.c_str()));
         }
 
-        for(int i = objBegin; i < argc; ++i)
-            objects.push_back(prepareGraphic(argv[i]));
+        ++objBegin;
     }
-    else
+
+    for(int i = objBegin; i < argc; ++i)
     {
-        std::cerr << "ERROR: No files specified\n";
-        return -1;
+        checkFile(argv[i]);
+        objects.push_back(prepareGraphic(argv[i]));
     }
 
     std::vector<int> keys = {GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_Z, GLFW_KEY_X};
