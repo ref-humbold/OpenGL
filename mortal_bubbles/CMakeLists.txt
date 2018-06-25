@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-
-# PROJECT
 project(MortalBubbles VERSION 1.0)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
 # PACKAGES
 find_package(glfw3 REQUIRED)
@@ -28,6 +25,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 # OUTPUT
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 add_executable(MortalBubbles ${SOURCES})
 target_link_libraries(MortalBubbles
                       glfw
