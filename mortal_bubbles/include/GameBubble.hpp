@@ -1,5 +1,5 @@
-#ifndef GAME_BUBBLE_HPP
-#define GAME_BUBBLE_HPP
+#ifndef _GAME_BUBBLE_HPP_
+#define _GAME_BUBBLE_HPP_
 
 #include <cstdlib>
 #include <cmath>

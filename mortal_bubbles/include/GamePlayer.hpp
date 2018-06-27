@@ -1,5 +1,5 @@
-#ifndef GAME_PLAYER_HPP
-#define GAME_PLAYER_HPP
+#ifndef _GAME_PLAYER_HPP_
+#define _GAME_PLAYER_HPP_
 
 #include <cstdlib>
 #include <cmath>

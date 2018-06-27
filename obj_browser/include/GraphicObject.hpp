@@ -1,5 +1,5 @@
-#ifndef GRAPHIC_OBJECT_HPP
-#define GRAPHIC_OBJECT_HPP
+#ifndef _GRAPHIC_OBJECT_HPP_
+#define _GRAPHIC_OBJECT_HPP_
 
 #include <cstdlib>
 #include <iostream>

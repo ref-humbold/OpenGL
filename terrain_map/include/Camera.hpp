@@ -1,5 +1,5 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#ifndef _CAMERA_HPP_
+#define _CAMERA_HPP_
 
 #include <cstdlib>
 #include <cmath>

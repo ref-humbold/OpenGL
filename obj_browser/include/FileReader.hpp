@@ -1,5 +1,5 @@
-#ifndef FILE_READER_HPP
-#define FILE_READER_HPP
+#ifndef _FILE_READER_HPP_
+#define _FILE_READER_HPP_
 
 #include <cstdlib>
 #include <cstdio>
