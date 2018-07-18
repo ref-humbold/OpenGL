@@ -3,7 +3,7 @@ project(MortalBubbles VERSION 1.0)
 
 # COMPILER
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas")
 
 # PACKAGES
 find_package(glfw3 REQUIRED)
