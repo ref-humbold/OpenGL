@@ -26,8 +26,8 @@ std::vector<std::string> readConfig(const char * filename)
 
     while(true)
     {
-        char str[50];
-        int read = fscanf(file, "%s", str);
+        char str[51];
+        int read = fscanf(file, "%50s", str);
 
         if(read == EOF)
             break;

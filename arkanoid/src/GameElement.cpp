@@ -23,7 +23,25 @@ void loadBuffer(GLuint vb, GLuint cb)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 }
 
-// GameBoard
+#pragma region GameBoard
+
+GameBoard::GameBoard()
+        : vbDataHexagon{0.0f,  0.0f, 0.4f,  0.0f,      0.2f, 0.34641f,  -0.2f, 0.34641f,
+                        -0.4f, 0.0f, -0.2f, -0.34641f, 0.2f, -0.34641f, 0.4f,  0.0f},
+          cbDataHexagon{0.0f, 0.6f, 0.6f,  0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f,
+                        0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f},
+          vbDataTriangle{0.0f, 0.0f, 0.0f, 1.0f, 0.57735f, 0.0f},
+          cbDataTriangle{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+          sc{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+          rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+          tr{vec2(0.0f, 0.0f)}
+    {
+        vertexBufferHexagon = createVertexBuffer(vbDataHexagon, sizeof(vbDataHexagon));
+        colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
+        vertexBufferTriangle = createVertexBuffer(vbDataTriangle, sizeof(vbDataTriangle));
+        colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
+        normVecs.resize(5);
+    }
 
 void GameBoard::drawBackground(GLuint pID)
 {
@@ -141,7 +159,32 @@ void GameBoard::drawOneTriangle(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
-// GameBrick
+#pragma endregion
+#pragma region GameBrick
+
+GameBrick::GameBrick()
+        : vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
+          cbDataRect{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+          cbDataRectBorder{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+          sc{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
+          rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+          tr{vec2(0.0f, 0.0f)}
+    {
+        vertexBufferRect = createVertexBuffer(vbDataRect, sizeof(vbDataRect));
+        colorBufferRect = createVertexBuffer(cbDataRect, sizeof(cbDataRect));
+        colorBufferRectBorder = createVertexBuffer(cbDataRectBorder, sizeof(cbDataRectBorder));
+
+        bricksLeft = 74;
+        isVisible.resize(6);
+
+        for(auto & vc : isVisible)
+            vc.resize(13, true);
+
+        isVisible[4][0] = false;
+        isVisible[4][12] = false;
+        isVisible[5][0] = false;
+        isVisible[5][12] = false;
+    }
 
 void GameBrick::drawAllBricks(GLuint pID)
 {
@@ -240,7 +283,21 @@ void GameBrick::drawRectBorder(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
-// GamePaddle
+#pragma endregion
+#pragma region GamePaddle
+
+GamePaddle::GamePaddle()
+        : vbDataPaddle{0.0f, 0.0f, 0.4f, -0.05f, 0.6f, 0.1f, -0.6f, 0.1f, -0.4f, -0.05f},
+          cbDataPaddle{1.0f, 1.0f, 1.0f, 0.8f, 0.8f, 0.8f, 0.2f, 0.2f,
+                       0.2f, 0.2f, 0.2f, 0.2f, 0.8f, 0.8f, 0.8f},
+          sc{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
+          rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+          tr{vec2(0.0f, -0.95f)},
+          velocity{1.0f}
+    {
+        vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
+        colorBufferPaddle = createVertexBuffer(cbDataPaddle, sizeof(cbDataPaddle));
+    }
 
 void GamePaddle::restart()
 {
@@ -286,7 +343,47 @@ GLfloat GamePaddle::getSurf()
     return tr[1] + 0.01f;
 }
 
-// GameBall
+#pragma endregion
+#pragma region GameBall
+
+GameBall::GameBall()
+        : vbDataBall{0.0f,         0.0f,         0.05f,        0.18660254f,  0.13660254f,
+                     0.13660254f,  0.18660254f,  0.05f,        0.18660254f,  -0.05f,
+                     0.13660254f,  -0.13660254f, 0.05f,        -0.18660254f, -0.05f,
+                     -0.18660254f, -0.13660254f, -0.13660254f, -0.18660254f, -0.05f,
+                     -0.18660254f, 0.05f,        -0.13660254f, 0.13660254f,  -0.05f,
+                     0.18660254f,  0.05f,        0.18660254f},
+          cbDataBall{0.8f,  0.8f,  0.8f,  0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f,
+                     0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f,
+                     0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f,
+                     0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f, 0.35f},
+          vbDataCross{0.13660254f, 0.13660254f,  -0.13660254f, -0.13660254f,
+                      0.13660254f, -0.13660254f, -0.13660254f, 0.13660254f},
+          cbDataCross{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+          sc{mat2(vec2(0.08f, 0.0f), vec2(0.0f, 0.08f))},
+          rt{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
+          tr{vec2(0.0f, -0.9f)},
+          vNorm{vec2(0.0f, 0.0f)},
+          angleMult{0},
+          radius{length(sc * vec2(0.13660254f, 0.13660254f))},
+          separator{1.25f * radius},
+          velDist{50.0f * radius},
+          startingShot{true}
+    {
+        vertexBufferBall = createVertexBuffer(vbDataBall, sizeof(vbDataBall));
+        colorBufferBall = createVertexBuffer(cbDataBall, sizeof(cbDataBall));
+        vertexBufferCross = createVertexBuffer(vbDataCross, sizeof(vbDataCross));
+        colorBufferCross = createVertexBuffer(cbDataCross, sizeof(cbDataCross));
+
+        velocity = velDist * normalize(vec2((-10.0f + rand() % 21) / 10.0f, 1.0f));
+        collided.resize(7);
+
+        for(int i = 0; i < 5; ++i)
+            collided[i].resize(13, std::make_pair(false, false));
+
+        collided[5].resize(5, std::make_pair(false, false));
+        collided[6].resize(1, std::make_pair(false, false));
+    }
 
 void GameBall::restart()
 {
@@ -656,3 +753,5 @@ void GameBall::moveBall(GLfloat delta)
             e.second = false;
         }
 }
+
+#pragma endregion

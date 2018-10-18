@@ -60,7 +60,6 @@ int main(int argc, char * argv[])
         loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
-
     srand(time(nullptr));
 
     GameController * ctrl = new GameController();
