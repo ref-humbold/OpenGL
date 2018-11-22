@@ -6,7 +6,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include "GLSLloader.hpp"
 #include "GameController.hpp"
 
@@ -59,7 +58,8 @@ int main(int argc, char * argv[])
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     std::string glsl_dir = argc == 2 ? argv[1] : ".";
-    GLuint programID = loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
+    GLuint programID =
+        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 

@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
 #include "Camera.hpp"
 #include "FileReader.hpp"
 #include "GLSLloader.hpp"

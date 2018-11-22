@@ -1,7 +1,6 @@
+#include "FileReader.hpp"
 #include <exception>
 #include <stdexcept>
-
-#include "FileReader.hpp"
 
 vec3 normalVec(vec3 vt1, vec3 vt2, vec3 vt3)
 {

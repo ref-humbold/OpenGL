@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-
 #include "GraphicObject.hpp"
 
 using namespace glm;
