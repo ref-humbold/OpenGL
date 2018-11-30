@@ -1,6 +1,8 @@
 #ifndef _CAMERA_HPP_
 #define _CAMERA_HPP_
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <cstdlib>
 #include <cmath>
 #include <iostream>

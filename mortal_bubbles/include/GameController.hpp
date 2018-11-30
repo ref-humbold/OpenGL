@@ -1,6 +1,8 @@
 #ifndef GAME_CONTROLLER_HPP
 #define GAME_CONTROLLER_HPP
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
