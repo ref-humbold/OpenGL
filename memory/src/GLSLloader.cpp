@@ -2,31 +2,31 @@
 
 using namespace glm;
 
-void compileShader(GLuint ShaderID, std::string ShaderCode)
+void compileShader(GLuint shader_ID, std::string shader_code)
 {
     GLint result = GL_FALSE;
     int InfoLogLength;
 
     // Compile shader
-    char const * SourcePointer = ShaderCode.c_str();
+    char const * SourcePointer = shader_code.c_str();
 
-    glShaderSource(ShaderID, 1, &SourcePointer, nullptr);
-    glCompileShader(ShaderID);
+    glShaderSource(shader_ID, 1, &SourcePointer, nullptr);
+    glCompileShader(shader_ID);
 
     // Check shader
-    glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &result);
-    glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    glGetShaderiv(shader_ID, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(shader_ID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 
     if(InfoLogLength > 0)
     {
         std::vector<char> ShaderErrorMessage(InfoLogLength + 1);
 
-        glGetShaderInfoLog(ShaderID, InfoLogLength, nullptr, &ShaderErrorMessage[0]);
+        glGetShaderInfoLog(shader_ID, InfoLogLength, nullptr, &ShaderErrorMessage[0]);
         throw std::runtime_error(&ShaderErrorMessage[0]);
     }
 }
 
-GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
+GLuint linkProgram(GLuint vertex_shader_ID, GLuint fragment_shader_ID)
 {
     GLint result = GL_FALSE;
     int InfoLogLength;
@@ -35,8 +35,8 @@ GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
     GLuint ProgramID = glCreateProgram();
 
     std::cout << "Linking program\n";
-    glAttachShader(ProgramID, VertexShaderID);
-    glAttachShader(ProgramID, FragmentShaderID);
+    glAttachShader(ProgramID, vertex_shader_ID);
+    glAttachShader(ProgramID, fragment_shader_ID);
     glLinkProgram(ProgramID);
 
     // Check the program
@@ -54,10 +54,10 @@ GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
     return ProgramID;
 }
 
-GLuint prepareShader(std::string file_path, GLenum shader_type)
+GLuint prepareShader(const std::string & file_path, GLenum shader_type)
 {
     // Read the shader code from the file
-    std::string shaderCode;
+    std::string shader_code;
     std::ifstream shaderStream(file_path, std::ios::in);
 
     if(shaderStream.is_open())
@@ -65,34 +65,34 @@ GLuint prepareShader(std::string file_path, GLenum shader_type)
         std::string Line = "";
 
         while(getline(shaderStream, Line))
-            shaderCode += "\n" + Line;
+            shader_code += "\n" + Line;
 
         shaderStream.close();
     }
     else
         throw std::runtime_error(std::string("Impossible to open ") + file_path);
 
-    GLuint shaderID = glCreateShader(shader_type);
+    GLuint shader_ID = glCreateShader(shader_type);
 
     std::cout << "Compiling shader : " << file_path << "\n";
-    compileShader(shaderID, shaderCode);
+    compileShader(shader_ID, shader_code);
 
-    return shaderID;
+    return shader_ID;
 }
 
-GLuint loadShaders(std::string vertex_file_path, std::string fragment_file_path)
+GLuint loadShaders(const std::string & vertex_file_path, const std::string & fragment_file_path)
 {
     // Create and compile shaders
-    GLuint VertexShaderID = prepareShader(vertex_file_path, GL_VERTEX_SHADER);
-    GLuint FragmentShaderID = prepareShader(fragment_file_path, GL_FRAGMENT_SHADER);
+    GLuint vertex_shader_ID = prepareShader(vertex_file_path, GL_VERTEX_SHADER);
+    GLuint fragment_shader_ID = prepareShader(fragment_file_path, GL_FRAGMENT_SHADER);
 
-    GLuint ProgramID = linkProgram(VertexShaderID, FragmentShaderID);
+    GLuint ProgramID = linkProgram(vertex_shader_ID, fragment_shader_ID);
 
-    glDetachShader(ProgramID, VertexShaderID);
-    glDetachShader(ProgramID, FragmentShaderID);
+    glDetachShader(ProgramID, vertex_shader_ID);
+    glDetachShader(ProgramID, fragment_shader_ID);
 
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
+    glDeleteShader(vertex_shader_ID);
+    glDeleteShader(fragment_shader_ID);
 
     std::cout << "Shaders loaded!\n";
 

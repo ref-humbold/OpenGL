@@ -15,12 +15,12 @@
 
 using namespace glm;
 
-void compileShader(GLuint ShaderID, std::string ShaderCode);
+void compileShader(GLuint shader_ID, const std::string & shader_code);
 
-GLuint linkProgram(GLuint VertexShaderID, GLuint FragmentShaderID);
+GLuint linkProgram(GLuint vertex_shader_ID, GLuint fragment_shader_ID);
 
-GLuint prepareShader(std::string file_path, GLenum shader_type);
+GLuint prepareShader(const std::string & file_path, GLenum shader_type);
 
-GLuint loadShaders(std::string vertex_file_path, std::string fragment_file_path);
+GLuint loadShaders(const std::string & vertex_file_path, const std::string & fragment_file_path);
 
 #endif
