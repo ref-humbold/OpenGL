@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <cmath>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <list>
 #include <tuple>
 #include <vector>

@@ -5,8 +5,8 @@
 
 #include <cstdlib>
 #include <cmath>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <tuple>
 #include <vector>
 #include <GL/glew.h>

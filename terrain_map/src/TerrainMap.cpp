@@ -17,6 +17,7 @@
 #include "GLSLloader.hpp"
 
 using namespace glm;
+using namespace std::string_literals;
 
 std::vector<std::string> readConfig(const char * filename)
 {
@@ -44,7 +45,7 @@ void checkFile(const char * filename)
     int length = strlen(filename);
 
     if(length <= 4 || strcmp(filename + length - 4, ".hgt") != 0)
-        throw std::runtime_error(std::string(filename) + " is not an HGT file.");
+        throw std::runtime_error(filename + " is not an HGT file."s);
 }
 
 void createVertexArray()

@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

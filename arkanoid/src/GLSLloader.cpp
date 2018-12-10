@@ -1,6 +1,7 @@
 #include "GLSLloader.hpp"
 
 using namespace glm;
+using namespace std::string_literals;
 
 void compileShader(GLuint shader_ID, const std::string & shader_code)
 {
@@ -70,7 +71,7 @@ GLuint prepareShader(const std::string & file_path, GLenum shader_type)
         shaderStream.close();
     }
     else
-        throw std::runtime_error(std::string("Impossible to open ") + file_path);
+        throw std::runtime_error("Impossible to open "s + file_path);
 
     GLuint shader_ID = glCreateShader(shader_type);
 

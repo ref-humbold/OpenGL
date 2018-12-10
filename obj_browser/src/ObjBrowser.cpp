@@ -15,6 +15,7 @@
 #include "GraphicObject.hpp"
 
 using namespace glm;
+using namespace std::string_literals;
 
 bool vecDifferent(vec3 v1, vec3 v2)
 {
@@ -57,7 +58,7 @@ void checkFile(const char * filename)
     int length = strlen(filename);
 
     if(length <= 4 || strcmp(filename + length - 4, ".obj") != 0)
-        throw std::runtime_error(std::string(filename) + " is not an OBJ file.");
+        throw std::runtime_error(filename + " is not an OBJ file."s);
 }
 
 void createVertexArray()

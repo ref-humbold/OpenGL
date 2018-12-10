@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "GraphicObject.hpp"
