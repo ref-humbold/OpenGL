@@ -8,4 +8,3 @@ void main()
 {
     outColor = fragmentColor;
 }
-

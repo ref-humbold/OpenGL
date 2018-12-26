@@ -16,17 +16,17 @@ out vec4 sourceDirCamera;
 
 void main()
 {
-    mat4 mvMat = worldToCameraMat*objectToWorldMat;
-    mat4 mvpMat = cameraToClipMat*worldToCameraMat*objectToWorldMat;
+    mat4 mvMat = worldToCameraMat * objectToWorldMat;
+    mat4 mvpMat = cameraToClipMat * worldToCameraMat * objectToWorldMat;
 
-    vec4 vPosCamera = mvMat*vertexPos;
-    vec4 vPosClip = mvpMat*vertexPos;
-    vec4 sourcePosCamera = worldToCameraMat*lightSourcePos;
+    vec4 vPosCamera = mvMat * vertexPos;
+    vec4 vPosClip = mvpMat * vertexPos;
+    vec4 sourcePosCamera = worldToCameraMat * lightSourcePos;
 
     fragmentColor = vertexColor;
-    normVecCamera = transpose(inverse(mvMat))*vertexNormal;
+    normVecCamera = transpose(inverse(mvMat)) * vertexNormal;
     observeDirCamera = -vPosCamera;
-    sourceDirCamera = sourcePosCamera+observeDirCamera;
+    sourceDirCamera = sourcePosCamera + observeDirCamera;
 
     gl_Position = vPosClip;
 }

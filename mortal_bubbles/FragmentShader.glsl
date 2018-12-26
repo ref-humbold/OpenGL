@@ -10,7 +10,7 @@ out vec4 outColor;
 void main()
 {
     float distance = length(observeDirCamera);
-    vec4 lightColorSource = vec4(1.0, 1.0, 1.0, 1.0)*8*exp(-distance);
+    vec4 lightColorSource = vec4(1.0, 1.0, 1.0, 1.0) * 8 * exp(-distance);
     vec4 lightColorObserve = vec4(1.0, 1.0, 1.0, 1.0);
     vec4 ambientCoeff = vec4(0.2, 0.2, 0.2, 1.0);
     vec4 specularCoeff = vec4(0.3, 0.3, 0.3, 1.0);
@@ -28,11 +28,11 @@ void main()
     float cosineLightObserve = max(dot(normalVector, lightDirObserve), 0);
     float cosineReflObserve = max(dot(eyeVector, reflDirObserve), 0);
 
-    vec4 ambient = ambientCoeff*fragmentColor;
-    vec4 diffuseSource = fragmentColor*lightColorSource*cosineLightSource;
-    vec4 specularSource = specularCoeff*lightColorSource*pow(cosineReflSource, 32);
-    vec4 diffuseObserve = fragmentColor*lightColorObserve*cosineLightObserve;
-    vec4 specularObserve = specularCoeff*lightColorObserve*pow(cosineReflObserve, 6);
+    vec4 ambient = ambientCoeff * fragmentColor;
+    vec4 diffuseSource = fragmentColor * lightColorSource * cosineLightSource;
+    vec4 specularSource = specularCoeff * lightColorSource * pow(cosineReflSource, 32);
+    vec4 diffuseObserve = fragmentColor * lightColorObserve * cosineLightObserve;
+    vec4 specularObserve = specularCoeff * lightColorObserve * pow(cosineReflObserve, 6);
 
-    outColor = ambient+diffuseSource+specularSource+diffuseObserve+specularObserve;
+    outColor = ambient + diffuseSource + specularSource + diffuseObserve + specularObserve;
 }

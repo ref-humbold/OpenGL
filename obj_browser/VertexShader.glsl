@@ -14,13 +14,13 @@ out vec4 observeDirCamera;
 void main()
 {
     mat4 mvMat = worldToCameraMat;
-    mat4 mvpMat = cameraToClipMat*worldToCameraMat;
+    mat4 mvpMat = cameraToClipMat * worldToCameraMat;
 
-    vec4 vPosCamera = mvMat*vec4(vertexPos, 1.0);
-    vec4 vPosClip = mvpMat*vec4(vertexPos, 1.0);
+    vec4 vPosCamera = mvMat * vec4(vertexPos, 1.0);
+    vec4 vPosClip = mvpMat * vec4(vertexPos, 1.0);
 
     fragmentColor = vec4(0.0, 0.0, 1.0, 1.0);
-    normVecCamera = transpose(inverse(mvMat))*vec4(vertexNormal, 0.0);
+    normVecCamera = transpose(inverse(mvMat)) * vec4(vertexNormal, 0.0);
     observeDirCamera = -vPosCamera;
 
     gl_Position = vPosClip;

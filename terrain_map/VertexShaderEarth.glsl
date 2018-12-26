@@ -13,12 +13,12 @@ void main()
     float lng = radians(vertexPos.x);
     float lat = radians(vertexPos.y);
 
-    float mapPosX = RADIUS*cos(lat)*sin(lng);
-    float mapPosY = RADIUS*sin(lat);
-    float mapPosZ = RADIUS*cos(lat)*cos(lng);
+    float mapPosX = RADIUS * cos(lat) * sin(lng);
+    float mapPosY = RADIUS * sin(lat);
+    float mapPosZ = RADIUS * cos(lat) * cos(lng);
 
     vec4 vPos = vec4(mapPosX, mapPosY, mapPosZ, 1.0);
-    vec4 vPosClip = worldToCameraMat*vPos;
+    vec4 vPosClip = worldToCameraMat * vPos;
 
     if(vertexPos.y == 90.0)
     {

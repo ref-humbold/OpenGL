@@ -11,9 +11,8 @@ out vec3 fragmentColor;
 
 void main()
 {
-    gl_Position.xy = rotateMat*scaleMat*vertexPos+transformVec;
+    gl_Position.xy = rotateMat * scaleMat * vertexPos + transformVec;
     gl_Position.z = 0.0;
     gl_Position.w = 1.0;
     fragmentColor = vertexColor;
 }
-
