@@ -35,7 +35,7 @@ GLuint linkProgram(GLuint vertex_shader_ID, GLuint fragment_shader_ID)
     // Link the program
     GLuint ProgramID = glCreateProgram();
 
-    std::cout << "Linking program\n";
+    std::cerr << "Linking program\n";
     glAttachShader(ProgramID, vertex_shader_ID);
     glAttachShader(ProgramID, fragment_shader_ID);
     glLinkProgram(ProgramID);
@@ -49,7 +49,7 @@ GLuint linkProgram(GLuint vertex_shader_ID, GLuint fragment_shader_ID)
         std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
 
         glGetProgramInfoLog(ProgramID, InfoLogLength, nullptr, &ProgramErrorMessage[0]);
-        std::cout << &ProgramErrorMessage[0] << "\n";
+        std::cerr << &ProgramErrorMessage[0] << "\n";
     }
 
     return ProgramID;
@@ -75,7 +75,7 @@ GLuint prepareShader(const std::string & file_path, GLenum shader_type)
 
     GLuint shader_ID = glCreateShader(shader_type);
 
-    std::cout << "Compiling shader : " << file_path << "\n";
+    std::cerr << "Compiling shader : " << file_path << "\n";
     compileShader(shader_ID, shader_code);
 
     return shader_ID;
@@ -95,7 +95,7 @@ GLuint loadShaders(const std::string & vertex_file_path, const std::string & fra
     glDeleteShader(vertex_shader_ID);
     glDeleteShader(fragment_shader_ID);
 
-    std::cout << "Shaders loaded!\n";
+    std::cerr << "Shaders loaded!\n";
 
     return ProgramID;
 }
