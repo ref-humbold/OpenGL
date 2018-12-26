@@ -16,14 +16,14 @@
 
 using namespace glm;
 
-void compileShader(GLuint shader_ID, std::string shader_code);
+void compileShader(GLuint shaderID, const std::string & shaderCode);
 
-GLuint linkProgram(GLuint vertex_shader_ID, GLuint fragment_shader_ID);
+GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
 
-GLuint prepareShader(const std::string & file_path, GLenum shader_type);
+GLuint prepareShader(const std::string & filePath, GLenum shaderType);
 
-std::tuple<GLuint, GLuint> loadShaders(const std::string & area_vertex_file_path,
-                                       const std::string & earth_vertex_file_path,
-                                       const std::string & fragment_file_path);
+std::tuple<GLuint, GLuint> loadShaders(const std::string & areaVertexFilePath,
+                                       const std::string & earthVertexFilePath,
+                                       const std::string & fragmentFilePath);
 
 #endif
