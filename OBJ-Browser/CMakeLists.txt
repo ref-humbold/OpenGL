@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(ObjBrowser VERSION 1.0)
+project(OBJ-Browser VERSION 1.0)
 
 # COMPILER
 set(CMAKE_CXX_STANDARD 14)
