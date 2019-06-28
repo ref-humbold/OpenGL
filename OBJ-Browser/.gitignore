@@ -1,6 +1,8 @@
-# C++, CMake
-bin
-build
+# [ C / C++ ]
+# C / C++ / CMake output
+bin/
+build/
+dist/
 
-# sample OBJ files
-obj_files
+# Visual Studio Code
+.vscode
