@@ -15,16 +15,16 @@ include_directories(${OPENGL_INCLUDE_DIR}
                     ${GLM_INCLUDE_DIRS})
 
 # SOURCES
-include_directories("${PROJECT_SOURCE_DIR}/include")
-set(SOURCES "${PROJECT_SOURCE_DIR}/src/GLSLloader.cpp"
-            "${PROJECT_SOURCE_DIR}/src/Area.cpp"
-            "${PROJECT_SOURCE_DIR}/src/Earth.cpp"
-            "${PROJECT_SOURCE_DIR}/src/Detailing.cpp"
-            "${PROJECT_SOURCE_DIR}/src/Camera.cpp"
-            "${PROJECT_SOURCE_DIR}/src/TerrainMap.cpp")
+include_directories(include)
+set(SOURCES src/GLSLloader.cpp
+            src/Area.cpp
+            src/Earth.cpp
+            src/Detailing.cpp
+            src/Camera.cpp
+            src/TerrainMap.cpp)
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 add_executable(TerrainMap ${SOURCES})
 target_link_libraries(TerrainMap glfw
                                  OpenGL::GL

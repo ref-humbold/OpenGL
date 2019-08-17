@@ -15,15 +15,15 @@ include_directories(${OPENGL_INCLUDE_DIR}
                     ${GLM_INCLUDE_DIRS})
 
 # SOURCES
-include_directories("${PROJECT_SOURCE_DIR}/include")
-set(SOURCES "${PROJECT_SOURCE_DIR}/src/GLSLloader.cpp"
-            "${PROJECT_SOURCE_DIR}/src/FileReader.cpp"
-            "${PROJECT_SOURCE_DIR}/src/Camera.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GraphicObject.cpp"
-            "${PROJECT_SOURCE_DIR}/src/ObjBrowser.cpp")
+include_directories(include)
+set(SOURCES src/GLSLloader.cpp
+            src/FileReader.cpp
+            src/Camera.cpp
+            src/GraphicObject.cpp
+            src/ObjBrowser.cpp)
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 add_executable(ObjBrowser ${SOURCES})
 target_link_libraries(ObjBrowser glfw
                                  OpenGL::GL

@@ -15,16 +15,16 @@ include_directories(${OPENGL_INCLUDE_DIR}
                     ${GLM_INCLUDE_DIRS})
 
 # SOURCES
-include_directories("${PROJECT_SOURCE_DIR}/include")
-set(SOURCES "${PROJECT_SOURCE_DIR}/src/GLSLloader.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GameAquarium.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GameBubble.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GamePlayer.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GameController.cpp"
-            "${PROJECT_SOURCE_DIR}/src/MortalBubbles.cpp")
+include_directories(include)
+set(SOURCES src/GLSLloader.cpp
+            src/GameAquarium.cpp
+            src/GameBubble.cpp
+            src/GamePlayer.cpp
+            src/GameController.cpp
+            src/MortalBubbles.cpp)
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 add_executable(MortalBubbles ${SOURCES})
 target_link_libraries(MortalBubbles glfw
                                     OpenGL::GL

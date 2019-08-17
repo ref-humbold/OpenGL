@@ -15,13 +15,13 @@ include_directories(${OPENGL_INCLUDE_DIR}
                     ${GLM_INCLUDE_DIRS})
 
 # SOURCES
-include_directories("${PROJECT_SOURCE_DIR}/include")
-set(SOURCES "${PROJECT_SOURCE_DIR}/src/GLSLloader.cpp"
-            "${PROJECT_SOURCE_DIR}/src/GameController.cpp"
-            "${PROJECT_SOURCE_DIR}/src/MemoryGame.cpp")
+include_directories(include)
+set(SOURCES src/GLSLloader.cpp
+            src/GameController.cpp
+            src/MemoryGame.cpp)
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 add_executable(MemoryGame ${SOURCES})
 target_link_libraries(MemoryGame glfw
                                  OpenGL::GL
