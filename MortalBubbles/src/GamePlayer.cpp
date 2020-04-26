@@ -32,9 +32,9 @@ void GamePlayer::drawPlayer(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
 
     glDrawElements(GL_TRIANGLE_FAN, 22, GL_UNSIGNED_SHORT, (void *)0);
 
-    for(int i = 0; i < 8; ++i)
+    for(size_t i = 0; i < 8; ++i)
     {
-        int ix = (42 * i + 22) * sizeof(unsigned short);
+        size_t ix = (42 * i + 22) * sizeof(unsigned short);
 
         glDrawElements(GL_TRIANGLE_STRIP, 42, GL_UNSIGNED_SHORT, (void *)ix);
     }
@@ -112,8 +112,8 @@ void GamePlayer::countNormals()
 
     for(int i = 0; i < 182; ++i)
     {
-        vec3 n =
-            normalize(vec3(nbDataPlayer[4 * i], nbDataPlayer[4 * i + 1], nbDataPlayer[4 * i + 2]));
+        vec3 n = normalize(
+                vec3(nbDataPlayer[4 * i], nbDataPlayer[4 * i + 1], nbDataPlayer[4 * i + 2]));
 
         nbDataPlayer[4 * i] = n[0];
         nbDataPlayer[4 * i + 1] = n[1];

@@ -19,8 +19,8 @@ private:
     GLuint vertexBuffer;
     GLuint indexBuffer;
 
-    int numLongs;
-    int numLats;
+    size_t numLongs;
+    size_t numLats;
 
 public:
     Earth();

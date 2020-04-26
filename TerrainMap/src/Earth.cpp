@@ -17,15 +17,15 @@ Earth::Earth() : numLongs{36}, numLats{17}
 
     push_point(0.0f, -90.0f);
 
-    for(int i = 0; i < numLats; ++i)
-        for(int j = 1; j <= numLongs; ++j)
+    for(size_t i = 0; i < numLats; ++i)
+        for(size_t j = 1; j <= numLongs; ++j)
             ibData.push_back(numLongs * i + j);
 
-    for(int j = 1; j <= numLongs; ++j)
+    for(size_t j = 1; j <= numLongs; ++j)
     {
         ibData.push_back(0);
 
-        for(int i = 0; i < numLats; ++i)
+        for(size_t i = 0; i < numLats; ++i)
             ibData.push_back(numLongs * i + j);
 
         ibData.push_back(numLongs * numLats + 1);
@@ -53,18 +53,18 @@ void Earth::draw(GLuint pID, mat4 worldToCamera)
 
     glUniformMatrix4fv(worldToCameraMat, 1, GL_FALSE, &worldToCamera[0][0]);
 
-    for(int i = 0; i < numLats; ++i)
+    for(size_t i = 0; i < numLats; ++i)
     {
-        int ix = i * numLongs * sizeof(GLuint);
+        size_t ix = i * numLongs * sizeof(GLuint);
 
         glDrawElements(GL_LINE_LOOP, numLongs, GL_UNSIGNED_INT, (void *)ix);
     }
 
-    int longitsStart = numLongs * numLats * sizeof(GLuint);
+    size_t longitsStart = numLongs * numLats * sizeof(GLuint);
 
-    for(int i = 0; i < numLongs; ++i)
+    for(size_t i = 0; i < numLongs; ++i)
     {
-        int ix = longitsStart + i * (numLats + 2) * sizeof(GLuint);
+        size_t ix = longitsStart + i * (numLats + 2) * sizeof(GLuint);
 
         glDrawElements(GL_LINE_STRIP, numLats + 2, GL_UNSIGNED_INT, (void *)ix);
     }

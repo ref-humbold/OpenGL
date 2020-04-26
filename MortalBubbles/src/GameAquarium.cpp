@@ -30,9 +30,9 @@ void GameAquarium::drawCube(GLuint pID, mat4 worldToCamera, mat4 cameraToClip, v
     glUniformMatrix4fv(cameraToClipMat, 1, GL_FALSE, &cameraToClip[0][0]);
     glUniform4fv(lightSourcePos, 1, &lightSource[0]);
 
-    for(int i = 0; i < 6; ++i)
+    for(size_t i = 0; i < 6; ++i)
     {
-        int ix = 6 * i * sizeof(unsigned short);
+        size_t ix = 6 * i * sizeof(unsigned short);
 
         glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_SHORT, (void *)ix);
     }

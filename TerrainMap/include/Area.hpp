@@ -2,10 +2,10 @@
 #define _AREA_HPP_
 
 #include <cstdlib>
-#include <cstdio>
 #include <cmath>
-#include <algorithm>
+#include <cstdio>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +17,7 @@ using namespace glm;
 class Area
 {
 private:
-    static constexpr int SIDE = 1201;
+    static constexpr size_t SIDE = 1201;
     static constexpr GLfloat PI_CONST = M_PI;
     static constexpr GLfloat MERCATOR = 360.0f / (2 * PI_CONST);
     static constexpr GLfloat RADIUS = 6400000.0f;

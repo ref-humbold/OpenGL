@@ -26,11 +26,11 @@ void Area::draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims)
     glUniform1f(mercatorFloat, MERCATOR);
     glUniform1i(dimensionsInt, dims);
 
-    int indexSize = (SIDE - 1) / details->getStep() + 1;
+    size_t indexSize = (SIDE - 1) / details->getStep() + 1;
 
-    for(int i = 0; i < indexSize - 1; ++i)
+    for(size_t i = 0; i < indexSize - 1; ++i)
     {
-        int ix = i * 2 * indexSize * sizeof(GLuint);
+        size_t ix = i * 2 * indexSize * sizeof(GLuint);
 
         glDrawElements(GL_TRIANGLE_STRIP, 2 * indexSize, GL_UNSIGNED_INT, (void *)ix);
     }
