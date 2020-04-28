@@ -3,11 +3,11 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <algorithm>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <GL/glew.h>
@@ -15,12 +15,11 @@
 
 using namespace glm;
 
-void compileShader(GLuint shaderID, const std::string & shaderCode);
+GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
+                     const std::string & shaderName);
 
 GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
 
-GLuint prepareShader(const std::string & filePath, GLenum shaderType);
-
-GLuint loadShaders(const std::string & vertexFilePath, const std::string & fragmentFilePath);
+GLuint loadShaders();
 
 #endif
