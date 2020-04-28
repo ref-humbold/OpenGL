@@ -55,75 +55,75 @@ int main(int argc, char * argv[])
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     std::string glsl_dir = argc == 2 ? argv[1] : ".";
-    GLuint programID =
-        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
+    GLuint programID = loadShaders(glsl_dir + "/shaders/VertexShader.glsl",
+                                   glsl_dir + "/shaders/FragmentShader.glsl");
 
     createVertexArray();
     srand(time(nullptr));
 
-    GameController * ctrl = new GameController();
-    GameBoard * board = new GameBoard();
-    GameBall * ball = new GameBall();
-    GameBrick * brick = new GameBrick();
-    GamePaddle * paddle = new GamePaddle();
+    GameController ctrl;
+    GameBoard board;
+    GameBall ball;
+    GameBrick brick;
+    GamePaddle paddle;
 
     int gamePhase = 0, tryings = 0;
     GLfloat timer = 0.0f, pauseTime;
 
-    // kontrola gry
+    // game control
 
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
 
-        ctrl->drawGame(programID, board, ball, brick, paddle);
+        ctrl.drawGame(programID, board, ball, brick, paddle);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
 
         if(gamePhase == 1)
         {
-            int keyCode = ctrl->checkKeyPress(window);
+            int keyCode = ctrl.checkKeyPress(window);
 
             switch(keyCode)
             {
                 case 0:
                     pauseTime = glfwGetTime();
-                    ctrl->checkKeyRelease(window, keyCode);
+                    ctrl.checkKeyRelease(window, keyCode);
                     std::cout << "\tPRZERWA - wciśnij spację, by kontunuować grę\n";
                     gamePhase = 0;
                     break;
 
                 case 1:
-                    paddle->moveLeft(glfwGetTime() - timer);
+                    paddle.moveLeft(glfwGetTime() - timer);
                     break;
 
                 case 2:
-                    paddle->moveRight(glfwGetTime() - timer);
+                    paddle.moveRight(glfwGetTime() - timer);
                     break;
             }
 
-            if(ball->checkOutside())
+            if(ball.checkOutside())
             {
                 std::cout << "KULKA SPADŁA Z PLANSZY!! Spróbuj ponownie.\n";
                 gamePhase = 0;
                 ++tryings;
-                ball->restart();
-                paddle->restart();
+                ball.restart();
+                paddle.restart();
             }
             else
             {
-                ball->checkCollisionPaddle(paddle);
-                ball->checkCollisionBrick(brick);
-                ball->checkCollisionBoard(board);
+                ball.checkCollisionPaddle(paddle);
+                ball.checkCollisionBrick(brick);
+                ball.checkCollisionBoard(board);
 
                 GLfloat delta = gamePhase == 0 ? pauseTime - timer : glfwGetTime() - timer;
                 timer = glfwGetTime();
 
-                ball->moveBall(delta);
+                ball.moveBall(delta);
 
-                if(brick->bricksLeft == 0)
+                if(brick.bricksLeft == 0)
                 {
                     std::cout << "WYGRAŁEŚ!! Kulka spadła Ci " << tryings << " razy.\n";
                     std::cout << "Wciśnij spację, by zakończyć.\n";
@@ -133,14 +133,14 @@ int main(int argc, char * argv[])
         }
         else
         {
-            int keyCode = ctrl->checkKeyPress(window);
+            int keyCode = ctrl.checkKeyPress(window);
 
             if(keyCode == 0)
             {
                 if(gamePhase == 2)
                     break;
 
-                ctrl->checkKeyRelease(window, keyCode);
+                ctrl.checkKeyRelease(window, keyCode);
                 gamePhase = 1;
                 timer = glfwGetTime();
                 std::cout << "\tGRAMY!!\n\n";
@@ -149,15 +149,9 @@ int main(int argc, char * argv[])
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    if(brick->bricksLeft != 0)
+    if(brick.bricksLeft != 0)
         std::cout << "PRZERWANO GRĘ\n\n";
 
     glfwTerminate();
-    delete ctrl;
-    delete board;
-    delete ball;
-    delete brick;
-    delete paddle;
-
     return 0;
 }

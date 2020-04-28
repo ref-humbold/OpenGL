@@ -2,16 +2,16 @@
 
 using namespace glm;
 
-void GameController::drawGame(GLuint pID, GameBoard * board, GameBall * ball, GameBrick * brick,
-                              GamePaddle * paddle)
+void GameController::drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
+                              GamePaddle & paddle)
 {
-    board->drawBackground(pID);
-    ball->drawBall(pID);
-    ball->drawCross(pID);
-    brick->drawAllBricks(pID);
-    paddle->drawPaddle(pID);
-    board->drawBorderTriangles(pID);
-    board->countNormalVectors();
+    board.drawBackground(pID);
+    ball.drawBall(pID);
+    ball.drawCross(pID);
+    brick.drawAllBricks(pID);
+    paddle.drawPaddle(pID);
+    board.drawBorderTriangles(pID);
+    board.countNormalVectors();
 }
 
 int GameController::checkKeyPress(GLFWwindow * window)

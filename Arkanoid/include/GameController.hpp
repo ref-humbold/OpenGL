@@ -19,8 +19,8 @@ public:
     {
     }
 
-    void drawGame(GLuint pID, GameBoard * board, GameBall * ball, GameBrick * brick,
-                  GamePaddle * paddle);
+    void drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
+                  GamePaddle & paddle);
     int checkKeyPress(GLFWwindow * window);
     void checkKeyRelease(GLFWwindow * window, int key);
 };

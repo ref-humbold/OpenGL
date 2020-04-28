@@ -128,9 +128,9 @@ public:
     bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR);
     GLfloat countDistance(vec2 pt, vec2 nl, vec2 pl);
     bool checkOutside();
-    void checkCollisionBoard(GameBoard * board);
-    void checkCollisionPaddle(GamePaddle * paddle);
-    void checkCollisionBrick(GameBrick * brick);
+    void checkCollisionBoard(GameBoard & board);
+    void checkCollisionPaddle(GamePaddle & paddle);
+    void checkCollisionBrick(GameBrick & brick);
     void moveBall(GLfloat delta);
 };
 
