@@ -1,5 +1,5 @@
-#ifndef _DETAILING_HPP_
-#define _DETAILING_HPP_
+#ifndef DETAILING_HPP_
+#define DETAILING_HPP_
 
 #include <cstdlib>
 #include <cmath>

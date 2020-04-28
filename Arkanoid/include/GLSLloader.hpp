@@ -1,5 +1,5 @@
-#ifndef _GLSL_LOADER_HPP_
-#define _GLSL_LOADER_HPP_
+#ifndef GLSL_LOADER_HPP_
+#define GLSL_LOADER_HPP_
 
 #include <cstdlib>
 #include <cstring>
