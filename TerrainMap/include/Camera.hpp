@@ -1,10 +1,10 @@
-#ifndef _CAMERA_HPP_
-#define _CAMERA_HPP_
+#ifndefCAMERA_HPP_
+#defineCAMERA_HPP_
 
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

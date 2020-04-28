@@ -1,5 +1,5 @@
-#ifndef _AREA_HPP_
-#define _AREA_HPP_
+#ifndefAREA_HPP_
+#defineAREA_HPP_
 
 #include <cstdlib>
 #include <cmath>

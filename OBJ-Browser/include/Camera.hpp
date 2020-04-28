@@ -1,12 +1,12 @@
-#ifndef _CAMERA_HPP_
-#define _CAMERA_HPP_
+#ifndef CAMERA_HPP_
+#define CAMERA_HPP_
 
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

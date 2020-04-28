@@ -1,5 +1,5 @@
-#ifndef _EARTH_HPP_
-#define _EARTH_HPP_
+#ifndefEARTH_HPP_
+#defineEARTH_HPP_
 
 #include <cstdlib>
 #include <cmath>

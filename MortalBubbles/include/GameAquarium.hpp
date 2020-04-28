@@ -1,5 +1,5 @@
-#ifndef _GAME_AQUARIUM_HPP_
-#define _GAME_AQUARIUM_HPP_
+#ifndefGAME_AQUARIUM_HPP_
+#defineGAME_AQUARIUM_HPP_
 
 #include <cstdlib>
 #include <cmath>

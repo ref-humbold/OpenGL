@@ -1,10 +1,10 @@
-#ifndef _DETAILING_HPP_
-#define _DETAILING_HPP_
+#ifndefDETAILING_HPP_
+#defineDETAILING_HPP_
 
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

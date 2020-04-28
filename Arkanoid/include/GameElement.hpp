@@ -1,5 +1,5 @@
-#ifndef _GAME_ELEMENT_HPP_
-#define _GAME_ELEMENT_HPP_
+#ifndef GAME_ELEMENT_HPP_
+#define GAME_ELEMENT_HPP_
 
 #include <cstdlib>
 #include <cmath>
