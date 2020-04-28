@@ -42,18 +42,14 @@ int main(int argc, char * argv[])
     int numRows = 4, numColumns = 4;
     int round = 1, cur = 0, prev = -1;
     bool check = false;
-    std::string glsl_dir = ".";
 
     switch(argc)
     {
-        case 4:
-            numColumns = atoi(argv[3]);
-
         case 3:
-            numRows = atoi(argv[2]);
+            numColumns = atoi(argv[2]);
 
         case 2:
-            glsl_dir = argv[1];
+            numRows = atoi(argv[1]);
     }
 
     if(!isInRange(numRows, 1, 12))
@@ -89,12 +85,11 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    GLuint programID =
-            loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
+    GLuint programID = loadShaders();
 
     createVertexArray();
 
-    GameController ctrl = new GameController(std::make_pair(numRows, numColumns));
+    GameController ctrl(std::make_pair(numRows, numColumns));
     int cardsLeft = numRows * numColumns;
     bool goToNext = false;
 
@@ -167,7 +162,5 @@ int main(int argc, char * argv[])
         std::cout << "PRZERWANO GRĘ\n\n";
 
     glfwTerminate();
-    delete ctrl;
-
     return 0;
 }
