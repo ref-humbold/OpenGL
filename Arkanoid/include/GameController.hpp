@@ -12,6 +12,14 @@
 
 using namespace glm;
 
+enum class Key : int
+{
+    None = GLFW_KEY_UNKNOWN,
+    Space = GLFW_KEY_SPACE,
+    Left = GLFW_KEY_LEFT,
+    Right = GLFW_KEY_RIGHT
+};
+
 class GameController
 {
 public:
@@ -21,8 +29,8 @@ public:
 
     void drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
                   GamePaddle & paddle);
-    int checkKeyPress(GLFWwindow * window);
-    void checkKeyRelease(GLFWwindow * window, int key);
+    Key checkKeyPress(GLFWwindow * window);
+    void checkKeyRelease(GLFWwindow * window, Key key);
 };
 
 #endif

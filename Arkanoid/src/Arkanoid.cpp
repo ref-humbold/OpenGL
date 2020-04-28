@@ -82,23 +82,26 @@ int main()
 
         if(gamePhase == 1)
         {
-            int keyCode = ctrl.checkKeyPress(window);
+            Key key = ctrl.checkKeyPress(window);
 
-            switch(keyCode)
+            switch(key)
             {
-                case 0:
+                case Key::Space:
                     pauseTime = glfwGetTime();
-                    ctrl.checkKeyRelease(window, keyCode);
+                    ctrl.checkKeyRelease(window, key);
                     std::cout << "\tPRZERWA - wciśnij spację, by kontunuować grę\n";
                     gamePhase = 0;
                     break;
 
-                case 1:
+                case Key::Left:
                     paddle.moveLeft(glfwGetTime() - timer);
                     break;
 
-                case 2:
+                case Key::Right:
                     paddle.moveRight(glfwGetTime() - timer);
+                    break;
+
+                default:
                     break;
             }
 
@@ -131,14 +134,14 @@ int main()
         }
         else
         {
-            int keyCode = ctrl.checkKeyPress(window);
+            Key key = ctrl.checkKeyPress(window);
 
-            if(keyCode == 0)
+            if(key == Key::Space)
             {
                 if(gamePhase == 2)
                     break;
 
-                ctrl.checkKeyRelease(window, keyCode);
+                ctrl.checkKeyRelease(window, key);
                 gamePhase = 1;
                 timer = glfwGetTime();
                 std::cout << "\tGRAMY!!\n\n";
