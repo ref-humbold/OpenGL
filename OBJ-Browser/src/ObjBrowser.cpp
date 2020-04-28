@@ -1,6 +1,6 @@
 #include <cstdlib>
-#include <cmath>
 #include <cstdio>
+#include <cmath>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
@@ -102,7 +102,12 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    GLuint programID = loadShaders();
+    if(argc <= 1)
+        throw std::runtime_error("No directory with shaders specified");
+
+    std::string glsl_dir = argv[1];
+    GLuint programID =
+        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
 
     createVertexArray();
 

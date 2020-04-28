@@ -1,9 +1,9 @@
-#ifndef GRAPHIC_OBJECT_HPP_
-#define GRAPHIC_OBJECT_HPP_
+#ifndef _GRAPHIC_OBJECT_HPP_
+#define _GRAPHIC_OBJECT_HPP_
 
 #include <cstdlib>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <GL/glew.h>

@@ -1,13 +1,13 @@
-#ifndefGLSL_LOADER_HPP_
-#defineGLSL_LOADER_HPP_
+#ifndef _GLSL_LOADER_HPP_
+#define _GLSL_LOADER_HPP_
 
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
 #include <string>
 #include <vector>
 #include <GL/glew.h>

@@ -1,5 +1,5 @@
-#ifndef GAME_CONTROLLER_HPP_
-#define GAME_CONTROLLER_HPP_
+#ifndef _GAME_CONTROLLER_HPP_
+#define _GAME_CONTROLLER_HPP_
 
 #include <cstdlib>
 #include <cmath>
@@ -19,8 +19,8 @@ public:
     {
     }
 
-    void drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
-                  GamePaddle & paddle);
+    void drawGame(GLuint pID, GameBoard * board, GameBall * ball, GameBrick * brick,
+                  GamePaddle * paddle);
     int checkKeyPress(GLFWwindow * window);
     void checkKeyRelease(GLFWwindow * window, int key);
 };

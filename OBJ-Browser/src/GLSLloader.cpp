@@ -1,18 +1,12 @@
 #include "GLSLloader.hpp"
-#include "shaders/FragmentShader_glsl.hpp"
-#include "shaders/VertexShader_glsl.hpp"
 
 using namespace glm;
 using namespace std::string_literals;
 
-GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
-                     const std::string & shaderName)
+void compileShader(GLuint shaderID, const std::string & shaderCode)
 {
-    GLuint shaderID = glCreateShader(shaderType);
     GLint result = GL_FALSE;
     int infoLogLength;
-
-    std::cerr << ".::. Compiling shader : " << shaderName << "\n";
 
     // Compile shader
     const char * shaderCodePointer = shaderCode.c_str();
@@ -31,8 +25,6 @@ GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
         glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
         throw std::runtime_error(shaderErrorMessage);
     }
-
-    return shaderID;
 }
 
 GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
@@ -63,15 +55,35 @@ GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
     return programID;
 }
 
-GLuint loadShaders()
+GLuint prepareShader(const std::string & filePath, GLenum shaderType)
+{
+    // Read the shader code from the file
+    std::string shaderCode;
+    std::ifstream shaderStream(filePath, std::ios::in);
+
+    if(shaderStream.is_open())
+        throw std::runtime_error("Impossible to open "s + filePath);
+
+    std::string line = "";
+
+    while(getline(shaderStream, line))
+        shaderCode += "\n" + line;
+
+    shaderStream.close();
+
+    GLuint shaderID = glCreateShader(shaderType);
+
+    std::cerr << ".::. Compiling shader : " << filePath << "\n";
+    compileShader(shaderID, shaderCode);
+
+    return shaderID;
+}
+
+GLuint loadShaders(const std::string & vertexFilePath, const std::string & fragmentFilePath)
 {
     // Create and compile shaders
-    GLuint vertexShaderID =
-            compileShader(GL_VERTEX_SHADER, std::string(VertexShader_glsl, VertexShader_glsl),
-                          "VertexShader.glsl"s);
-    GLuint fragmentShaderID =
-            compileShader(GL_FRAGMENT_SHADER, std::string(FragmentShader_glsl, FragmentShader_glsl),
-                          "FragmentShader.glsl"s);
+    GLuint vertexShaderID = prepareShader(vertexFilePath, GL_VERTEX_SHADER);
+    GLuint fragmentShaderID = prepareShader(fragmentFilePath, GL_FRAGMENT_SHADER);
 
     GLuint programID = linkProgram(vertexShaderID, fragmentShaderID);
 

@@ -1,10 +1,10 @@
-#ifndef FILE_READER_HPP_
-#define FILE_READER_HPP_
+#ifndef _FILE_READER_HPP_
+#define _FILE_READER_HPP_
 
 #include <cstdlib>
 #include <cstdio>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "GraphicObject.hpp"

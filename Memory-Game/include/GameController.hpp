@@ -1,5 +1,5 @@
-#ifndefGAME_CONTROLLER_HPP_
-#defineGAME_CONTROLLER_HPP_
+#ifndef _GAME_CONTROLLER_HPP_
+#define _GAME_CONTROLLER_HPP_
 
 #include <cstdlib>
 #include <iostream>
