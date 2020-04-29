@@ -1,4 +1,5 @@
 #include "GameController.hpp"
+#include <algorithm>
 
 using namespace glm;
 
@@ -14,37 +15,39 @@ GameController::GameController(int rows, int columns)
       fieldsCount{rows * columns},
       size{std::make_pair(rows, columns)}
 {
-    std::vector<bool> isSet(fieldsCount, false);
-
     srand(time(nullptr));
     visible.resize(fieldsCount, false);
-    colours.resize(fieldsCount);
-    signs.resize(fieldsCount);
 
     for(float i = -rows + 1; i <= rows; i += 2)
         for(float j = -columns + 1; j <= columns; j += 2)
             transforms.push_back(std::make_pair(i, j));
 
-    for(size_t e = 0; e != isSet.size(); e += 2)
+    for(int i = 0; i < fieldsCount / 2; ++i)
     {
-        int i, j;
-        Colour colour = static_cast<Colour>(rand() % 6);
-        Sign sign = static_cast<Sign>(rand() % 4);
+        int index1, index2;
+        Colour colour;
+        Sign sign;
 
         do
-            i = rand() % isSet.size();
-        while(isSet[i]);
+        {
+            colour = static_cast<Colour>(rand() % coloursCount);
+            sign = static_cast<Sign>(rand() % signsCount);
+        } while(std::count_if(std::begin(cards), std::end(cards),
+                              [=](const std::pair<int, std::pair<Colour, Sign>> & c) {
+                                  return c.second.first == colour && c.second.second == sign;
+                              })
+                > 1 + fieldsCount / (coloursCount * signsCount));
 
         do
-            j = rand() % isSet.size();
-        while(isSet[j] || j == i);
+            index1 = rand() % fieldsCount;
+        while(cards.find(index1) != cards.end());
 
-        colours[i] = colour;
-        signs[i] = sign;
-        colours[j] = colour;
-        signs[j] = sign;
-        isSet[i] = true;
-        isSet[j] = true;
+        do
+            index2 = rand() % fieldsCount;
+        while(cards.find(index2) != cards.end() || index2 == index1);
+
+        cards.emplace(index1, std::make_pair(colour, sign));
+        cards.emplace(index2, std::make_pair(colour, sign));
     }
 
     glGenBuffers(1, &vertexBuffer);
@@ -64,8 +67,8 @@ void GameController::drawGame(GLuint pID, int currentIndex,
     for(int i = 0; i < size.first * size.second; i++)
         if(visible[i] || i == visibleIndices.first || i == visibleIndices.second)
         {
-            drawCards(pID, colours[i], transforms[i], 0);
-            drawSign(pID, signs[i], transforms[i]);
+            drawCards(pID, cards.at(i).first, transforms[i], 0);
+            drawSign(pID, cards.at(i).second, transforms[i]);
         }
         else
             drawCards(pID, Colour::Black, transforms[i], 0);
@@ -130,8 +133,7 @@ int GameController::moveFrame(Key key, int currentIndex)
 
 bool GameController::checkSame(const std::pair<int, int> & visibleIndices)
 {
-    return colours[visibleIndices.first] == colours[visibleIndices.second]
-           && signs[visibleIndices.first] == signs[visibleIndices.second];
+    return cards.at(visibleIndices.first) == cards.at(visibleIndices.second);
 }
 
 void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation,
@@ -139,7 +141,7 @@ void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> tr
 {
     GLint scale = glGetUniformLocation(pID, "scale");
     GLint transform = glGetUniformLocation(pID, "transform");
-    GLint color = glGetUniformLocation(pID, "fragmentColor");
+    GLint fragmentColor = glGetUniformLocation(pID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
     glUniform2f(transform, transformation.second, transformation.first);
@@ -147,35 +149,43 @@ void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> tr
     switch(colour)
     {
         case Colour::Red:
-            glUniform3f(color, 1.0f, 0.0f, 0.0f);  // red
+            glUniform3f(fragmentColor, 1.0f, 0.0f, 0.0f);
             break;
 
         case Colour::Green:
-            glUniform3f(color, 0.0f, 1.0f, 0.0f);  // green
+            glUniform3f(fragmentColor, 0.0f, 1.0f, 0.0f);
             break;
 
         case Colour::Blue:
-            glUniform3f(color, 0.0f, 0.0f, 1.0f);  // blue
+            glUniform3f(fragmentColor, 0.0f, 0.0f, 1.0f);
             break;
 
         case Colour::Cyan:
-            glUniform3f(color, 0.0f, 1.0f, 1.0f);  // cyan
+            glUniform3f(fragmentColor, 0.0f, 1.0f, 1.0f);
             break;
 
         case Colour::Magenta:
-            glUniform3f(color, 1.0f, 0.0f, 1.0f);  // magenta
+            glUniform3f(fragmentColor, 1.0f, 0.0f, 1.0f);
             break;
 
         case Colour::Yellow:
-            glUniform3f(color, 1.0f, 1.0f, 0.0f);  // yellow
+            glUniform3f(fragmentColor, 1.0f, 1.0f, 0.0f);
+            break;
+
+        case Colour::Orange:
+            glUniform3f(fragmentColor, 1.0f, 0.66f, 0.0f);
+            break;
+
+        case Colour::Purple:
+            glUniform3f(fragmentColor, 0.66f, 0.0f, 0.66f);
             break;
 
         case Colour::Black:
-            glUniform3f(color, 0.0f, 0.0f, 0.0f);  // black
+            glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
             break;
 
         case Colour::Gray:
-            glUniform3f(color, 0.5f, 0.5f, 0.5f);  // grey
+            glUniform3f(fragmentColor, 0.5f, 0.5f, 0.5f);
             break;
     }
 
@@ -186,11 +196,11 @@ void GameController::drawSign(GLuint pID, Sign sign, std::pair<int, int> transfo
 {
     GLint scale = glGetUniformLocation(pID, "scale");
     GLint transform = glGetUniformLocation(pID, "transform");
-    GLint color = glGetUniformLocation(pID, "fragmentColor");
+    GLint fragmentColor = glGetUniformLocation(pID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
     glUniform2f(transform, transformation.second, transformation.first);
-    glUniform3f(color, 0.0f, 0.0f, 0.0f);
+    glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
 
     switch(sign)
     {

@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -28,6 +29,8 @@ enum class Colour : int
     Cyan = 3,
     Magenta = 4,
     Yellow = 5,
+    Orange = 6,
+    Purple = 7,
     Black = 10,
     Gray = 11
 };
@@ -43,7 +46,7 @@ enum class Sign : int
 class GameController
 {
 public:
-    explicit GameController(int rows, int columns);
+    GameController(int rows, int columns);
 
     int fields()
     {
@@ -70,14 +73,14 @@ private:
     void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);
     void drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation);
 
+    const int coloursCount = 8, signsCount = 4;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
     int fieldsCount;
     std::pair<int, int> size;
-    std::vector<Colour> colours;
-    std::vector<Sign> signs;
-    std::vector<std::pair<int, int>> transforms;
+    std::map<int, std::pair<Colour, Sign>> cards;
     std::vector<bool> visible;
+    std::vector<std::pair<int, int>> transforms;
 };
 
 #endif
