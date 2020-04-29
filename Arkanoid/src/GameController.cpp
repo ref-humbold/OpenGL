@@ -19,11 +19,11 @@ Key GameController::checkKeyPress(GLFWwindow * window)
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return Key::Space;
+        return Key::StartPause;
     else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
-        return Key::Left;
+        return Key::MoveLeft;
     else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
-        return Key::Right;
+        return Key::MoveRight;
 
     return Key::None;
 }

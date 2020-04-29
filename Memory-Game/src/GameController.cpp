@@ -11,8 +11,8 @@ GameController::GameController(int rows, int columns)
              0.0f,  0.7f, -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
             -0.7f,  0.0f,  0.0f,  0.7f, 0.7f,  0.0f,  0.0f, -0.7f  // square
         },
-      size{std::make_pair(rows, columns)},
-      fieldsCount{rows * columns}
+      fieldsCount{rows * columns},
+      size{std::make_pair(rows, columns)}
 {
     std::vector<bool> isSet(fieldsCount, false);
 
@@ -78,15 +78,15 @@ Key GameController::checkKeyPress(GLFWwindow * window)
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return Key::Space;
+        return Key::Select;
     else if(glfwGetKey(window, GLFW_KEY_UP) == action)
-        return Key::Up;
+        return Key::MoveUp;
     else if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
-        return Key::Down;
+        return Key::MoveDown;
     else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
-        return Key::Left;
+        return Key::MoveLeft;
     else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
-        return Key::Right;
+        return Key::MoveRight;
 
     return Key::None;
 }
@@ -105,19 +105,19 @@ int GameController::moveFrame(Key key, int currentIndex)
 
     switch(key)
     {
-        case Key::Up:
+        case Key::MoveUp:
             currentIndex = (row + 1) % size.first * size.second + column;
             break;
 
-        case Key::Down:
+        case Key::MoveDown:
             currentIndex = (row - 1 + size.first) % size.first * size.second + column;
             break;
 
-        case Key::Left:
+        case Key::MoveLeft:
             currentIndex = row * size.second + (column - 1 + size.second) % size.second;
             break;
 
-        case Key::Right:
+        case Key::MoveRight:
             currentIndex = row * size.second + (column + 1) % size.second;
             break;
 

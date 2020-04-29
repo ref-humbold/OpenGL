@@ -13,11 +13,11 @@ using namespace glm;
 enum class Key : int
 {
     None = GLFW_KEY_UNKNOWN,
-    Space = GLFW_KEY_SPACE,
-    Up = GLFW_KEY_UP,
-    Down = GLFW_KEY_DOWN,
-    Left = GLFW_KEY_LEFT,
-    Right = GLFW_KEY_RIGHT
+    Select = GLFW_KEY_SPACE,
+    MoveUp = GLFW_KEY_UP,
+    MoveDown = GLFW_KEY_DOWN,
+    MoveLeft = GLFW_KEY_LEFT,
+    MoveRight = GLFW_KEY_RIGHT
 };
 
 enum class Colour : int

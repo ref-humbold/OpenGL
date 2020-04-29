@@ -74,9 +74,7 @@ int main()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-
         ctrl.drawGame(programID, board, ball, brick, paddle);
-
         glfwSwapBuffers(window);
         glfwPollEvents();
 
@@ -86,18 +84,18 @@ int main()
 
             switch(key)
             {
-                case Key::Space:
+                case Key::StartPause:
                     pauseTime = glfwGetTime();
                     ctrl.checkKeyRelease(window, key);
                     std::cout << "\tPRZERWA - wciśnij spację, by kontunuować grę\n";
                     gamePhase = 0;
                     break;
 
-                case Key::Left:
+                case Key::MoveLeft:
                     paddle.moveLeft(glfwGetTime() - timer);
                     break;
 
-                case Key::Right:
+                case Key::MoveRight:
                     paddle.moveRight(glfwGetTime() - timer);
                     break;
 
@@ -136,7 +134,7 @@ int main()
         {
             Key key = ctrl.checkKeyPress(window);
 
-            if(key == Key::Space)
+            if(key == Key::StartPause)
             {
                 if(gamePhase == 2)
                     break;

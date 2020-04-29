@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
                     visibleIndices = std::make_pair(-1, -1);
             }
 
-            if(key == Key::Space && !ctrl.isVisible(currentIndex))
+            if(key == Key::Select && !ctrl.isVisible(currentIndex))
             {
                 if(visibleIndices.first == -1)
                     visibleIndices.first = currentIndex;
@@ -116,7 +116,7 @@ int main(int argc, char * argv[])
                     }
                 }
             }
-            else if(key != Key::None && key != Key::Space)
+            else if(key != Key::None && key != Key::Select)
                 currentIndex = ctrl.moveFrame(key, currentIndex);
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS

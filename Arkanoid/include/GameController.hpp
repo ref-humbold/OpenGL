@@ -15,9 +15,9 @@ using namespace glm;
 enum class Key : int
 {
     None = GLFW_KEY_UNKNOWN,
-    Space = GLFW_KEY_SPACE,
-    Left = GLFW_KEY_LEFT,
-    Right = GLFW_KEY_RIGHT
+    StartPause = GLFW_KEY_SPACE,
+    MoveLeft = GLFW_KEY_LEFT,
+    MoveRight = GLFW_KEY_RIGHT
 };
 
 class GameController
