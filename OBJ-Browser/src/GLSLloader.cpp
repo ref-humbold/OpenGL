@@ -1,6 +1,6 @@
 #include "GLSLloader.hpp"
 
-#define READ_FROM_HEADER false
+#define READ_FROM_HEADER true
 
 #if READ_FROM_HEADER
 #include "shaders/FragmentShader_glsl.hpp"
