@@ -2,7 +2,7 @@
 
 using namespace glm;
 
-GameController::GameController(const std::pair<int, int> & size)
+GameController::GameController(int rows, int columns)
     : vertexBufferData{
             -0.9f, -0.9f,  0.9f, -0.9f, 0.9f,  0.9f, -0.9f,  0.9f,  // card
             -1.0f, -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f,  1.0f,  // frame
@@ -11,17 +11,18 @@ GameController::GameController(const std::pair<int, int> & size)
              0.0f,  0.7f, -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
             -0.7f,  0.0f,  0.0f,  0.7f, 0.7f,  0.0f,  0.0f, -0.7f  // square
         },
-      size{size}
+      size{std::make_pair(rows, columns)},
+      fieldsCount{rows * columns}
 {
-    std::vector<bool> isSet(size.first * size.second, false);
+    std::vector<bool> isSet(fieldsCount, false);
 
     srand(time(nullptr));
-    visible.resize(size.first * size.second, false);
-    colours.resize(size.first * size.second);
-    signs.resize(size.first * size.second);
+    visible.resize(fieldsCount, false);
+    colours.resize(fieldsCount);
+    signs.resize(fieldsCount);
 
-    for(float i = -size.first + 1; i <= size.first; i += 2)
-        for(float j = -size.second + 1; j <= size.second; j += 2)
+    for(float i = -rows + 1; i <= rows; i += 2)
+        for(float j = -columns + 1; j <= columns; j += 2)
             transforms.push_back(std::make_pair(i, j));
 
     for(size_t e = 0; e != isSet.size(); e += 2)
@@ -49,16 +50,6 @@ GameController::GameController(const std::pair<int, int> & size)
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
-}
-
-bool GameController::isVisible(int i)
-{
-    return visible[i];
-}
-
-void GameController::setVisible(int i)
-{
-    visible[i] = true;
 }
 
 void GameController::drawGame(GLuint pID, int currentIndex,

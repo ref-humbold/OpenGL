@@ -13,6 +13,7 @@ include_directories(${OPENGL_INCLUDE_DIR}
 set(SOURCES
     GLSLloader.cpp
     GameController.cpp
+    Parameters.cpp
     MemoryGame.cpp)
 
 # OUTPUT

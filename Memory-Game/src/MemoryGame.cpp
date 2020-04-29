@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include "GLSLloader.hpp"
 #include "GameController.hpp"
+#include "Parameters.hpp"
 
 using namespace glm;
 
@@ -16,11 +17,6 @@ void createVertexArray()
     GLuint vertexArrayID;
     glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
-}
-
-bool isInRange(int num, int min, int mx)
-{
-    return min <= num && num <= mx;
 }
 
 void printRound(int round)
@@ -39,27 +35,7 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    int numRows = 4, numColumns = 4;
-
-    switch(argc)
-    {
-        case 3:
-            numColumns = atoi(argv[2]);
-
-        case 2:
-            numRows = atoi(argv[1]);
-    }
-
-    if(!isInRange(numRows, 1, 12))
-        throw std::runtime_error("INCORRECT NUMBER OF ROWS, MINIMUM 1, MAXIMUM 12, GOT "
-                                 + std::to_string(numRows));
-
-    if(!isInRange(numColumns, 1, 12))
-        throw std::runtime_error("INCORRECT NUMBER OF COLUMNS, MINIMUM 1, MAXIMUM 12, GOT "
-                                 + std::to_string(numColumns));
-
-    if((numRows * numColumns) % 2 != 0)
-        throw std::runtime_error("ODD NUMBER OF CARDS");
+    parameters params(argc, argv);
 
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
@@ -87,8 +63,8 @@ int main(int argc, char * argv[])
 
     createVertexArray();
 
-    GameController ctrl(std::make_pair(numRows, numColumns));
-    int currentIndex = 0, round = 1, cardsLeft = numRows * numColumns;
+    GameController ctrl(params.rows(), params.columns());
+    int currentIndex = 0, round = 1, cardPairsLeft = ctrl.fields() / 2;
     std::pair<int, int> visibleIndices = std::make_pair(-1, -1);
 
     printRound(round);
@@ -101,7 +77,7 @@ int main(int argc, char * argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        if(cardsLeft > 0)
+        if(cardPairsLeft > 0)
         {
             glfwPollEvents();
 
@@ -127,11 +103,11 @@ int main(int argc, char * argv[])
                     {
                         ctrl.setVisible(visibleIndices.first);
                         ctrl.setVisible(visibleIndices.second);
-                        cardsLeft -= 2;
+                        --cardPairsLeft;
                         std::cout << "\tTRAFIONO!!!\n";
                     }
 
-                    if(cardsLeft == 0)
+                    if(cardPairsLeft == 0)
                         std::cout << "WYGRANA W " << round << " RUNDACH\n";
                     else
                     {
@@ -146,7 +122,7 @@ int main(int argc, char * argv[])
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    if(cardsLeft != 0)
+    if(cardPairsLeft > 0)
         std::cout << "PRZERWANO GRĘ\n\n";
 
     glfwTerminate();

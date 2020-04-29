@@ -42,20 +42,24 @@ enum class Sign : int
 
 class GameController
 {
-private:
-    const GLfloat vertexBufferData[42];
-    GLuint vertexBuffer;
-    std::pair<int, int> size;
-    std::vector<Colour> colours;
-    std::vector<Sign> signs;
-    std::vector<std::pair<int, int>> transforms;
-    std::vector<bool> visible;
-
 public:
-    explicit GameController(const std::pair<int, int> & size);
+    explicit GameController(int rows, int columns);
 
-    bool isVisible(int i);
-    void setVisible(int i);
+    int fields()
+    {
+        return fieldsCount;
+    }
+
+    bool isVisible(int i)
+    {
+        return visible[i];
+    }
+
+    void setVisible(int i)
+    {
+        visible[i] = true;
+    }
+
     void drawGame(GLuint pID, int currentIndex, const std::pair<int, int> & visibleIndices);
     Key checkKeyPress(GLFWwindow * window);
     void checkKeyRelease(GLFWwindow * window, Key key);
@@ -65,6 +69,15 @@ public:
 private:
     void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);
     void drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation);
+
+    const GLfloat vertexBufferData[42];
+    GLuint vertexBuffer;
+    int fieldsCount;
+    std::pair<int, int> size;
+    std::vector<Colour> colours;
+    std::vector<Sign> signs;
+    std::vector<std::pair<int, int>> transforms;
+    std::vector<bool> visible;
 };
 
 #endif
