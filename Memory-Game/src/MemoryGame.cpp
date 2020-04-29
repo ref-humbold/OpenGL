@@ -40,8 +40,6 @@ void glfwHints()
 int main(int argc, char * argv[])
 {
     int numRows = 4, numColumns = 4;
-    int round = 1, cur = 0, prev = -1;
-    bool check = false;
 
     switch(argc)
     {
@@ -90,8 +88,8 @@ int main(int argc, char * argv[])
     createVertexArray();
 
     GameController ctrl(std::make_pair(numRows, numColumns));
-    int cardsLeft = numRows * numColumns;
-    bool goToNext = false;
+    int currentIndex = 0, round = 1, cardsLeft = numRows * numColumns;
+    std::pair<int, int> visibleIndices = std::make_pair(-1, -1);
 
     printRound(round);
 
@@ -99,61 +97,51 @@ int main(int argc, char * argv[])
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-
-        ctrl.drawGame(programID, std::make_pair(prev, cur), (check || goToNext));
-
+        ctrl.drawGame(programID, currentIndex, visibleIndices);
         glfwSwapBuffers(window);
+        glfwPollEvents();
 
-        if(cardsLeft == 0)
-            glfwPollEvents();
-        else if(check)
-        {
-            if(ctrl.checkSame(prev, cur))
-            {
-                ctrl.setVisible(prev);
-                ctrl.setVisible(cur);
-                cardsLeft -= 2;
-                std::cout << "\tTRAFIONO!!!\n";
-            }
-
-            if(cardsLeft == 0)
-            {
-                std::cout << "WYGRANA W " << round << " RUNDACH\n";
-                goToNext = true;
-                continue;
-            }
-
-            round++;
-            check = false;
-            goToNext = true;
-            printRound(round);
-        }
-        else
+        if(cardsLeft > 0)
         {
             glfwPollEvents();
 
-            int keyCode = ctrl.checkKeyPress(window);
+            Key key = ctrl.checkKeyPress(window);
 
-            if(keyCode != -1)
+            if(key != Key::None)
             {
-                ctrl.checkKeyRelease(window, keyCode);
+                ctrl.checkKeyRelease(window, key);
 
-                if(goToNext)
+                if(visibleIndices.second > 0)
+                    visibleIndices = std::make_pair(-1, -1);
+            }
+
+            if(key == Key::Space && !ctrl.isVisible(currentIndex))
+            {
+                if(visibleIndices.first == -1)
+                    visibleIndices.first = currentIndex;
+                else if(visibleIndices.first != currentIndex)
                 {
-                    prev = -1;
-                    goToNext = false;
+                    visibleIndices.second = currentIndex;
+
+                    if(ctrl.checkSame(visibleIndices))
+                    {
+                        ctrl.setVisible(visibleIndices.first);
+                        ctrl.setVisible(visibleIndices.second);
+                        cardsLeft -= 2;
+                        std::cout << "\tTRAFIONO!!!\n";
+                    }
+
+                    if(cardsLeft == 0)
+                        std::cout << "WYGRANA W " << round << " RUNDACH\n";
+                    else
+                    {
+                        ++round;
+                        printRound(round);
+                    }
                 }
             }
-
-            if(keyCode == 0 && !ctrl.isVisible(cur))
-            {
-                if(prev == -1)
-                    prev = cur;
-                else if(prev != cur)
-                    check = true;
-            }
-            else if(keyCode > 0)
-                cur = ctrl.moveFrame(keyCode, cur);
+            else if(key != Key::None && key != Key::Space)
+                currentIndex = ctrl.moveFrame(key, currentIndex);
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);

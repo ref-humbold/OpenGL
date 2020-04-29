@@ -56,11 +56,11 @@ public:
 
     bool isVisible(int i);
     void setVisible(int i);
-    void drawGame(GLuint pID, const std::pair<int, int> & pos, bool isCurVisible);
-    int checkKeyPress(GLFWwindow * window);
-    void checkKeyRelease(GLFWwindow * window, int key);
-    int moveFrame(int key, int cur);
-    bool checkSame(int prev, int cur);
+    void drawGame(GLuint pID, int currentIndex, const std::pair<int, int> & visibleIndices);
+    Key checkKeyPress(GLFWwindow * window);
+    void checkKeyRelease(GLFWwindow * window, Key key);
+    int moveFrame(Key key, int currentIndex);
+    bool checkSame(const std::pair<int, int> & visibleIndices);
 
 private:
     void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);

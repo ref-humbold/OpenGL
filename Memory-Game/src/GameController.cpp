@@ -13,11 +13,9 @@ GameController::GameController(const std::pair<int, int> & size)
         },
       size{size}
 {
-    srand(time(nullptr));
-
     std::vector<bool> isSet(size.first * size.second, false);
-    int elemSet = 0;
 
+    srand(time(nullptr));
     visible.resize(size.first * size.second, false);
     colours.resize(size.first * size.second);
     signs.resize(size.first * size.second);
@@ -26,7 +24,7 @@ GameController::GameController(const std::pair<int, int> & size)
         for(float j = -size.second + 1; j <= size.second; j += 2)
             transforms.push_back(std::make_pair(i, j));
 
-    while(elemSet != (int)isSet.size())
+    for(size_t e = 0; e != isSet.size(); e += 2)
     {
         int i, j;
         Colour colour = static_cast<Colour>(rand() % 6);
@@ -46,7 +44,6 @@ GameController::GameController(const std::pair<int, int> & size)
         signs[j] = sign;
         isSet[i] = true;
         isSet[j] = true;
-        elemSet += 2;
     }
 
     glGenBuffers(1, &vertexBuffer);
@@ -64,16 +61,17 @@ void GameController::setVisible(int i)
     visible[i] = true;
 }
 
-void GameController::drawGame(GLuint pID, const std::pair<int, int> & pos, bool isCurVisible)
+void GameController::drawGame(GLuint pID, int currentIndex,
+                              const std::pair<int, int> & visibleIndices)
 {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-    drawCards(pID, Colour::Gray, transforms[pos.second], 4);
+    drawCards(pID, Colour::Gray, transforms[currentIndex], 4);
 
     for(int i = 0; i < size.first * size.second; i++)
-        if(visible[i] || i == pos.first || (isCurVisible && i == pos.second))
+        if(visible[i] || i == visibleIndices.first || i == visibleIndices.second)
         {
             drawCards(pID, colours[i], transforms[i], 0);
             drawSign(pID, signs[i], transforms[i]);
@@ -84,93 +82,65 @@ void GameController::drawGame(GLuint pID, const std::pair<int, int> & pos, bool 
     glDisableVertexAttribArray(0);
 }
 
-int GameController::checkKeyPress(GLFWwindow * window)
+Key GameController::checkKeyPress(GLFWwindow * window)
 {
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return 0;
+        return Key::Space;
     else if(glfwGetKey(window, GLFW_KEY_UP) == action)
-        return 1;
+        return Key::Up;
     else if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
-        return 2;
+        return Key::Down;
     else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
-        return 3;
+        return Key::Left;
     else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
-        return 4;
+        return Key::Right;
 
-    return -1;
+    return Key::None;
 }
 
-void GameController::checkKeyRelease(GLFWwindow * window, int key)
+void GameController::checkKeyRelease(GLFWwindow * window, Key key)
 {
-    int action = GLFW_RELEASE;
+    if(key != Key::None)
+        do
+            glfwPollEvents();
+        while(glfwGetKey(window, static_cast<int>(key)) != GLFW_RELEASE);
+}
+
+int GameController::moveFrame(Key key, int currentIndex)
+{
+    int row = currentIndex / size.second, column = currentIndex % size.second;
 
     switch(key)
     {
-        case 0:
-            while(glfwGetKey(window, GLFW_KEY_SPACE) != action)
-                glfwPollEvents();
-
+        case Key::Up:
+            currentIndex = (row + 1) % size.first * size.second + column;
             break;
 
-        case 1:
-            while(glfwGetKey(window, GLFW_KEY_UP) != action)
-                glfwPollEvents();
-
+        case Key::Down:
+            currentIndex = (row - 1 + size.first) % size.first * size.second + column;
             break;
 
-        case 2:
-            while(glfwGetKey(window, GLFW_KEY_DOWN) != action)
-                glfwPollEvents();
-
+        case Key::Left:
+            currentIndex = row * size.second + (column - 1 + size.second) % size.second;
             break;
 
-        case 3:
-            while(glfwGetKey(window, GLFW_KEY_LEFT) != action)
-                glfwPollEvents();
-
+        case Key::Right:
+            currentIndex = row * size.second + (column + 1) % size.second;
             break;
 
-        case 4:
-            while(glfwGetKey(window, GLFW_KEY_RIGHT) != action)
-                glfwPollEvents();
-
+        default:
             break;
     }
 
-    return;
+    return currentIndex;
 }
 
-int GameController::moveFrame(int key, int cur)
+bool GameController::checkSame(const std::pair<int, int> & visibleIndices)
 {
-    int rw = cur / size.second, cl = cur % size.second;
-
-    switch(key)
-    {
-        case 1:
-            cur = (rw + 1) % size.first * size.second + cl;
-            break;
-
-        case 2:
-            cur = (rw - 1 + size.first) % size.first * size.second + cl;
-            break;
-
-        case 3:
-            cur = rw * size.second + (cl - 1 + size.second) % size.second;
-            break;
-
-        case 4:
-            cur = rw * size.second + (cl + 1) % size.second;
-            break;
-    }
-
-    return cur;
-}
-
-bool GameController::checkSame(int prev, int cur)
-{
-    return colours[prev] == colours[cur] && signs[prev] == signs[cur];
+    return colours[visibleIndices.first] == colours[visibleIndices.second]
+           && signs[visibleIndices.first] == signs[visibleIndices.second];
 }
 
 void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation,
