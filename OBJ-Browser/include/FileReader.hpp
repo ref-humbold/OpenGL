@@ -3,8 +3,8 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "GraphicObject.hpp"
@@ -17,6 +17,6 @@ std::vector<std::string> split(const std::string & str, const std::string & deli
 
 std::vector<GLuint> parse(const std::string & str, const std::string & delim);
 
-void readOBJ(GraphicObject * grobj, const char * filename);
+void readOBJ(GraphicObject & grobj, const char * filename);
 
 #endif

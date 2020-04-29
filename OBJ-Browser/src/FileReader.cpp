@@ -47,7 +47,7 @@ std::vector<GLuint> parse(const std::string & str, const std::string & delim)
     return parsed;
 }
 
-void readOBJ(GraphicObject * grobj, const char * filename)
+void readOBJ(GraphicObject & object, const char * filename)
 {
     FILE * file = fopen(filename, "r");
 
@@ -153,9 +153,9 @@ void readOBJ(GraphicObject * grobj, const char * filename)
     for(auto ix : normIndices)
         normals.push_back(normRead[ix]);
 
-    grobj->setVertexBuffer(vertices);
-    grobj->setTextureBuffer(uvs);
-    grobj->setNormalBuffer(normals);
+    object.setVertexBuffer(vertices);
+    object.setTextureBuffer(uvs);
+    object.setNormalBuffer(normals);
 
     fclose(file);
 }

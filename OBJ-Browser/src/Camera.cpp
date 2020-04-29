@@ -1,8 +1,8 @@
 #include "Camera.hpp"
 
-void Camera::drawObject(GLuint pID, GraphicObject * grobj)
+void Camera::drawObject(GLuint pID, GraphicObject & object)
 {
-    grobj->draw(pID, view, proj);
+    object.draw(pID, view, proj);
 }
 
 void Camera::viewScale(GLfloat zoom)
