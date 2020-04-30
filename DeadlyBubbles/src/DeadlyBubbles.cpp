@@ -39,7 +39,7 @@ int main()
 
     glfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "Mortal Bubbles", nullptr, nullptr);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "Deadly Bubbles", nullptr, nullptr);
 
     if(window == nullptr)
     {
