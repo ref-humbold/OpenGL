@@ -1,6 +1,6 @@
 #include <cstdlib>
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <iostream>
@@ -89,18 +89,10 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    if(argc <= 1)
-        throw std::runtime_error("No directory with shaders specified");
-
     GLuint areaProgramID, earthProgramID;
-    std::string glsl_dir = argv[1];
 
-    std::tie(areaProgramID, earthProgramID) =
-        loadShaders(glsl_dir + "/VertexShaderArea.glsl", glsl_dir + "/VertexShaderEarth.glsl",
-                    glsl_dir + "/FragmentShader.glsl");
-
+    std::tie(areaProgramID, earthProgramID) = loadShaders();
     createVertexArray();
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 

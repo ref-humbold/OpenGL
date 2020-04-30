@@ -3,11 +3,11 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <algorithm>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -16,14 +16,13 @@
 
 using namespace glm;
 
-void compileShader(GLuint shaderID, const std::string & shaderCode);
+GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
+                     const std::string & shaderName);
 
 GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
 
-GLuint prepareShader(const std::string & filePath, GLenum shaderType);
+std::string readShader(const std::string & filePath);
 
-std::tuple<GLuint, GLuint> loadShaders(const std::string & areaVertexFilePath,
-                                       const std::string & earthVertexFilePath,
-                                       const std::string & fragmentFilePath);
+std::tuple<GLuint, GLuint> loadShaders();
 
 #endif
