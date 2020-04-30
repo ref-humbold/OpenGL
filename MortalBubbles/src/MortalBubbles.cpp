@@ -32,7 +32,7 @@ void glfwHints()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-int main(int argc, char * argv[])
+int main()
 {
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
@@ -57,19 +57,15 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::string glsl_dir = argc == 2 ? argv[1] : ".";
-    GLuint programID =
-        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
+    GLuint programID = loadShaders();
 
     createVertexArray();
-
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
     srand(time(nullptr));
 
     GameController * ctrl = new GameController(window);
