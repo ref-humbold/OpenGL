@@ -28,23 +28,23 @@ vec3 Camera::getMousePos(GLFWwindow * window)
     glfwGetCursorPos(window, &x, &y);
 
     vec3 res = vec3(2.0f * x / windowW - 1.0f, -(2.0f * y / windowH - 1.0f), 0.0f);
-    GLfloat ln = res[0] * res[0] + res[1] * res[1];
+    GLfloat length = res[0] * res[0] + res[1] * res[1];
 
-    if(ln <= 1.0f)
-        res[2] = sqrt(1.0f - ln);
+    if(length <= 1.0f)
+        res[2] = sqrt(1.0f - length);
 
     return res;
 }
 
-std::vector<bool> Camera::checkKeyPress(GLFWwindow * window, std::vector<int> & keys)
+std::vector<Key> Camera::checkKeyPress(GLFWwindow * window, const std::vector<Key> & keys)
 {
-    std::vector<bool> result(keys.size());
+    std::vector<Key> pressed;
+    auto was_pressed = [=](Key k) -> bool {
+        return glfwGetKey(window, static_cast<int>(k)) == GLFW_PRESS;
+    };
 
-    auto pressed = [=](int k) -> bool { return glfwGetKey(window, k) == GLFW_PRESS; };
-
-    std::transform(keys.begin(), keys.end(), result.begin(), pressed);
-
-    return result;
+    std::copy_if(keys.begin(), keys.end(), std::back_inserter(pressed), was_pressed);
+    return pressed;
 }
 
 bool Camera::checkMouseAction(GLFWwindow * window, int action)

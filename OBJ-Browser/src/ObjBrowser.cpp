@@ -24,9 +24,7 @@ bool vecDifferent(vec3 v1, vec3 v2)
 
 GraphicObject prepareGraphic(const char * filename)
 {
-    GraphicObject object;
-
-    readOBJ(object, filename);
+    GraphicObject object = readOBJ(filename);
     object.createBuffers();
 
     return object;
@@ -137,7 +135,7 @@ int main(int argc, char * argv[])
         objects.push_back(prepareGraphic(argv[i]));
     }
 
-    std::vector<int> keys = {GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_Z, GLFW_KEY_X};
+    std::vector<Key> keys = {Key::ItemLeft, Key::ItemRight, Key::ZoomIn, Key::ZoomOut};
     Camera camera(window);
     auto objIter = objects.begin();
     int iterationClicked = 0;
@@ -154,50 +152,45 @@ int main(int argc, char * argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::vector<bool> pressed = camera.checkKeyPress(window, keys);
-
-        for(unsigned int i = 0; i < pressed.size(); ++i)
-        {
-            if(pressed[i])
-                switch(keys[i])
-                {
-                    case GLFW_KEY_LEFT:
-                        if(objIter != objects.begin())
+        for(Key k : camera.checkKeyPress(window, keys))
+            switch(k)
+            {
+                case Key::ItemLeft:
+                    if(objIter != objects.begin())
+                    {
+                        if(iterationClicked >= 3)
                         {
-                            if(iterationClicked >= 3)
-                            {
-                                iterationClicked = 0;
-                                --objIter;
-                            }
-                            else
-                                ++iterationClicked;
+                            iterationClicked = 0;
+                            --objIter;
                         }
+                        else
+                            ++iterationClicked;
+                    }
 
-                        break;
+                    break;
 
-                    case GLFW_KEY_RIGHT:
-                        if(objIter != objects.end() - 1)
+                case Key::ItemRight:
+                    if(objIter != objects.end() - 1)
+                    {
+                        if(iterationClicked >= 3)
                         {
-                            if(iterationClicked >= 3)
-                            {
-                                iterationClicked = 0;
-                                ++objIter;
-                            }
-                            else
-                                ++iterationClicked;
+                            iterationClicked = 0;
+                            ++objIter;
                         }
+                        else
+                            ++iterationClicked;
+                    }
 
-                        break;
+                    break;
 
-                    case GLFW_KEY_Z:
-                        camera.viewScale(0.99f);
-                        break;
+                case Key::ZoomIn:
+                    camera.viewScale(0.99f);
+                    break;
 
-                    case GLFW_KEY_X:
-                        camera.viewScale(1.01f);
-                        break;
-                }
-        }
+                case Key::ZoomOut:
+                    camera.viewScale(1.01f);
+                    break;
+            }
 
         if(!mouseClicked && camera.checkMouseAction(window, GLFW_PRESS))
         {

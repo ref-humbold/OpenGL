@@ -1,6 +1,11 @@
 #include "FileReader.hpp"
+#include <cstdio>
 #include <exception>
+#include <iostream>
 #include <stdexcept>
+#include <algorithm>
+#include <string>
+#include <vector>
 
 vec3 normalVec(vec3 vt1, vec3 vt2, vec3 vt3)
 {
@@ -12,7 +17,7 @@ vec3 normalVec(vec3 vt1, vec3 vt2, vec3 vt3)
 
 std::vector<std::string> split(const std::string & str, const std::string & delim)
 {
-    std::vector<std::string> splitted;
+    std::vector<std::string> splitParts;
     size_t beginPos = 0;
 
     while(beginPos != std::string::npos)
@@ -21,34 +26,44 @@ std::vector<std::string> split(const std::string & str, const std::string & deli
 
         if(endPos != std::string::npos)
         {
-            splitted.push_back(str.substr(beginPos, endPos - beginPos));
+            splitParts.push_back(str.substr(beginPos, endPos - beginPos));
             beginPos = endPos + delim.size();
         }
         else
         {
-            splitted.push_back(str.substr(beginPos));
+            splitParts.push_back(str.substr(beginPos));
             beginPos = endPos;
         }
     }
 
-    return splitted;
+    return splitParts;
+}
+
+std::vector<std::string> splitNonEmpty(const std::string & str, const std::string & delim)
+{
+    std::vector<std::string> splitPartsNonEmpty;
+    std::vector<std::string> splitParts = split(str, delim);
+
+    std::copy_if(splitParts.begin(), splitParts.end(), std::back_inserter(splitPartsNonEmpty),
+                 [](const std::string & s) { return s.size() > 0; });
+
+    return splitPartsNonEmpty;
 }
 
 std::vector<GLuint> parse(const std::string & str, const std::string & delim)
 {
     std::vector<GLuint> parsed;
-    std::vector<std::string> splitted = split(str, delim);
+    std::vector<std::string> splitParts = split(str, delim);
 
-    parsed.resize(splitted.size());
-
-    std::transform(splitted.begin(), splitted.end(), parsed.begin(),
-                   [](std::string s) { return s == "" ? 0 : stoul(s); });
+    std::transform(splitParts.begin(), splitParts.end(), std::back_inserter(parsed),
+                   [](const std::string & s) { return s.size() == 0 ? 0 : stoul(s); });
 
     return parsed;
 }
 
-void readOBJ(GraphicObject & object, const char * filename)
+GraphicObject readOBJ(const char * filename)
 {
+    GraphicObject object;
     FILE * file = fopen(filename, "r");
 
     if(file == nullptr)
@@ -75,8 +90,10 @@ void readOBJ(GraphicObject & object, const char * filename)
         std::string sstr = std::string(str);
         int lastNL = sstr.find_last_of("\n");
         std::string trim_sstr = sstr.substr(0, lastNL);
+        std::vector<std::string> line = splitNonEmpty(trim_sstr, " ");
 
-        std::vector<std::string> line = split(trim_sstr, " ");
+        if(line.size() == 0)
+            continue;
 
         if(line[0] == "v")
         {
@@ -158,4 +175,5 @@ void readOBJ(GraphicObject & object, const char * filename)
     object.setNormalBuffer(normals);
 
     fclose(file);
+    return object;
 }
