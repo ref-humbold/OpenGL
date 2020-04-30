@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include "GLSLloader.hpp"
 #include "GameController.hpp"
+#include "Parameters.hpp"
 
 using namespace glm;
 
@@ -34,6 +35,8 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
+    parameters params(argc, argv);
+
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
@@ -68,7 +71,7 @@ int main(int argc, char * argv[])
     glDepthFunc(GL_LESS);
     srand(time(nullptr));
 
-    GameController ctrl(window);
+    GameController ctrl(window, params.training());
     std::vector<Key> keys = {Key::SwitchView, Key::ZoomIn,   Key::ZoomOut,
                              Key::MoveUp,     Key::MoveDown, Key::MoveFront,
                              Key::MoveBack,   Key::MoveLeft, Key::MoveRight};

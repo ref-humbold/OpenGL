@@ -11,12 +11,13 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
+    DeadlyBubbles.cpp
     GLSLloader.cpp
     GameAquarium.cpp
     GameBubble.cpp
     GamePlayer.cpp
     GameController.cpp
-    DeadlyBubbles.cpp)
+    Parameters.cpp)
 
 # OUTPUT
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")

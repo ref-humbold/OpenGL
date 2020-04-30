@@ -31,14 +31,14 @@ enum class Key : int
     MoveLeft = GLFW_KEY_A,  //backward X axis
     MoveUp = GLFW_KEY_E,  // forward Y axis
     MoveDown = GLFW_KEY_Z,  // backward Y axis
-    MoveBack = GLFW_KEY_W,  // forward Z axis
-    MoveFront = GLFW_KEY_X  // backward Z axis
+    MoveBack = GLFW_KEY_X,  // forward Z axis
+    MoveFront = GLFW_KEY_W  // backward Z axis
 };
 
 class GameController
 {
 public:
-    explicit GameController(GLFWwindow * window);
+    GameController(GLFWwindow * window, bool training);
 
     void drawGame(GLuint pID);
     void restart();
@@ -65,19 +65,13 @@ private:
     GameAquarium aqua;
     GamePlayer player;
     GameBubble bubble;
-
-    mat4 view;
-    mat4 proj;
-    vec3 cameraPos;
-    vec3 cameraDir;
+    mat4 view, proj;
+    vec3 cameraPos, cameraDir;
     std::map<Key, vec4> playerMoves;
-    bool viewInside;
-    GLfloat fov;
-    GLfloat persBegin;
-    GLfloat persStep;
+    bool viewInside, training;
+    GLfloat fov, persBegin, persStep;
     vec4 lightSource;
-    int windowWidth;
-    int windowHeight;
+    int windowWidth, windowHeight;
 };
 
 #endif

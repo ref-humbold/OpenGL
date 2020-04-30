@@ -2,11 +2,12 @@
 
 using namespace glm;
 
-GameController::GameController(GLFWwindow * window)
+GameController::GameController(GLFWwindow * window, bool training)
     : points{1.0},
       cameraPos{vec3(0.0f, 0.0f, 3.0f)},
       cameraDir{vec3(0.0f, 0.0f, 0.0f)},
       viewInside{false},
+      training{training},
       fov{PI_CONST / 4},
       persBegin{1.0f},
       persStep{4.0f}
@@ -132,16 +133,15 @@ bool GameController::checkEndRound()
 
 void GameController::deletePointedBubble(int ix)
 {
-    auto indexing = [=](std::tuple<GLfloat, vec3, vec3, int> b) { return std::get<3>(b) == ix; };
-
-    bubble.elements.remove_if(indexing);
+    bubble.elements.remove_if(
+            [=](std::tuple<GLfloat, vec3, vec3, int> b) { return std::get<3>(b) == ix; });
 }
 
 GLfloat GameController::moveBubbles(GLfloat delta, GLfloat counter, int freq)
 {
     bubble.move(delta, aqua.getSide());
 
-    if(counter >= 0.2f / freq)
+    if(!training && counter >= 0.2f / freq)
     {
         bubble.showUp(aqua.getSide());
         counter = 0.0f;

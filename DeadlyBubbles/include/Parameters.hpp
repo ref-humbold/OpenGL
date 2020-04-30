@@ -16,27 +16,20 @@ public:
 class parameters
 {
 public:
-    parameters(int argc, char * argv[]) : numRows{4}, numColumns{4}
+    parameters(int argc, char * argv[]) : trainingMode{false}
     {
         parse(argc, argv);
-        validate();
     }
 
-    int rows()
+    bool training()
     {
-        return numRows;
-    }
-
-    int columns()
-    {
-        return numColumns;
+        return trainingMode;
     }
 
 private:
     void parse(int argc, char * argv[]);
-    void validate();
 
-    int numRows, numColumns;
+    bool trainingMode;
 };
 
 #endif
