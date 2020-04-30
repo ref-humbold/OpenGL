@@ -2,6 +2,7 @@
 #include <exception>
 #include <iostream>
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -21,7 +22,7 @@ void createVertexArray()
 
 void printRound(int round)
 {
-    std::cout << "\t\tRUNDA " << round << "\n";
+    std::cout << "** Round " << round << "\n";
 }
 
 void glfwHints()
@@ -33,12 +34,10 @@ void glfwHints()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-int main(int argc, char * argv[])
+std::tuple<GLFWwindow *, GLuint> initialize()
 {
-    parameters params(argc, argv);
-
     if(!glfwInit())
-        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
+        throw std::runtime_error("Failed to initialize glfw");
 
     glfwHints();
 
@@ -47,14 +46,14 @@ int main(int argc, char * argv[])
     if(window == nullptr)
     {
         glfwTerminate();
-        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
+        throw std::runtime_error("Failed to open a new window");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
+        throw std::runtime_error("Failed to initialize glew");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -62,6 +61,16 @@ int main(int argc, char * argv[])
     GLuint programID = loadShaders();
 
     createVertexArray();
+    return std::make_tuple(window, programID);
+}
+
+int main(int argc, char * argv[])
+{
+    parameters params(argc, argv);
+    GLFWwindow * window;
+    GLuint programID;
+
+    std::tie(window, programID) = initialize();
 
     GameController ctrl(params.rows(), params.columns());
     int currentIndex = 0, round = 1, cardPairsLeft = ctrl.fields() / 2;
@@ -79,8 +88,6 @@ int main(int argc, char * argv[])
 
         if(cardPairsLeft > 0)
         {
-            glfwPollEvents();
-
             Key key = ctrl.checkKeyPress(window);
 
             if(key != Key::None)
@@ -104,11 +111,11 @@ int main(int argc, char * argv[])
                         ctrl.setVisible(visibleIndices.first);
                         ctrl.setVisible(visibleIndices.second);
                         --cardPairsLeft;
-                        std::cout << "\tTRAFIONO!!!\n";
+                        std::cout << "-- Matched! --\n";
                     }
 
                     if(cardPairsLeft == 0)
-                        std::cout << "WYGRANA W " << round << " RUNDACH\n";
+                        std::cout << "You won in " << round << " rounds\n";
                     else
                     {
                         ++round;
@@ -123,7 +130,7 @@ int main(int argc, char * argv[])
             && glfwWindowShouldClose(window) == 0);
 
     if(cardPairsLeft > 0)
-        std::cout << "PRZERWANO GRĘ\n\n";
+        std::cout << "Game was interrupted\n\n";
 
     glfwTerminate();
     return 0;

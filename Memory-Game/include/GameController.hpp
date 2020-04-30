@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <set>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -55,32 +56,34 @@ public:
 
     bool isVisible(int i)
     {
-        return visible[i];
+        return visible.find(i) != visible.end();
     }
 
     void setVisible(int i)
     {
-        visible[i] = true;
+        visible.emplace(i);
     }
 
-    void drawGame(GLuint pID, int currentIndex, const std::pair<int, int> & visibleIndices);
+    void restart();
+    void drawGame(GLuint programID, int currentIndex, const std::pair<int, int> & visibleIndices);
     Key checkKeyPress(GLFWwindow * window);
     void checkKeyRelease(GLFWwindow * window, Key key);
     int moveFrame(Key key, int currentIndex);
     bool checkSame(const std::pair<int, int> & visibleIndices);
 
 private:
-    void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);
-    void drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation);
+    void drawCards(GLuint programID, Colour colour, std::pair<int, int> transformation,
+                   int frameOffset);
+    void drawSign(GLuint programID, Sign sign, std::pair<int, int> transformation);
 
     const int coloursCount = 8, signsCount = 4;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
     int fieldsCount;
     std::pair<int, int> size;
-    std::map<int, std::pair<Colour, Sign>> cards;
-    std::vector<bool> visible;
     std::vector<std::pair<int, int>> transforms;
+    std::map<int, std::pair<Colour, Sign>> cards;
+    std::set<int> visible;
 };
 
 #endif

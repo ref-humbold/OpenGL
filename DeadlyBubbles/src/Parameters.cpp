@@ -1,4 +1,5 @@
 #include "Parameters.hpp"
+#include <string>
 #include <unistd.h>
 
 using namespace std::string_literals;
