@@ -13,16 +13,37 @@
 
 using namespace glm;
 
+struct GameState
+{
+    explicit GameState(const GameController & ctrl) : cardsCount{ctrl.fieldsCount}
+    {
+        restart();
+    }
+
+    void restart()
+    {
+        currentIndex = 0;
+        round = 1;
+        cardPairsLeft = cardsCount / 2;
+        visibleIndices = std::make_pair(-1, -1);
+        std::cout << "\n## NEW GAME ##\n";
+    }
+
+    void printRound()
+    {
+        std::cout << "** Round " << round << "\n";
+    }
+
+    const int cardsCount;
+    int currentIndex, round, cardPairsLeft;
+    std::pair<int, int> visibleIndices;
+};
+
 void createVertexArray()
 {
     GLuint vertexArrayID;
     glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
-}
-
-void printRound(int round)
-{
-    std::cout << "** Round " << round << "\n";
 }
 
 void glfwHints()
@@ -73,20 +94,19 @@ int main(int argc, char * argv[])
     std::tie(window, programID) = initialize();
 
     GameController ctrl(params.rows(), params.columns());
-    int currentIndex = 0, round = 1, cardPairsLeft = ctrl.fields() / 2;
-    std::pair<int, int> visibleIndices = std::make_pair(-1, -1);
+    GameState state(ctrl);
 
-    printRound(round);
+    state.printRound();
 
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-        ctrl.drawGame(programID, currentIndex, visibleIndices);
+        ctrl.drawGame(programID, state.currentIndex, state.visibleIndices);
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        if(cardPairsLeft > 0)
+        if(state.cardPairsLeft > 0)
         {
             Key key = ctrl.checkKeyPress(window);
 
@@ -94,42 +114,53 @@ int main(int argc, char * argv[])
             {
                 ctrl.checkKeyRelease(window, key);
 
-                if(visibleIndices.second > 0)
-                    visibleIndices = std::make_pair(-1, -1);
+                if(state.visibleIndices.second >= 0)
+                    state.visibleIndices = std::make_pair(-1, -1);
             }
 
-            if(key == Key::Select && !ctrl.isVisible(currentIndex))
+            if(key == Key::Select && !ctrl.isVisible(state.currentIndex))
             {
-                if(visibleIndices.first == -1)
-                    visibleIndices.first = currentIndex;
-                else if(visibleIndices.first != currentIndex)
+                if(state.visibleIndices.first == -1)
+                    state.visibleIndices.first = state.currentIndex;
+                else if(state.visibleIndices.first != state.currentIndex)
                 {
-                    visibleIndices.second = currentIndex;
+                    state.visibleIndices.second = state.currentIndex;
 
-                    if(ctrl.checkSame(visibleIndices))
+                    if(ctrl.checkSame(state.visibleIndices))
                     {
-                        ctrl.setVisible(visibleIndices.first);
-                        ctrl.setVisible(visibleIndices.second);
-                        --cardPairsLeft;
+                        ctrl.setVisible(state.visibleIndices.first);
+                        ctrl.setVisible(state.visibleIndices.second);
+                        --state.cardPairsLeft;
                         std::cout << "-- Matched! --\n";
                     }
 
-                    if(cardPairsLeft == 0)
-                        std::cout << "You won in " << round << " rounds\n";
+                    if(state.cardPairsLeft == 0)
+                        std::cout << "You won in " << state.round << " rounds\n";
                     else
                     {
-                        ++round;
-                        printRound(round);
+                        ++state.round;
+                        state.printRound();
                     }
                 }
             }
             else if(key != Key::None && key != Key::Select)
-                currentIndex = ctrl.moveFrame(key, currentIndex);
+                state.currentIndex = ctrl.moveFrame(key, state.currentIndex);
+        }
+        else
+        {
+            Key key = ctrl.checkKeyPress(window);
+
+            if(key == Key::Select)
+            {
+                ctrl.checkKeyRelease(window, key);
+                ctrl.restart();
+                state.restart();
+            }
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    if(cardPairsLeft > 0)
+    if(state.cardPairsLeft > 0)
         std::cout << "Game was interrupted\n\n";
 
     glfwTerminate();

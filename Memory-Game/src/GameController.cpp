@@ -4,16 +4,16 @@
 using namespace glm;
 
 GameController::GameController(int rows, int columns)
-    : vertexBufferData{
-            -0.9f, -0.9f,  0.9f, -0.9f, 0.9f,  0.9f, -0.9f,  0.9f,  // card
-            -1.0f, -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f,  1.0f,  // frame
-             0.0f,  0.7f,  0.0f, -0.7f,  // pipe
-            -0.7f, -0.7f,  0.7f,  0.7f, 0.7f, -0.7f, -0.7f,  0.7f,  // cross
-             0.0f,  0.7f, -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
-            -0.7f,  0.0f,  0.0f,  0.7f, 0.7f,  0.0f,  0.0f, -0.7f  // square
-        },
-      fieldsCount{rows * columns},
-      size{std::make_pair(rows, columns)}
+    : fieldsCount{rows * columns},
+      size{std::make_pair(rows, columns)},
+      vertexBufferData{
+              -0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,  // card
+              -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,  // frame
+              0.0f,  0.7f,  0.0f,  -0.7f,  // pipe
+              -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,  // cross
+              0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
+              -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
+      }
 {
     for(float i = -rows + 1; i <= rows; i += 2)
         for(float j = -columns + 1; j <= columns; j += 2)

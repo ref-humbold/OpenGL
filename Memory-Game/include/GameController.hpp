@@ -49,11 +49,6 @@ class GameController
 public:
     GameController(int rows, int columns);
 
-    int fields()
-    {
-        return fieldsCount;
-    }
-
     bool isVisible(int i)
     {
         return visible.find(i) != visible.end();
@@ -71,16 +66,17 @@ public:
     int moveFrame(Key key, int currentIndex);
     bool checkSame(const std::pair<int, int> & visibleIndices);
 
+    const int fieldsCount;
+
 private:
     void drawCards(GLuint programID, Colour colour, std::pair<int, int> transformation,
                    int frameOffset);
     void drawSign(GLuint programID, Sign sign, std::pair<int, int> transformation);
 
     const int coloursCount = 8, signsCount = 4;
+    const std::pair<int, int> size;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
-    int fieldsCount;
-    std::pair<int, int> size;
     std::vector<std::pair<int, int>> transforms;
     std::map<int, std::pair<Colour, Sign>> cards;
     std::set<int> visible;
