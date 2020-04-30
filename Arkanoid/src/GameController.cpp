@@ -2,56 +2,37 @@
 
 using namespace glm;
 
-void GameController::drawGame(GLuint pID, GameBoard * board, GameBall * ball, GameBrick * brick,
-                              GamePaddle * paddle)
+void GameController::drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
+                              GamePaddle & paddle)
 {
-    board->drawBackground(pID);
-    ball->drawBall(pID);
-    ball->drawCross(pID);
-    brick->drawAllBricks(pID);
-    paddle->drawPaddle(pID);
-    board->drawBorderTriangles(pID);
-    board->countNormalVectors();
+    board.drawBackground(pID);
+    ball.drawBall(pID);
+    ball.drawCross(pID);
+    brick.drawAllBricks(pID);
+    paddle.drawPaddle(pID);
+    board.drawBorderTriangles(pID);
+    board.countNormalVectors();
 }
 
-int GameController::checkKeyPress(GLFWwindow * window)
+Key GameController::checkKeyPress(GLFWwindow * window)
 {
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return 0;
+        return Key::StartPause;
     else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
-        return 1;
+        return Key::MoveLeft;
     else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
-        return 2;
+        return Key::MoveRight;
 
-    return -1;
+    return Key::None;
 }
 
-void GameController::checkKeyRelease(GLFWwindow * window, int key)
+void GameController::checkKeyRelease(GLFWwindow * window, Key key)
 {
-    int action = GLFW_RELEASE;
-
-    switch(key)
-    {
-        case 0:
-            while(glfwGetKey(window, GLFW_KEY_SPACE) != action)
-                glfwPollEvents();
-
-            break;
-
-        case 1:
-            while(glfwGetKey(window, GLFW_KEY_LEFT) != action)
-                glfwPollEvents();
-
-            break;
-
-        case 2:
-            while(glfwGetKey(window, GLFW_KEY_RIGHT) != action)
-                glfwPollEvents();
-
-            break;
-    }
-
-    return;
+    if(key != Key::None)
+        do
+        {
+            glfwPollEvents();
+        } while(glfwGetKey(window, static_cast<int>(key)) != GLFW_RELEASE);
 }

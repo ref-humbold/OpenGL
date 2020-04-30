@@ -5,8 +5,8 @@
 
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,6 +17,14 @@
 #include "GraphicObject.hpp"
 
 using namespace glm;
+
+enum class Key : int
+{
+    ZoomIn = GLFW_KEY_Z,
+    ZoomOut = GLFW_KEY_X,
+    ItemLeft = GLFW_KEY_LEFT,
+    ItemRight = GLFW_KEY_RIGHT
+};
 
 class Camera
 {
@@ -39,11 +47,11 @@ public:
         proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
     }
 
-    void drawObject(GLuint pID, GraphicObject * grobj);
+    void drawObject(GLuint pID, GraphicObject & grobj);
     void viewScale(GLfloat zoom);
     void viewRotate(GLfloat angleRad, vec3 axis);
     vec3 getMousePos(GLFWwindow * window);
-    std::vector<bool> checkKeyPress(GLFWwindow * window, std::vector<int> & keys);
+    std::vector<Key> checkKeyPress(GLFWwindow * window, const std::vector<Key> & keys);
     bool checkMouseAction(GLFWwindow * window, int action);
 };
 

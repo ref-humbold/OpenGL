@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,31 +11,76 @@
 
 using namespace glm;
 
+enum class Key : int
+{
+    None = GLFW_KEY_UNKNOWN,
+    Select = GLFW_KEY_SPACE,
+    MoveUp = GLFW_KEY_UP,
+    MoveDown = GLFW_KEY_DOWN,
+    MoveLeft = GLFW_KEY_LEFT,
+    MoveRight = GLFW_KEY_RIGHT
+};
+
+enum class Colour : int
+{
+    Red = 0,
+    Green = 1,
+    Blue = 2,
+    Cyan = 3,
+    Magenta = 4,
+    Yellow = 5,
+    Orange = 6,
+    Purple = 7,
+    Black = 10,
+    Gray = 11
+};
+
+enum class Sign : int
+{
+    Pipe = 0,
+    Cross = 1,
+    Triangle = 2,
+    Square = 3
+};
+
 class GameController
 {
-private:
-    const GLfloat vbData[34];
-    GLuint vertexBuffer;
-    std::pair<int, int> size;
-    std::vector<int> colorCodes;
-    std::vector<int> signCodes;
-    std::vector<std::pair<int, int>> transforms;
-    std::vector<bool> visible;
-
 public:
-    GameController(const std::pair<int, int> & size, int numColors, int numSigns);
+    GameController(int rows, int columns);
 
-    bool isVisible(int i);
-    void setVisible(int i);
-    void drawGame(GLuint pID, const std::pair<int, int> & pos, bool isCurVisible);
-    int checkKeyPress(GLFWwindow * window);
-    void checkKeyRelease(GLFWwindow * window, int key);
-    int moveFrame(int key, int cur);
-    bool checkSame(int prev, int cur);
+    int fields()
+    {
+        return fieldsCount;
+    }
+
+    bool isVisible(int i)
+    {
+        return visible[i];
+    }
+
+    void setVisible(int i)
+    {
+        visible[i] = true;
+    }
+
+    void drawGame(GLuint pID, int currentIndex, const std::pair<int, int> & visibleIndices);
+    Key checkKeyPress(GLFWwindow * window);
+    void checkKeyRelease(GLFWwindow * window, Key key);
+    int moveFrame(Key key, int currentIndex);
+    bool checkSame(const std::pair<int, int> & visibleIndices);
 
 private:
-    void drawSquares(GLuint pID, int col, std::pair<int, int> tr, int frameOffset);
-    void drawSign(GLuint pID, int i);
+    void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);
+    void drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation);
+
+    const int coloursCount = 8, signsCount = 4;
+    const GLfloat vertexBufferData[42];
+    GLuint vertexBuffer;
+    int fieldsCount;
+    std::pair<int, int> size;
+    std::map<int, std::pair<Colour, Sign>> cards;
+    std::vector<bool> visible;
+    std::vector<std::pair<int, int>> transforms;
 };
 
 #endif

@@ -17,20 +17,6 @@ void loadBuffer(GLuint vb, GLuint cb);
 
 class GameBoard
 {
-private:
-    const GLfloat vbDataHexagon[16];
-    const GLfloat cbDataHexagon[24];
-    const GLfloat vbDataTriangle[6];
-    const GLfloat cbDataTriangle[9];
-    GLuint vertexBufferHexagon;
-    GLuint colorBufferHexagon;
-    GLuint vertexBufferTriangle;
-    GLuint colorBufferTriangle;
-
-    mat2 sc;
-    mat2 rt;
-    vec2 tr;
-
 public:
     std::vector<vec2> normVecs;
 
@@ -42,22 +28,23 @@ public:
 
 private:
     void drawOneTriangle(GLuint pID);
+
+    const GLfloat vbDataHexagon[16];
+    const GLfloat cbDataHexagon[24];
+    const GLfloat vbDataTriangle[6];
+    const GLfloat cbDataTriangle[9];
+    GLuint vertexBufferHexagon;
+    GLuint colorBufferHexagon;
+    GLuint vertexBufferTriangle;
+    GLuint colorBufferTriangle;
+
+    mat2 scaleMatrix;
+    mat2 rotateMatrix;
+    vec2 transformVector;
 };
 
 class GameBrick
 {
-private:
-    const GLfloat vbDataRect[8];
-    GLfloat cbDataRect[12];
-    const GLfloat cbDataRectBorder[12];
-    GLuint vertexBufferRect;
-    GLuint colorBufferRect;
-    GLuint colorBufferRectBorder;
-
-    mat2 sc;
-    mat2 rt;
-    vec2 tr;
-
 public:
     std::vector<std::vector<bool>> isVisible;
     int bricksLeft;
@@ -69,21 +56,21 @@ public:
 private:
     void drawRect(GLuint pID, int col);
     void drawRectBorder(GLuint pID);
+
+    const GLfloat vbDataRect[8];
+    GLfloat cbDataRect[12];
+    const GLfloat cbDataRectBorder[12];
+    GLuint vertexBufferRect;
+    GLuint colorBufferRect;
+    GLuint colorBufferRectBorder;
+
+    mat2 scaleMatrix;
+    mat2 rotateMatrix;
+    vec2 transformVector;
 };
 
 class GamePaddle
 {
-private:
-    const GLfloat vbDataPaddle[20];
-    const GLfloat cbDataPaddle[30];
-    GLuint vertexBufferPaddle;
-    GLuint colorBufferPaddle;
-
-    mat2 sc;
-    mat2 rt;
-    vec2 tr;
-    GLfloat velocity;
-
 public:
     GamePaddle();
 
@@ -93,10 +80,35 @@ public:
     void moveRight(GLfloat delta);
     GLfloat getPosX();
     GLfloat getSurf();
+
+private:
+    const GLfloat vbDataPaddle[20];
+    const GLfloat cbDataPaddle[30];
+    GLuint vertexBufferPaddle;
+    GLuint colorBufferPaddle;
+
+    mat2 scaleMatrix;
+    mat2 rotateMatrix;
+    vec2 transformVector;
+    GLfloat velocity;
 };
 
 class GameBall
 {
+public:
+    GameBall();
+
+    void restart();
+    void drawBall(GLuint pID);
+    void drawCross(GLuint pID);
+    bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR);
+    GLfloat countDistance(vec2 pt, vec2 nl, vec2 pl);
+    bool checkOutside();
+    void checkCollisionBoard(GameBoard & board);
+    void checkCollisionPaddle(GamePaddle & paddle);
+    void checkCollisionBrick(GameBrick & brick);
+    void moveBall(GLfloat delta);
+
 private:
     const GLfloat vbDataBall[28];
     const GLfloat cbDataBall[42];
@@ -107,31 +119,17 @@ private:
     GLuint vertexBufferCross;
     GLuint colorBufferCross;
 
-    mat2 sc;
-    mat2 rt;
-    vec2 tr;
+    mat2 scaleMatrix;
+    mat2 rotateMatrix;
+    vec2 transformVector;
     vec2 velocity;
     vec2 vNorm;
     int angleMult;
     GLfloat radius;
     GLfloat separator;
-    GLfloat velDist;
+    GLfloat velocityDistance;
     bool startingShot;
     std::vector<std::vector<std::pair<bool, bool>>> collided;
-
-public:
-    GameBall();
-
-    void restart();
-    void drawBall(GLuint pID);
-    void drawCross(GLuint pID);
-    bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR);
-    GLfloat countDistance(vec2 pt, vec2 nl, vec2 pl);
-    bool checkOutside();
-    void checkCollisionBoard(GameBoard * board);
-    void checkCollisionPaddle(GamePaddle * paddle);
-    void checkCollisionBrick(GameBrick * brick);
-    void moveBall(GLfloat delta);
 };
 
 #endif

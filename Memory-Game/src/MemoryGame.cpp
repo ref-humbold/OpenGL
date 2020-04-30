@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include "GLSLloader.hpp"
 #include "GameController.hpp"
+#include "Parameters.hpp"
 
 using namespace glm;
 
@@ -16,11 +17,6 @@ void createVertexArray()
     GLuint vertexArrayID;
     glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
-}
-
-bool isInRange(int num, int min, int mx)
-{
-    return min <= num && num <= mx;
 }
 
 void printRound(int round)
@@ -39,47 +35,7 @@ void glfwHints()
 
 int main(int argc, char * argv[])
 {
-    int numRows = 4, numColumns = 4, numColours = 6, numSigns = 3;
-    int round = 1, cur = 0, prev = -1;
-    bool check = false;
-    std::string glsl_dir = ".";
-
-    switch(argc)
-    {
-        case 6:
-            numSigns = atoi(argv[5]);
-
-        case 5:
-            numColours = atoi(argv[4]);
-
-        case 4:
-            numColumns = atoi(argv[3]);
-
-        case 3:
-            numRows = atoi(argv[2]);
-
-        case 2:
-            glsl_dir = argv[1];
-    }
-
-    if(!isInRange(numRows, 1, 12))
-        throw std::runtime_error("INCORRECT NUMBER OF ROWS, MINIMUM 1, MAXIMUM 12, GOT "
-                                 + std::to_string(numRows));
-
-    if(!isInRange(numColumns, 1, 12))
-        throw std::runtime_error("INCORRECT NUMBER OF COLUMNS, MINIMUM 1, MAXIMUM 12, GOT "
-                                 + std::to_string(numColumns));
-
-    if(!isInRange(numColours, 2, 6))
-        throw std::runtime_error("INCORRECT NUMBER OF CARD COLOURS, MINIMUM 2, MAXIMUM 6, GOT "
-                                 + std::to_string(numColours));
-
-    if(!isInRange(numSigns, 1, 3))
-        throw std::runtime_error("INCORRECT NUMBER OF CARD SIGNS, MINIMUM 1, MAXIMUM 3, GOT "
-                                 + std::to_string(numSigns));
-
-    if((numRows * numColumns) % 2 != 0)
-        throw std::runtime_error("ODD NUMBER OF CARDS");
+    parameters params(argc, argv);
 
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
@@ -103,15 +59,13 @@ int main(int argc, char * argv[])
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    GLuint programID =
-        loadShaders(glsl_dir + "/VertexShader.glsl", glsl_dir + "/FragmentShader.glsl");
+    GLuint programID = loadShaders();
 
     createVertexArray();
 
-    GameController * ctrl =
-        new GameController(std::make_pair(numRows, numColumns), numColours, numSigns);
-    int cardsLeft = numRows * numColumns;
-    bool goToNext = false;
+    GameController ctrl(params.rows(), params.columns());
+    int currentIndex = 0, round = 1, cardPairsLeft = ctrl.fields() / 2;
+    std::pair<int, int> visibleIndices = std::make_pair(-1, -1);
 
     printRound(round);
 
@@ -119,70 +73,58 @@ int main(int argc, char * argv[])
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-
-        ctrl->drawGame(programID, std::make_pair(prev, cur), (check || goToNext));
-
+        ctrl.drawGame(programID, currentIndex, visibleIndices);
         glfwSwapBuffers(window);
+        glfwPollEvents();
 
-        if(cardsLeft == 0)
+        if(cardPairsLeft > 0)
+        {
             glfwPollEvents();
-        else if(check)
-        {
-            if(ctrl->checkSame(prev, cur))
+
+            Key key = ctrl.checkKeyPress(window);
+
+            if(key != Key::None)
             {
-                ctrl->setVisible(prev);
-                ctrl->setVisible(cur);
-                cardsLeft -= 2;
-                std::cout << "\tTRAFIONO!!!\n";
+                ctrl.checkKeyRelease(window, key);
+
+                if(visibleIndices.second > 0)
+                    visibleIndices = std::make_pair(-1, -1);
             }
 
-            if(cardsLeft == 0)
+            if(key == Key::Select && !ctrl.isVisible(currentIndex))
             {
-                std::cout << "WYGRANA W " << round << " RUNDACH\n";
-                goToNext = true;
-                continue;
-            }
-
-            round++;
-            check = false;
-            goToNext = true;
-            printRound(round);
-        }
-        else
-        {
-            glfwWaitEvents();
-
-            int keyCode = ctrl->checkKeyPress(window);
-
-            if(keyCode != -1)
-            {
-                ctrl->checkKeyRelease(window, keyCode);
-
-                if(goToNext)
+                if(visibleIndices.first == -1)
+                    visibleIndices.first = currentIndex;
+                else if(visibleIndices.first != currentIndex)
                 {
-                    prev = -1;
-                    goToNext = false;
+                    visibleIndices.second = currentIndex;
+
+                    if(ctrl.checkSame(visibleIndices))
+                    {
+                        ctrl.setVisible(visibleIndices.first);
+                        ctrl.setVisible(visibleIndices.second);
+                        --cardPairsLeft;
+                        std::cout << "\tTRAFIONO!!!\n";
+                    }
+
+                    if(cardPairsLeft == 0)
+                        std::cout << "WYGRANA W " << round << " RUNDACH\n";
+                    else
+                    {
+                        ++round;
+                        printRound(round);
+                    }
                 }
             }
-
-            if(keyCode == 0 && !ctrl->isVisible(cur))
-            {
-                if(prev == -1)
-                    prev = cur;
-                else if(prev != cur)
-                    check = true;
-            }
-            else if(keyCode > 0)
-                cur = ctrl->moveFrame(keyCode, cur);
+            else if(key != Key::None && key != Key::Select)
+                currentIndex = ctrl.moveFrame(key, currentIndex);
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    if(cardsLeft != 0)
+    if(cardPairsLeft > 0)
         std::cout << "PRZERWANO GRĘ\n\n";
 
     glfwTerminate();
-    delete ctrl;
-
     return 0;
 }

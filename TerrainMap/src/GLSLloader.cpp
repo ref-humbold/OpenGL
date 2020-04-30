@@ -1,12 +1,24 @@
 #include "GLSLloader.hpp"
 
+#define READ_FROM_HEADER true
+
+#if READ_FROM_HEADER
+#include "shaders/AreaVertexShader_glsl.hpp"
+#include "shaders/EarthVertexShader_glsl.hpp"
+#include "shaders/FragmentShader_glsl.hpp"
+#endif
+
 using namespace glm;
 using namespace std::string_literals;
 
-void compileShader(GLuint shaderID, const std::string & shaderCode)
+GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
+                     const std::string & shaderName)
 {
+    GLuint shaderID = glCreateShader(shaderType);
     GLint result = GL_FALSE;
     int infoLogLength;
+
+    std::cerr << ".::. Compiling shader : " << shaderName << "\n";
 
     // Compile shader
     const char * shaderCodePointer = shaderCode.c_str();
@@ -25,6 +37,8 @@ void compileShader(GLuint shaderID, const std::string & shaderCode)
         glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
         throw std::runtime_error(shaderErrorMessage);
     }
+
+    return shaderID;
 }
 
 GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
@@ -55,13 +69,15 @@ GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
     return programID;
 }
 
-GLuint prepareShader(const std::string & filePath, GLenum shaderType)
+std::string readShader(const std::string & filePath)
 {
     // Read the shader code from the file
     std::string shaderCode;
     std::ifstream shaderStream(filePath, std::ios::in);
 
-    if(shaderStream.is_open())
+    std::cerr << ".::. Reading shader : " << filePath << "\n";
+
+    if(!shaderStream.is_open())
         throw std::runtime_error("Impossible to open "s + filePath);
 
     std::string line = "";
@@ -70,23 +86,31 @@ GLuint prepareShader(const std::string & filePath, GLenum shaderType)
         shaderCode += "\n" + line;
 
     shaderStream.close();
-
-    GLuint shaderID = glCreateShader(shaderType);
-
-    std::cerr << ".::. Compiling shader : " << filePath << "\n";
-    compileShader(shaderID, shaderCode);
-
-    return shaderID;
+    return shaderCode;
 }
 
-std::tuple<GLuint, GLuint> loadShaders(const std::string & areaVertexFilePath,
-                                       const std::string & earthVertexFilePath,
-                                       const std::string & fragmentFilePath)
+std::tuple<GLuint, GLuint> loadShaders()
 {
+    // Read shaders
+#if READ_FROM_HEADER
+    std::string areaVertexShaderCode =
+            std::string(AreaVertexShader_glsl, AreaVertexShader_glsl_len);
+    std::string earthVertexShaderCode =
+            std::string(EarthVertexShader_glsl, EarthVertexShader_glsl_len);
+    std::string fragmentShaderCode = std::string(FragmentShader_glsl, FragmentShader_glsl_len);
+#else
+    std::string areaVertexShaderCode = readShader("../shaders/AreaVertexShader.glsl"s);
+    std::string earthVertexShaderCode = readShader("../shaders/EarthVertexShader.glsl"s);
+    std::string fragmentShaderCode = readShader("../shaders/FragmentShader.glsl"s);
+#endif
+
     // Create and compile shaders
-    GLuint areaVertexShaderID = prepareShader(areaVertexFilePath, GL_VERTEX_SHADER);
-    GLuint earthVertexShaderID = prepareShader(earthVertexFilePath, GL_VERTEX_SHADER);
-    GLuint fragmentShaderID = prepareShader(fragmentFilePath, GL_FRAGMENT_SHADER);
+    GLuint areaVertexShaderID =
+            compileShader(GL_VERTEX_SHADER, areaVertexShaderCode, "AreaVertexShader.glsl"s);
+    GLuint earthVertexShaderID =
+            compileShader(GL_VERTEX_SHADER, earthVertexShaderCode, "EarthVertexShader.glsl"s);
+    GLuint fragmentShaderID =
+            compileShader(GL_FRAGMENT_SHADER, fragmentShaderCode, "FragmentShader.glsl"s);
 
     GLuint areaProgramID = linkProgram(areaVertexShaderID, fragmentShaderID);
     GLuint earthProgramID = linkProgram(earthVertexShaderID, fragmentShaderID);

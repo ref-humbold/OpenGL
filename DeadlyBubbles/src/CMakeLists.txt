@@ -16,12 +16,12 @@ set(SOURCES
     GameBubble.cpp
     GamePlayer.cpp
     GameController.cpp
-    MortalBubbles.cpp)
+    DeadlyBubbles.cpp)
 
 # OUTPUT
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(MortalBubbles ${SOURCES})
-target_link_libraries(MortalBubbles
+add_executable(DeadlyBubbles ${SOURCES})
+target_link_libraries(DeadlyBubbles
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}

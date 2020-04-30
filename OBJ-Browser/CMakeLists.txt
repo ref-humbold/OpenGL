@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(OBJ-Browser VERSION 1.0)
+project(OBJ-Browser VERSION 2.0)
 
 # PROPERTIES
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
