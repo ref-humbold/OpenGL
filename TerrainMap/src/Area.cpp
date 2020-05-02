@@ -97,7 +97,7 @@ GLfloat Area::countEarthPosZ(GLfloat longitude, GLfloat latitude)
 
 void Area::countCoefficients(const char * filename)
 {
-    auto digit = [](char c) { return +c - '0'; };
+    auto digit = [](char c) -> int { return +c - '0'; };
 
     char latdir = filename[0];
     char lngdir = filename[3];

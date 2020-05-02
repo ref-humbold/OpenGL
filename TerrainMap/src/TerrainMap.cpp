@@ -19,27 +19,6 @@
 using namespace glm;
 using namespace std::string_literals;
 
-std::vector<std::string> readConfig(const char * filename)
-{
-    std::vector<std::string> result;
-    FILE * file = fopen(filename, "r");
-
-    while(true)
-    {
-        char str[51];
-        int read = fscanf(file, "%50s", str);
-
-        if(read == EOF)
-            break;
-
-        result.push_back(std::string(str));
-    }
-
-    fclose(file);
-
-    return result;
-}
-
 void checkFile(const char * filename)
 {
     int length = strlen(filename);
@@ -100,25 +79,11 @@ int main(int argc, char * argv[])
     Detailing details;
     Earth earth;
     std::vector<Area> terrain;
-    int hgtBegin = 2;
 
-    if(argc <= hgtBegin)
+    if(argc <= 1)
         throw std::runtime_error("No HGT files specified");
 
-    if(strcmp(argv[hgtBegin], "config.txt") == 0)
-    {
-        std::vector<std::string> names = readConfig(argv[hgtBegin]);
-
-        for(auto str : names)
-        {
-            checkFile(str.c_str());
-            terrain.push_back(Area(str.c_str()));
-        }
-
-        ++hgtBegin;
-    }
-
-    for(int i = hgtBegin; i < argc; ++i)
+    for(int i = 1; i < argc; ++i)
     {
         checkFile(argv[i]);
         terrain.push_back(Area(argv[i]));
