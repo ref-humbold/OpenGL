@@ -2,6 +2,23 @@
 
 using namespace glm;
 
+Camera::Camera(GLFWwindow * window)
+    : dims{2},
+      sc{mat4(vec4(1.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f, 1.0f, 0.0f, 0.0f),
+              vec4(0.0f, 0.0f, 1.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f))},
+      distance{1.005f * RADIUS},
+      cameraCoeffs{vec2(0.0f, 0.0f)},
+      cameraMapPos{vec2(0.0f, 0.0f)},
+      cameraEarthPos{vec3(0.0f, 0.0f, distance)},
+      fov{PI_CONST / 3},
+      persBegin{0.0025f * RADIUS},
+      persLength{0.1f * RADIUS}
+{
+    glfwGetWindowSize(window, &windowW, &windowH);
+    view = lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f));
+    proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
+}
+
 int Camera::getDims()
 {
     return dims;
@@ -29,30 +46,30 @@ void Camera::changeDims()
     }
 }
 
-void Camera::drawEarth(GLuint pID, Earth * earth)
+void Camera::drawEarth(GLuint pID, Earth & earth)
 {
     mat4 cameraMat = proj * view;
 
-    earth->draw(pID, cameraMat);
+    earth.draw(pID, cameraMat);
 }
 
-void Camera::drawTerrain(GLuint pID, const std::vector<Area *> & areas, Detailing * details)
+void Camera::drawTerrain(GLuint pID, const std::vector<Area> & areas, Detailing & details)
 {
     mat4 cameraMat = dims == 2 ? sc * view : proj * view;
 
     for(auto ar : areas)
         if(areaInside(ar, cameraMat))
-            ar->draw(pID, cameraMat, details, dims);
+            ar.draw(pID, cameraMat, details, dims);
 }
 
-long long int Camera::getTriangles(const std::vector<Area *> & areas, Detailing * details)
+long long int Camera::getTriangles(const std::vector<Area> & areas, Detailing & details)
 {
     long long int totalTriangles = 0LL;
     mat4 cameraMat = dims == 2 ? sc * view : proj * view;
 
     for(auto ar : areas)
         if(areaInside(ar, cameraMat))
-            totalTriangles += details->getTriangles();
+            totalTriangles += details.getTriangles();
 
     return totalTriangles;
 }
@@ -158,9 +175,9 @@ vec3 Camera::cameraDir3D()
     return vec3(0.0f, distance, 0.0f);
 }
 
-bool Camera::areaInside(Area * area, mat4 cameraMat)
+bool Camera::areaInside(Area & area, mat4 cameraMat)
 {
-    std::pair<vec4, vec4> corners = area->getCorners(dims);
+    std::pair<vec4, vec4> corners = area.getCorners(dims);
     vec4 leftdown = cameraMat * corners.first;
     vec4 rightup = cameraMat * corners.second;
 

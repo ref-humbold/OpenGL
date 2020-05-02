@@ -4,11 +4,6 @@ using namespace glm;
 
 Earth::Earth() : numLongs{36}, numLats{17}
 {
-    auto push_point = [=](GLfloat longitude, GLfloat latitude) {
-        vbData.push_back(longitude);
-        vbData.push_back(latitude);
-    };
-
     push_point(0.0f, 90.0f);
 
     for(int lt = 80; lt >= -80; lt -= 10)
@@ -71,3 +66,9 @@ void Earth::draw(GLuint pID, mat4 worldToCamera)
 
     glDisableVertexAttribArray(0);
 }
+
+void Earth::push_point(GLfloat longitude, GLfloat latitude)
+{
+    vbData.push_back(longitude);
+    vbData.push_back(latitude);
+};

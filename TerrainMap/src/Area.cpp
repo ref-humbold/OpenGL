@@ -2,17 +2,27 @@
 
 using namespace glm;
 
-void Area::draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims)
+Area::Area(const char * filename) : geoCoeffs{vec2(0.0f, 0.0f)}
+{
+    countCoefficients(filename);
+    readHeights(filename);
+
+    glGenBuffers(1, &heightBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, heightBuffer);
+    glBufferData(GL_ARRAY_BUFFER, hbData.size() * sizeof(GLfloat), &hbData[0], GL_STATIC_DRAW);
+}
+
+void Area::draw(GLuint pID, mat4 worldToCamera, Detailing & details, int dims)
 {
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, details->getVertexBuffer());
+    glBindBuffer(GL_ARRAY_BUFFER, details.getVertexBuffer());
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, heightBuffer);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, details->getIndexBuffer());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, details.getIndexBuffer());
 
     GLint worldToCameraMat = glGetUniformLocation(pID, "worldToCameraMat");
     GLint longitudeFloat = glGetUniformLocation(pID, "longitude");
@@ -26,7 +36,7 @@ void Area::draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims)
     glUniform1f(mercatorFloat, MERCATOR);
     glUniform1i(dimensionsInt, dims);
 
-    size_t indexSize = (SIDE - 1) / details->getStep() + 1;
+    size_t indexSize = (SIDE - 1) / details.getStep() + 1;
 
     for(size_t i = 0; i < indexSize - 1; ++i)
     {
