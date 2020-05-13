@@ -5,9 +5,8 @@
 #include <exception>
 #include <stdexcept>
 
-class params_exception : public std::logic_error
+struct params_exception : public std::logic_error
 {
-public:
     explicit params_exception(const std::string & s) : std::logic_error(s)
     {
     }

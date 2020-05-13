@@ -33,7 +33,7 @@ void glfwHints()
 int main()
 {
     if(!glfwInit())
-        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
+        throw std::runtime_error("Failed to initialize GLFW");
 
     glfwHints();
 
@@ -42,14 +42,14 @@ int main()
     if(window == nullptr)
     {
         glfwTerminate();
-        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
+        throw std::runtime_error("Failed to open a new window");
     }
 
     glfwMakeContextCurrent(window);
     glewExperimental = true;
 
     if(glewInit() != GLEW_OK)
-        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
+        throw std::runtime_error("Failed to initialize GLEW");
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -67,8 +67,6 @@ int main()
 
     int gamePhase = 0, tryings = 0;
     GLfloat timer = 0.0f, pauseTime;
-
-    // game control
 
     do
     {

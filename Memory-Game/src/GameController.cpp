@@ -1,8 +1,6 @@
 #include "GameController.hpp"
 #include <algorithm>
 
-using namespace glm;
-
 GameController::GameController(int rows, int columns)
     : fieldsCount{rows * columns},
       size{std::make_pair(rows, columns)},
@@ -15,9 +13,9 @@ GameController::GameController(int rows, int columns)
               -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
       }
 {
-    for(float i = -rows + 1; i <= rows; i += 2)
-        for(float j = -columns + 1; j <= columns; j += 2)
-            transforms.push_back(std::make_pair(i, j));
+    for(int y = -rows + 1; y <= rows; y += 2)
+        for(int x = -columns + 1; x <= columns; x += 2)
+            transforms.push_back(glm::vec2(x, y));
 
     restart();
 
@@ -90,13 +88,17 @@ Key GameController::checkKeyPress(GLFWwindow * window)
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
         return Key::Select;
-    else if(glfwGetKey(window, GLFW_KEY_UP) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_UP) == action)
         return Key::MoveUp;
-    else if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
         return Key::MoveDown;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
         return Key::MoveLeft;
-    else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
         return Key::MoveRight;
 
     return Key::None;
@@ -144,7 +146,7 @@ bool GameController::checkSame(const std::pair<int, int> & visibleIndices)
     return cards.at(visibleIndices.first) == cards.at(visibleIndices.second);
 }
 
-void GameController::drawCards(GLuint programID, Colour colour, std::pair<int, int> transformation,
+void GameController::drawCards(GLuint programID, Colour colour, glm::vec2 transformation,
                                int frameOffset)
 {
     GLint scale = glGetUniformLocation(programID, "scale");
@@ -152,7 +154,7 @@ void GameController::drawCards(GLuint programID, Colour colour, std::pair<int, i
     GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation.second, transformation.first);
+    glUniform2f(transform, transformation[0], transformation[1]);
 
     switch(colour)
     {
@@ -200,14 +202,14 @@ void GameController::drawCards(GLuint programID, Colour colour, std::pair<int, i
     glDrawArrays(GL_TRIANGLE_FAN, frameOffset, 4);
 }
 
-void GameController::drawSign(GLuint programID, Sign sign, std::pair<int, int> transformation)
+void GameController::drawSign(GLuint programID, Sign sign, glm::vec2 transformation)
 {
     GLint scale = glGetUniformLocation(programID, "scale");
     GLint transform = glGetUniformLocation(programID, "transform");
     GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation.second, transformation.first);
+    glUniform2f(transform, transformation[0], transformation[1]);
     glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
 
     switch(sign)

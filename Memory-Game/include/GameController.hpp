@@ -10,8 +10,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-using namespace glm;
-
 enum class Key : int
 {
     None = GLFW_KEY_UNKNOWN,
@@ -69,15 +67,14 @@ public:
     const int fieldsCount;
 
 private:
-    void drawCards(GLuint programID, Colour colour, std::pair<int, int> transformation,
-                   int frameOffset);
-    void drawSign(GLuint programID, Sign sign, std::pair<int, int> transformation);
+    void drawCards(GLuint programID, Colour colour, glm::vec2 transformation, int frameOffset);
+    void drawSign(GLuint programID, Sign sign, glm::vec2 transformation);
 
     const int coloursCount = 8, signsCount = 4;
     const std::pair<int, int> size;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
-    std::vector<std::pair<int, int>> transforms;
+    std::vector<glm::vec2> transforms;
     std::map<int, std::pair<Colour, Sign>> cards;
     std::set<int> visible;
 };
