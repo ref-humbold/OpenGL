@@ -19,27 +19,6 @@
 using namespace glm;
 using namespace std::string_literals;
 
-std::vector<std::string> readConfig(const char * filename)
-{
-    std::vector<std::string> result;
-    FILE * file = fopen(filename, "r");
-
-    while(true)
-    {
-        char str[51];
-        int read = fscanf(file, "%50s", str);
-
-        if(read == EOF)
-            break;
-
-        result.push_back(std::string(str));
-    }
-
-    fclose(file);
-
-    return result;
-}
-
 void checkFile(const char * filename)
 {
     int length = strlen(filename);
@@ -96,32 +75,18 @@ int main(int argc, char * argv[])
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    Camera * cam = new Camera(window);
-    Detailing * details = new Detailing();
-    Earth * earth = nullptr;
-    std::vector<Area *> terrain;
-    int hgtBegin = 2;
+    Camera camera(window);
+    Detailing details;
+    Earth earth;
+    std::vector<Area> terrain;
 
-    if(argc <= hgtBegin)
+    if(argc <= 1)
         throw std::runtime_error("No HGT files specified");
 
-    if(strcmp(argv[hgtBegin], "config.txt") == 0)
-    {
-        std::vector<std::string> names = readConfig(argv[hgtBegin]);
-
-        for(auto str : names)
-        {
-            checkFile(str.c_str());
-            terrain.push_back(new Area(str.c_str()));
-        }
-
-        ++hgtBegin;
-    }
-
-    for(int i = hgtBegin; i < argc; ++i)
+    for(int i = 1; i < argc; ++i)
     {
         checkFile(argv[i]);
-        terrain.push_back(new Area(argv[i]));
+        terrain.push_back(Area(argv[i]));
     }
 
     std::vector<int> keys = {GLFW_KEY_TAB,   GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT,
@@ -131,7 +96,7 @@ int main(int argc, char * argv[])
                              GLFW_KEY_7,     GLFW_KEY_8,  GLFW_KEY_9,    GLFW_KEY_0};
     std::vector<GLfloat> levels = {-1.2f, -0.8f, -0.4f, -0.01f, 0.4f, 0.8f, 1.2f};
     auto nextLevel = std::find_if(levels.begin(), levels.end(),
-                                  [=](GLfloat lvl) { return lvl >= cam->getZoom(); });
+                                  [&](GLfloat lvl) { return lvl >= camera.getZoom(); });
     int frames = 0, lastFrames = 0;
     bool autoLOD = true;
     GLfloat time_start = glfwGetTime();
@@ -147,23 +112,23 @@ int main(int argc, char * argv[])
         if(time_end - time_start >= 1.0)
         {
             std::cout << "\t\t" << frames << " FPS - " << 1000.0f / frames << " ms per frame";
-            std::cout << " >> LOD " << details->getLOD() << " - step " << details->getStep();
-            std::cout << " >> TRIANGLES " << cam->getTriangles(terrain, details) << "\n";
+            std::cout << " >> LOD " << details.getLOD() << " - step " << details.getStep();
+            std::cout << " >> TRIANGLES " << camera.getTriangles(terrain, details) << "\n";
 
             if(autoLOD)
             {
-                if(nextLevel != levels.end() && cam->getZoom() > *nextLevel)
+                if(nextLevel != levels.end() && camera.getZoom() > *nextLevel)
                 {
                     ++nextLevel;
-                    details->setLOD(details->getLOD() - 1);
+                    details.setLOD(details.getLOD() - 1);
                 }
-                else if(nextLevel != levels.begin() && cam->getZoom() < *(nextLevel - 1))
+                else if(nextLevel != levels.begin() && camera.getZoom() < *(nextLevel - 1))
                     --nextLevel;
 
                 if(frames < 10 && lastFrames < 10)
-                    details->setLOD(details->getLOD() + 1);
+                    details.setLOD(details.getLOD() + 1);
                 else if(frames >= 30 && lastFrames >= 30)
-                    details->setLOD(details->getLOD() - 1);
+                    details.setLOD(details.getLOD() - 1);
             }
 
             lastFrames = frames;
@@ -173,19 +138,19 @@ int main(int argc, char * argv[])
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if(cam->getDims() == 3)
+        if(camera.getDims() == 3)
         {
             glUseProgram(earthProgramID);
-            cam->drawEarth(earthProgramID, earth);
+            camera.drawEarth(earthProgramID, earth);
         }
 
         glUseProgram(areaProgramID);
-        cam->drawTerrain(areaProgramID, terrain, details);
+        camera.drawTerrain(areaProgramID, terrain, details);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::vector<bool> pressed = cam->checkKeyPress(window, keys);
+        std::vector<bool> pressed = camera.checkKeyPress(window, keys);
 
         for(unsigned int i = 0; i < pressed.size(); ++i)
             if(pressed[i])
@@ -201,149 +166,128 @@ int main(int argc, char * argv[])
                             glfwPollEvents();
 
                         time_start = glfwGetTime() - loop_start + time_start;
-                        cam->changeDims();
-                        std::cout << "DIMENSIONS = " << cam->getDims() << "\n";
-
-                        if(cam->getDims() == 3)
-                            earth = new Earth();
-                        else
-                        {
-                            delete earth;
-                            earth = nullptr;
-                        }
-
+                        camera.changeDims();
+                        std::cout << "DIMENSIONS = " << camera.getDims() << "\n";
                         std::cout << "CENTER AT: longitude = 0, latitude = 0\n";
                         break;
 
                     case GLFW_KEY_Z:
-                        cam->viewScale(0.99f);
-                        std::cout << "ZOOM: " << cam->getZoom() << "\n";
+                        camera.viewScale(0.99f);
+                        std::cout << "ZOOM: " << camera.getZoom() << "\n";
                         break;
 
                     case GLFW_KEY_X:
-                        cam->viewScale(1.01f);
-                        std::cout << "ZOOM: " << cam->getZoom() << "\n";
+                        camera.viewScale(1.01f);
+                        std::cout << "ZOOM: " << camera.getZoom() << "\n";
                         break;
 
                     case GLFW_KEY_A:
-                        cam->resetScale();
-                        std::cout << "ZOOM: " << cam->getZoom() << "\n";
+                        camera.resetScale();
+                        std::cout << "ZOOM: " << camera.getZoom() << "\n";
                         break;
 
                     case GLFW_KEY_Q:
-                        cam->cameraRotate(1.25f);
+                        camera.cameraRotate(1.25f);
                         break;
 
                     case GLFW_KEY_W:
-                        cam->cameraRotate(-1.25f);
+                        camera.cameraRotate(-1.25f);
                         break;
 
                     case GLFW_KEY_UP:
-                        if(cam->getDims() == 2)
-                            cam->viewTranslate(vec3(0.0f, 0.25f, 0.0f));
+                        if(camera.getDims() == 2)
+                            camera.viewTranslate(vec3(0.0f, 0.25f, 0.0f));
                         else
-                            cam->viewRotate(0.25f, false);
+                            camera.viewRotate(0.25f, false);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
-                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << camera.getGeoCenter()[0]
+                                  << ", latitude = " << camera.getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_DOWN:
-                        if(cam->getDims() == 2)
-                            cam->viewTranslate(vec3(0.0f, -0.25f, 0.0f));
+                        if(camera.getDims() == 2)
+                            camera.viewTranslate(vec3(0.0f, -0.25f, 0.0f));
                         else
-                            cam->viewRotate(-0.25f, false);
+                            camera.viewRotate(-0.25f, false);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
-                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << camera.getGeoCenter()[0]
+                                  << ", latitude = " << camera.getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_LEFT:
-                        if(cam->getDims() == 2)
-                            cam->viewTranslate(vec3(-0.25f, 0.0f, 0.0f));
+                        if(camera.getDims() == 2)
+                            camera.viewTranslate(vec3(-0.25f, 0.0f, 0.0f));
                         else
-                            cam->viewRotate(-0.5f, true);
+                            camera.viewRotate(-0.5f, true);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
-                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << camera.getGeoCenter()[0]
+                                  << ", latitude = " << camera.getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_RIGHT:
-                        if(cam->getDims() == 2)
-                            cam->viewTranslate(vec3(0.25f, 0.0f, 0.0f));
+                        if(camera.getDims() == 2)
+                            camera.viewTranslate(vec3(0.25f, 0.0f, 0.0f));
                         else
-                            cam->viewRotate(0.5f, true);
+                            camera.viewRotate(0.5f, true);
 
-                        std::cout << "CENTER AT: longitude = " << cam->getGeoCenter()[0]
-                                  << ", latitude = " << cam->getGeoCenter()[1] << "\n";
+                        std::cout << "CENTER AT: longitude = " << camera.getGeoCenter()[0]
+                                  << ", latitude = " << camera.getGeoCenter()[1] << "\n";
                         break;
 
                     case GLFW_KEY_0:
                         autoLOD = true;
-                        details->setLOD(0);
+                        details.setLOD(0);
                         break;
 
                     case GLFW_KEY_1:
                         autoLOD = false;
-                        details->setLOD(0);
+                        details.setLOD(0);
                         break;
 
                     case GLFW_KEY_2:
                         autoLOD = false;
-                        details->setLOD(1);
+                        details.setLOD(1);
                         break;
 
                     case GLFW_KEY_3:
                         autoLOD = false;
-                        details->setLOD(2);
+                        details.setLOD(2);
                         break;
 
                     case GLFW_KEY_4:
                         autoLOD = false;
-                        details->setLOD(3);
+                        details.setLOD(3);
                         break;
 
                     case GLFW_KEY_5:
                         autoLOD = false;
-                        details->setLOD(4);
+                        details.setLOD(4);
                         break;
 
                     case GLFW_KEY_6:
                         autoLOD = false;
-                        details->setLOD(5);
+                        details.setLOD(5);
                         break;
 
                     case GLFW_KEY_7:
                         autoLOD = false;
-                        details->setLOD(6);
+                        details.setLOD(6);
                         break;
 
                     case GLFW_KEY_8:
                         autoLOD = false;
-                        details->setLOD(7);
+                        details.setLOD(7);
                         break;
 
                     case GLFW_KEY_9:
                         autoLOD = false;
-                        details->setLOD(8);
+                        details.setLOD(8);
                         break;
                 }
             }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    for(unsigned int i = 0; i < terrain.size(); ++i)
-        delete terrain[i];
-
-    terrain.clear();
-
-    if(cam->getDims() == 3)
-        delete earth;
-
-    delete details;
-    delete cam;
-
     glfwTerminate();
-
     return 0;
 }

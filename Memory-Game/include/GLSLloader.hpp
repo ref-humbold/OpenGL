@@ -11,9 +11,6 @@
 #include <string>
 #include <vector>
 #include <GL/glew.h>
-#include <glm/glm.hpp>
-
-using namespace glm;
 
 GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
                      const std::string & shaderName);

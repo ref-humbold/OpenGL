@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include "GLSLloader.hpp"
 #include "GameController.hpp"
+#include "Parameters.hpp"
 
 using namespace glm;
 
@@ -32,8 +33,10 @@ void glfwHints()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-int main()
+int main(int argc, char * argv[])
 {
+    parameters params(argc, argv);
+
     if(!glfwInit())
         throw std::runtime_error("FAILED TO INITIALIZE GLFW");
 
@@ -68,83 +71,66 @@ int main()
     glDepthFunc(GL_LESS);
     srand(time(nullptr));
 
-    GameController * ctrl = new GameController(window);
-    std::vector<int> keys = {GLFW_KEY_TAB, GLFW_KEY_W, GLFW_KEY_X,  GLFW_KEY_E,   GLFW_KEY_Z,
-                             GLFW_KEY_A,   GLFW_KEY_D, GLFW_KEY_UP, GLFW_KEY_DOWN};
+    GameController ctrl(window, params.training());
+    std::vector<Key> keys = {Key::SwitchView, Key::ZoomIn,   Key::ZoomOut,
+                             Key::MoveUp,     Key::MoveDown, Key::MoveFront,
+                             Key::MoveBack,   Key::MoveLeft, Key::MoveRight};
     vec3 mouseBegin, mouseEnd;
     int gameLevel = -1;
     bool isRestarted = true, mouseClicked = false;
     GLfloat timer = 0.0f, counter = 0.0f;
 
-    std::cout << "\n\tRUNDA 1: PUNKTY = " << ctrl->points << "\n";
-    ctrl->restart();
+    std::cout << "\n\tRUNDA 1: PUNKTY = " << ctrl.points << "\n";
+    ctrl.restart();
 
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-
-        ctrl->drawGame(programID);
-
+        ctrl.drawGame(programID);
         glfwSwapBuffers(window);
         glfwPollEvents();
 
         if(gameLevel > 0)
         {
-            std::vector<bool> movesMask(6, false);
-            std::vector<bool> pressed = ctrl->checkKeyPress(window, keys);
+            std::vector<Key> moveKeys;
+            std::vector<Key> pressed = ctrl.checkKeyPress(window, keys);
 
-            for(unsigned int i = 0; i < pressed.size(); ++i)
-                if(pressed[i])
-                    switch(keys[i])
-                    {
-                        case GLFW_KEY_TAB:
-                            ctrl->checkTabReleased(window);
-                            ctrl->changeCamera();
-                            break;
+            for(Key k : pressed)
+                switch(k)
+                {
+                    case Key::SwitchView:
+                        ctrl.checkKeyReleased(window, k);
+                        ctrl.changeCamera();
+                        break;
 
-                        case GLFW_KEY_W:
-                            movesMask[0] = true;
-                            break;
+                    case Key::ZoomIn:
+                        ctrl.viewScale(0.99f);
+                        break;
 
-                        case GLFW_KEY_X:
-                            movesMask[1] = true;
-                            break;
+                    case Key::ZoomOut:
+                        ctrl.viewScale(1.01f);
+                        break;
 
-                        case GLFW_KEY_E:
-                            movesMask[2] = true;
-                            break;
+                    case Key::MoveUp:
+                    case Key::MoveDown:
+                    case Key::MoveFront:
+                    case Key::MoveBack:
+                    case Key::MoveLeft:
+                    case Key::MoveRight:
+                        moveKeys.push_back(k);
+                        break;
+                }
 
-                        case GLFW_KEY_Z:
-                            movesMask[3] = true;
-                            break;
-
-                        case GLFW_KEY_A:
-                            movesMask[4] = true;
-                            break;
-
-                        case GLFW_KEY_D:
-                            movesMask[5] = true;
-                            break;
-
-                        case GLFW_KEY_UP:
-                            ctrl->viewScale(0.99f);
-                            break;
-
-                        case GLFW_KEY_DOWN:
-                            ctrl->viewScale(1.01f);
-                            break;
-                    }
-
-            if(!mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS))
+            if(!mouseClicked && ctrl.checkMouseAction(window, GLFW_PRESS))
             {
-                mouseBegin = ctrl->getMousePos(window);
+                mouseBegin = ctrl.getMousePos(window);
                 mouseClicked = true;
             }
 
-            if(mouseClicked && ctrl->checkMouseAction(window, GLFW_PRESS))
+            if(mouseClicked && ctrl.checkMouseAction(window, GLFW_PRESS))
             {
-                mouseEnd = ctrl->getMousePos(window);
+                mouseEnd = ctrl.getMousePos(window);
 
                 if(vecDifferent(mouseBegin, mouseEnd))
                 {
@@ -154,21 +140,21 @@ int main()
                     GLfloat angleRad = acos(min(cosine, 1.0f));
                     vec3 axis = normalize(cross(normBegin, normEnd));
 
-                    ctrl->viewRotate(angleRad, axis);
+                    ctrl.viewRotate(angleRad, axis);
                     mouseBegin = mouseEnd;
                 }
             }
 
-            if(ctrl->checkMouseAction(window, GLFW_RELEASE))
+            if(ctrl.checkMouseAction(window, GLFW_RELEASE))
                 mouseClicked = false;
 
-            int bubleNumber = ctrl->checkCollisionBubble();
+            int bubleNumber = ctrl.checkCollisionBubble();
 
             if(bubleNumber > 0)
             {
                 std::cout << "\tTRAFIŁEŚ W PUNKTOWANY BĄBELEK!! ZDOBYWASZ 10% WIĘCEJ PUNKTÓW\n\n";
-                ctrl->points *= 1.1;
-                ctrl->deletePointedBubble(bubleNumber);
+                ctrl.points *= 1.1;
+                ctrl.deletePointedBubble(bubleNumber);
             }
             else if(bubleNumber < 0)
             {
@@ -177,13 +163,13 @@ int main()
                 counter = 0.0f;
                 timer = glfwGetTime();
             }
-            else if(ctrl->checkEndRound())
+            else if(ctrl.checkEndRound())
             {
                 gameLevel = -gameLevel - 1;
                 counter = 0.0f;
-                ctrl->points += 10.0;
+                ctrl.points += 10.0;
                 std::cout << "\tZA WYGRANIE RUNDY DOSTAJESZ 10 PUNKTÓW.\n";
-                std::cout << "\tRUNDA " << -gameLevel << ": PUNKTY = " << ctrl->points << "\n";
+                std::cout << "\tRUNDA " << -gameLevel << ": PUNKTY = " << ctrl.points << "\n";
                 timer = glfwGetTime();
             }
             else
@@ -191,8 +177,8 @@ int main()
                 GLfloat delta = glfwGetTime() - timer;
                 timer = glfwGetTime();
                 counter += delta;
-                counter = ctrl->moveBubbles(delta, counter, gameLevel);
-                ctrl->movePlayer(delta, movesMask);
+                counter = ctrl.moveBubbles(delta, counter, gameLevel);
+                ctrl.movePlayer(delta, moveKeys);
             }
         }
         else if(gameLevel == 0)
@@ -218,7 +204,7 @@ int main()
             if(counter > 1.5f && !isRestarted)
             {
                 isRestarted = true;
-                ctrl->restart();
+                ctrl.restart();
             }
 
             counter += glfwGetTime() - timer;
@@ -227,9 +213,7 @@ int main()
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
-    std::cout << "\tKONIEC GRY: PUNKTY = " << ctrl->points << "\n\n";
+    std::cout << "\tKONIEC GRY: PUNKTY = " << ctrl.points << "\n\n";
     glfwTerminate();
-    delete ctrl;
-
     return 0;
 }

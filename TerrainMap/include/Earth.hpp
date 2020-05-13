@@ -13,19 +13,18 @@ using namespace glm;
 
 class Earth
 {
-private:
-    std::vector<GLfloat> vbData;
-    std::vector<GLuint> ibData;
-    GLuint vertexBuffer;
-    GLuint indexBuffer;
-
-    size_t numLongs;
-    size_t numLats;
-
 public:
     Earth();
 
     void draw(GLuint pID, mat4 worldToCamera);
+
+private:
+    void push_point(GLfloat longitude, GLfloat latitude);
+
+    std::vector<GLfloat> vbData;
+    std::vector<GLuint> ibData;
+    GLuint vertexBuffer, indexBuffer;
+    size_t numLongs, numLats;
 };
 
 #endif

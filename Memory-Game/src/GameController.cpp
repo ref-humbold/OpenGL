@@ -1,26 +1,36 @@
 #include "GameController.hpp"
 #include <algorithm>
 
-using namespace glm;
-
 GameController::GameController(int rows, int columns)
-    : vertexBufferData{
-            -0.9f, -0.9f,  0.9f, -0.9f, 0.9f,  0.9f, -0.9f,  0.9f,  // card
-            -1.0f, -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f,  1.0f,  // frame
-             0.0f,  0.7f,  0.0f, -0.7f,  // pipe
-            -0.7f, -0.7f,  0.7f,  0.7f, 0.7f, -0.7f, -0.7f,  0.7f,  // cross
-             0.0f,  0.7f, -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
-            -0.7f,  0.0f,  0.0f,  0.7f, 0.7f,  0.0f,  0.0f, -0.7f  // square
-        },
-      fieldsCount{rows * columns},
-      size{std::make_pair(rows, columns)}
+    : fieldsCount{rows * columns},
+      size{std::make_pair(rows, columns)},
+      vertexBufferData{
+              -0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,  // card
+              -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,  // frame
+              0.0f,  0.7f,  0.0f,  -0.7f,  // pipe
+              -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,  // cross
+              0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
+              -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
+      }
+{
+    for(int y = -rows + 1; y <= rows; y += 2)
+        for(int x = -columns + 1; x <= columns; x += 2)
+            transforms.push_back(glm::vec2(x, y));
+
+    restart();
+
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
+}
+
+void GameController::restart()
 {
     srand(time(nullptr));
-    visible.resize(fieldsCount, false);
+    visible.clear();
+    cards.clear();
 
-    for(float i = -rows + 1; i <= rows; i += 2)
-        for(float j = -columns + 1; j <= columns; j += 2)
-            transforms.push_back(std::make_pair(i, j));
+    int sameCardsRatio = 1 + fieldsCount / (coloursCount * signsCount);
 
     for(int i = 0; i < fieldsCount / 2; ++i)
     {
@@ -32,11 +42,11 @@ GameController::GameController(int rows, int columns)
         {
             colour = static_cast<Colour>(rand() % coloursCount);
             sign = static_cast<Sign>(rand() % signsCount);
-        } while(std::count_if(std::begin(cards), std::end(cards),
-                              [=](const std::pair<int, std::pair<Colour, Sign>> & c) {
-                                  return c.second.first == colour && c.second.second == sign;
-                              })
-                > 1 + fieldsCount / (coloursCount * signsCount));
+        } while(sameCardsRatio < std::count_if(
+                        std::begin(cards), std::end(cards),
+                        [=](const auto & c) {
+                            return c.second.first == colour && c.second.second == sign;
+                        }));
 
         do
             index1 = rand() % fieldsCount;
@@ -49,29 +59,25 @@ GameController::GameController(int rows, int columns)
         cards.emplace(index1, std::make_pair(colour, sign));
         cards.emplace(index2, std::make_pair(colour, sign));
     }
-
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
 }
 
-void GameController::drawGame(GLuint pID, int currentIndex,
+void GameController::drawGame(GLuint programID, int currentIndex,
                               const std::pair<int, int> & visibleIndices)
 {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-    drawCards(pID, Colour::Gray, transforms[currentIndex], 4);
+    drawCards(programID, Colour::Gray, transforms[currentIndex], 4);
 
     for(int i = 0; i < size.first * size.second; i++)
-        if(visible[i] || i == visibleIndices.first || i == visibleIndices.second)
+        if(isVisible(i) || i == visibleIndices.first || i == visibleIndices.second)
         {
-            drawCards(pID, cards.at(i).first, transforms[i], 0);
-            drawSign(pID, cards.at(i).second, transforms[i]);
+            drawCards(programID, cards.at(i).first, transforms[i], 0);
+            drawSign(programID, cards.at(i).second, transforms[i]);
         }
         else
-            drawCards(pID, Colour::Black, transforms[i], 0);
+            drawCards(programID, Colour::Black, transforms[i], 0);
 
     glDisableVertexAttribArray(0);
 }
@@ -82,13 +88,17 @@ Key GameController::checkKeyPress(GLFWwindow * window)
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
         return Key::Select;
-    else if(glfwGetKey(window, GLFW_KEY_UP) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_UP) == action)
         return Key::MoveUp;
-    else if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_DOWN) == action)
         return Key::MoveDown;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
         return Key::MoveLeft;
-    else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
         return Key::MoveRight;
 
     return Key::None;
@@ -109,11 +119,11 @@ int GameController::moveFrame(Key key, int currentIndex)
     switch(key)
     {
         case Key::MoveUp:
-            currentIndex = (row + 1) % size.first * size.second + column;
+            currentIndex = ((row + 1) % size.first) * size.second + column;
             break;
 
         case Key::MoveDown:
-            currentIndex = (row - 1 + size.first) % size.first * size.second + column;
+            currentIndex = ((row - 1 + size.first) % size.first) * size.second + column;
             break;
 
         case Key::MoveLeft:
@@ -136,15 +146,15 @@ bool GameController::checkSame(const std::pair<int, int> & visibleIndices)
     return cards.at(visibleIndices.first) == cards.at(visibleIndices.second);
 }
 
-void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation,
+void GameController::drawCards(GLuint programID, Colour colour, glm::vec2 transformation,
                                int frameOffset)
 {
-    GLint scale = glGetUniformLocation(pID, "scale");
-    GLint transform = glGetUniformLocation(pID, "transform");
-    GLint fragmentColor = glGetUniformLocation(pID, "fragmentColor");
+    GLint scale = glGetUniformLocation(programID, "scale");
+    GLint transform = glGetUniformLocation(programID, "transform");
+    GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation.second, transformation.first);
+    glUniform2f(transform, transformation[0], transformation[1]);
 
     switch(colour)
     {
@@ -192,14 +202,14 @@ void GameController::drawCards(GLuint pID, Colour colour, std::pair<int, int> tr
     glDrawArrays(GL_TRIANGLE_FAN, frameOffset, 4);
 }
 
-void GameController::drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation)
+void GameController::drawSign(GLuint programID, Sign sign, glm::vec2 transformation)
 {
-    GLint scale = glGetUniformLocation(pID, "scale");
-    GLint transform = glGetUniformLocation(pID, "transform");
-    GLint fragmentColor = glGetUniformLocation(pID, "fragmentColor");
+    GLint scale = glGetUniformLocation(programID, "scale");
+    GLint transform = glGetUniformLocation(programID, "transform");
+    GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
 
     glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation.second, transformation.first);
+    glUniform2f(transform, transformation[0], transformation[1]);
     glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
 
     switch(sign)

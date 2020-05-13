@@ -5,8 +5,9 @@
 
 #include <cstdlib>
 #include <cmath>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
+#include <map>
 #include <tuple>
 #include <vector>
 #include <GL/glew.h>
@@ -21,39 +22,23 @@
 
 using namespace glm;
 
+enum class Key : int
+{
+    SwitchView = GLFW_KEY_TAB,
+    ZoomIn = GLFW_KEY_UP,
+    ZoomOut = GLFW_KEY_DOWN,
+    MoveRight = GLFW_KEY_D,  // forward X axis
+    MoveLeft = GLFW_KEY_A,  //backward X axis
+    MoveUp = GLFW_KEY_E,  // forward Y axis
+    MoveDown = GLFW_KEY_Z,  // backward Y axis
+    MoveBack = GLFW_KEY_X,  // forward Z axis
+    MoveFront = GLFW_KEY_W  // backward Z axis
+};
+
 class GameController
 {
-private:
-    static constexpr GLfloat PI_CONST = M_PI;
-
-    GameAquarium * aqua;
-    GamePlayer * player;
-    GameBubble * bubble;
-
-    mat4 view;
-    mat4 proj;
-    vec3 cameraPos;
-    vec3 cameraDir;
-    std::vector<vec4> playerMoves;
-    bool viewInside;
-    GLfloat fov;
-    GLfloat persBegin;
-    GLfloat persStep;
-    vec4 lightSource;
-    int windowW;
-    int windowH;
-
 public:
-    double points;
-
-    explicit GameController(GLFWwindow * window);
-
-    ~GameController()
-    {
-        delete aqua;
-        delete player;
-        delete bubble;
-    }
+    GameController(GLFWwindow * window, bool training);
 
     void drawGame(GLuint pID);
     void restart();
@@ -66,11 +51,27 @@ public:
     bool checkEndRound();
     void deletePointedBubble(int ix);
     GLfloat moveBubbles(GLfloat delta, GLfloat counter, int freq);
-    void movePlayer(GLfloat delta, std::vector<bool> movesMask);
+    void movePlayer(GLfloat delta, const std::vector<Key> & keys);
     vec3 getMousePos(GLFWwindow * window);
-    std::vector<bool> checkKeyPress(GLFWwindow * window, std::vector<int> & keys);
+    std::vector<Key> checkKeyPress(GLFWwindow * window, const std::vector<Key> & keys);
     bool checkMouseAction(GLFWwindow * window, int action);
-    void checkTabReleased(GLFWwindow * window);
+    void checkKeyReleased(GLFWwindow * window, Key key);
+
+    double points;
+
+private:
+    static constexpr GLfloat PI_CONST = M_PI;
+
+    GameAquarium aqua;
+    GamePlayer player;
+    GameBubble bubble;
+    mat4 view, proj;
+    vec3 cameraPos, cameraDir;
+    std::map<Key, vec4> playerMoves;
+    bool viewInside, training;
+    GLfloat fov, persBegin, persStep;
+    vec4 lightSource;
+    int windowWidth, windowHeight;
 };
 
 #endif

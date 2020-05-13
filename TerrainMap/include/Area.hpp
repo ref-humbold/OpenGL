@@ -16,29 +16,10 @@ using namespace glm;
 
 class Area
 {
-private:
-    static constexpr size_t SIDE = 1201;
-    static constexpr GLfloat PI_CONST = M_PI;
-    static constexpr GLfloat MERCATOR = 360.0f / (2 * PI_CONST);
-    static constexpr GLfloat RADIUS = 6400000.0f;
-
-    std::vector<GLfloat> hbData;
-    GLuint heightBuffer;
-
-    vec2 geoCoeffs;
-
 public:
-    explicit Area(const char * filename) : geoCoeffs{vec2(0.0f, 0.0f)}
-    {
-        countCoefficients(filename);
-        readHeights(filename);
+    explicit Area(const char * filename);
 
-        glGenBuffers(1, &heightBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, heightBuffer);
-        glBufferData(GL_ARRAY_BUFFER, hbData.size() * sizeof(GLfloat), &hbData[0], GL_STATIC_DRAW);
-    }
-
-    void draw(GLuint pID, mat4 worldToCamera, Detailing * details, int dims);
+    void draw(GLuint pID, mat4 worldToCamera, Detailing & details, int dims);
     std::pair<vec4, vec4> getCorners(int dims);
 
 private:
@@ -49,6 +30,15 @@ private:
     GLfloat countEarthPosZ(GLfloat longitude, GLfloat latitude);
     void countCoefficients(const char * filename);
     void readHeights(const char * filename);
+
+    static constexpr size_t SIDE = 1201;
+    static constexpr GLfloat PI_CONST = M_PI;
+    static constexpr GLfloat MERCATOR = 360.0f / (2 * PI_CONST);
+    static constexpr GLfloat RADIUS = 6400000.0f;
+
+    std::vector<GLfloat> hbData;
+    GLuint heightBuffer;
+    vec2 geoCoeffs;
 };
 
 #endif

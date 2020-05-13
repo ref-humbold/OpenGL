@@ -4,12 +4,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <set>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-
-using namespace glm;
 
 enum class Key : int
 {
@@ -48,39 +47,36 @@ class GameController
 public:
     GameController(int rows, int columns);
 
-    int fields()
-    {
-        return fieldsCount;
-    }
-
     bool isVisible(int i)
     {
-        return visible[i];
+        return visible.find(i) != visible.end();
     }
 
     void setVisible(int i)
     {
-        visible[i] = true;
+        visible.emplace(i);
     }
 
-    void drawGame(GLuint pID, int currentIndex, const std::pair<int, int> & visibleIndices);
+    void restart();
+    void drawGame(GLuint programID, int currentIndex, const std::pair<int, int> & visibleIndices);
     Key checkKeyPress(GLFWwindow * window);
     void checkKeyRelease(GLFWwindow * window, Key key);
     int moveFrame(Key key, int currentIndex);
     bool checkSame(const std::pair<int, int> & visibleIndices);
 
+    const int fieldsCount;
+
 private:
-    void drawCards(GLuint pID, Colour colour, std::pair<int, int> transformation, int frameOffset);
-    void drawSign(GLuint pID, Sign sign, std::pair<int, int> transformation);
+    void drawCards(GLuint programID, Colour colour, glm::vec2 transformation, int frameOffset);
+    void drawSign(GLuint programID, Sign sign, glm::vec2 transformation);
 
     const int coloursCount = 8, signsCount = 4;
+    const std::pair<int, int> size;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
-    int fieldsCount;
-    std::pair<int, int> size;
+    std::vector<glm::vec2> transforms;
     std::map<int, std::pair<Colour, Sign>> cards;
-    std::vector<bool> visible;
-    std::vector<std::pair<int, int>> transforms;
+    std::set<int> visible;
 };
 
 #endif
