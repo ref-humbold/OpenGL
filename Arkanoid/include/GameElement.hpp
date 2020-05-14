@@ -121,7 +121,7 @@ private:
     glm::mat2 rotateMatrix;
     glm::vec2 transformVector;
     glm::vec2 velocity;
-    glm::vec2 vNorm;
+    glm::vec2 normalVector;
     int angleMult;
     GLfloat radius;
     GLfloat separator;

@@ -4,8 +4,6 @@
 #include "GameController.hpp"
 #include "GameElement.hpp"
 
-using namespace glm;
-
 int main()
 {
     GLFWwindow * window;

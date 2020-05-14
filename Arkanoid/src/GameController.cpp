@@ -1,7 +1,5 @@
 #include "GameController.hpp"
 
-using namespace glm;
-
 void GameController::drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
                               GamePaddle & paddle)
 {
@@ -20,9 +18,11 @@ Key GameController::checkKeyPress(GLFWwindow * window)
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
         return Key::StartPause;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
         return Key::MoveLeft;
-    else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
         return Key::MoveRight;
 
     return Key::None;
