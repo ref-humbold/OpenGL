@@ -12,6 +12,13 @@
 #include <vector>
 #include <GL/glew.h>
 
+struct shader_exception : std::runtime_error
+{
+    explicit shader_exception(const std::string & s) : std::runtime_error(s)
+    {
+    }
+};
+
 GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
                      const std::string & shaderName);
 

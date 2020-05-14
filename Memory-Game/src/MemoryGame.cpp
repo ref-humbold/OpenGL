@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <iostream>
-#include <vector>
 #include "GLinit.hpp"
 #include "GameController.hpp"
 #include "Parameters.hpp"

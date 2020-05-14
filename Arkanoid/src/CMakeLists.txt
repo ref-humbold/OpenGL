@@ -11,6 +11,7 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
+    GLinit.cpp
     GLSLloader.cpp
     GameElement.cpp
     GameController.cpp

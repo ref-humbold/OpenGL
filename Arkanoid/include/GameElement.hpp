@@ -9,16 +9,14 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-using namespace glm;
-
 GLuint createVertexBuffer(const GLfloat vbData[], size_t size);
 
-void loadBuffer(GLuint vb, GLuint cb);
+void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID);
 
 class GameBoard
 {
 public:
-    std::vector<vec2> normVecs;
+    std::vector<glm::vec2> normVecs;
 
     GameBoard();
 
@@ -38,9 +36,9 @@ private:
     GLuint vertexBufferTriangle;
     GLuint colorBufferTriangle;
 
-    mat2 scaleMatrix;
-    mat2 rotateMatrix;
-    vec2 transformVector;
+    glm::mat2 scaleMatrix;
+    glm::mat2 rotateMatrix;
+    glm::vec2 transformVector;
 };
 
 class GameBrick
@@ -64,9 +62,9 @@ private:
     GLuint colorBufferRect;
     GLuint colorBufferRectBorder;
 
-    mat2 scaleMatrix;
-    mat2 rotateMatrix;
-    vec2 transformVector;
+    glm::mat2 scaleMatrix;
+    glm::mat2 rotateMatrix;
+    glm::vec2 transformVector;
 };
 
 class GamePaddle
@@ -87,9 +85,9 @@ private:
     GLuint vertexBufferPaddle;
     GLuint colorBufferPaddle;
 
-    mat2 scaleMatrix;
-    mat2 rotateMatrix;
-    vec2 transformVector;
+    glm::mat2 scaleMatrix;
+    glm::mat2 rotateMatrix;
+    glm::vec2 transformVector;
     GLfloat velocity;
 };
 
@@ -102,7 +100,7 @@ public:
     void drawBall(GLuint pID);
     void drawCross(GLuint pID);
     bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR);
-    GLfloat countDistance(vec2 pt, vec2 nl, vec2 pl);
+    GLfloat countDistance(glm::vec2 pt, glm::vec2 nl, glm::vec2 pl);
     bool checkOutside();
     void checkCollisionBoard(GameBoard & board);
     void checkCollisionPaddle(GamePaddle & paddle);
@@ -119,11 +117,11 @@ private:
     GLuint vertexBufferCross;
     GLuint colorBufferCross;
 
-    mat2 scaleMatrix;
-    mat2 rotateMatrix;
-    vec2 transformVector;
-    vec2 velocity;
-    vec2 vNorm;
+    glm::mat2 scaleMatrix;
+    glm::mat2 rotateMatrix;
+    glm::vec2 transformVector;
+    glm::vec2 velocity;
+    glm::vec2 vNorm;
     int angleMult;
     GLfloat radius;
     GLfloat separator;

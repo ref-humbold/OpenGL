@@ -33,7 +33,7 @@ GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
         std::string shaderErrorMessage(infoLogLength + 1, '\0');
 
         glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
-        throw std::runtime_error(shaderErrorMessage);
+        throw shader_error(shaderErrorMessage);
     }
 
     return shaderID;
@@ -61,7 +61,7 @@ GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
         std::string programErrorMessage(infoLogLength + 1, '\0');
 
         glGetProgramInfoLog(programID, infoLogLength, nullptr, &programErrorMessage[0]);
-        throw std::runtime_error(programErrorMessage);
+        throw shader_error(programErrorMessage);
     }
 
     return programID;
@@ -76,7 +76,7 @@ std::string readShader(const std::string & filePath)
     std::cerr << ".::. Reading shader : " << filePath << "\n";
 
     if(!shaderStream.is_open())
-        throw std::runtime_error("Impossible to open "s + filePath);
+        throw shader_error("Impossible to open "s + filePath);
 
     std::string line = "";
 

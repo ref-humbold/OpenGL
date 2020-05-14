@@ -12,14 +12,14 @@ GLuint createVertexBuffer(const GLfloat vbData[], size_t size)
     return bufferID;
 }
 
-void loadBuffer(GLuint vb, GLuint cb)
+void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID)
 {
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, cb);
+    glBindBuffer(GL_ARRAY_BUFFER, colourBufferID);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 }
 
