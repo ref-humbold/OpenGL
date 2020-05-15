@@ -26,7 +26,6 @@ GameController::GameController(int rows, int columns)
 
 void GameController::restart()
 {
-    srand(time(nullptr));
     visible.clear();
     cards.clear();
 

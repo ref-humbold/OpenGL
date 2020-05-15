@@ -37,6 +37,7 @@ int main(int argc, char * argv[])
     GLuint programID;
 
     std::tie(window, programID) = initializeGL();
+    srand(time(nullptr));
 
     GameController ctrl(params.rows(), params.columns());
     GameState state(ctrl);

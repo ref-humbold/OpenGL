@@ -13,10 +13,20 @@ GLuint createVertexBuffer(const GLfloat vbData[], size_t size);
 
 void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID);
 
+enum class Colour : int
+{
+    Red,
+    Green,
+    Blue,
+    Cyan,
+    Magenta,
+    Yellow
+};
+
 class GameBoard
 {
 public:
-    std::vector<glm::vec2> normVecs;
+    std::vector<glm::vec2> normalVectors;
 
     GameBoard();
 
@@ -44,7 +54,7 @@ private:
 class GameBrick
 {
 public:
-    std::vector<std::vector<bool>> isVisible;
+    bool isVisible[6][13];
     int bricksLeft;
 
     GameBrick();
@@ -52,7 +62,7 @@ public:
     void drawAllBricks(GLuint pID);
 
 private:
-    void drawRect(GLuint pID, int col);
+    void drawRect(GLuint pID, Colour colour);
     void drawRectBorder(GLuint pID);
 
     const GLfloat vbDataRect[8];
@@ -108,6 +118,9 @@ public:
     void moveBall(GLfloat delta);
 
 private:
+    void brickScored(GameBrick & brick, int row, int column,
+                     std::vector<std::pair<int, int>> & bricksHit);
+
     const GLfloat vbDataBall[28];
     const GLfloat cbDataBall[42];
     const GLfloat vbDataCross[8];
@@ -122,7 +135,6 @@ private:
     glm::vec2 transformVector;
     glm::vec2 velocity;
     glm::vec2 normalVector;
-    int angleMult;
     GLfloat radius;
     GLfloat separator;
     GLfloat velocityDistance;
