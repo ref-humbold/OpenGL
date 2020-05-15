@@ -17,7 +17,7 @@ Key GameController::checkKeyPress(GLFWwindow * window)
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return Key::StartPause;
+        return Key::Pause;
 
     if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
         return Key::MoveLeft;

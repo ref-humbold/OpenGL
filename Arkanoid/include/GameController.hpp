@@ -12,7 +12,7 @@
 enum class Key : int
 {
     None = GLFW_KEY_UNKNOWN,
-    StartPause = GLFW_KEY_SPACE,
+    Pause = GLFW_KEY_SPACE,
     MoveLeft = GLFW_KEY_LEFT,
     MoveRight = GLFW_KEY_RIGHT
 };

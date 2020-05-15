@@ -4,6 +4,13 @@
 #include "GameController.hpp"
 #include "GameElement.hpp"
 
+enum class GamePhase : int
+{
+    NoPlay,
+    Playing,
+    Ended,
+};
+
 int main()
 {
     GLFWwindow * window;
@@ -18,7 +25,8 @@ int main()
     GameBrick brick;
     GamePaddle paddle;
 
-    int gamePhase = 0, tryings = 0;
+    GamePhase gamePhase = GamePhase::NoPlay;
+    int round = 0;
     GLfloat timer = 0.0f, pauseTime;
 
     do
@@ -29,17 +37,17 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        if(gamePhase == 1)
+        if(gamePhase == GamePhase::Playing)
         {
             Key key = ctrl.checkKeyPress(window);
 
             switch(key)
             {
-                case Key::StartPause:
+                case Key::Pause:
                     pauseTime = glfwGetTime();
                     ctrl.checkKeyRelease(window, key);
-                    std::cout << "\tPRZERWA - wciśnij spację, by kontunuować grę\n";
-                    gamePhase = 0;
+                    std::cout << "\t* PAUSE - press space to continue.\n";
+                    gamePhase = GamePhase::NoPlay;
                     break;
 
                 case Key::MoveLeft:
@@ -56,9 +64,9 @@ int main()
 
             if(ball.checkOutside())
             {
-                std::cout << "KULKA SPADŁA Z PLANSZY!! Spróbuj ponownie.\n";
-                gamePhase = 0;
-                ++tryings;
+                std::cout << "[[ The ball fell out! Try again. ]]\n";
+                gamePhase = GamePhase::NoPlay;
+                ++round;
                 ball.restart();
                 paddle.restart();
             }
@@ -68,16 +76,17 @@ int main()
                 ball.checkCollisionBrick(brick);
                 ball.checkCollisionBoard(board);
 
-                GLfloat delta = gamePhase == 0 ? pauseTime - timer : glfwGetTime() - timer;
-                timer = glfwGetTime();
+                GLfloat delta =
+                        gamePhase == GamePhase::NoPlay ? pauseTime - timer : glfwGetTime() - timer;
 
+                timer = glfwGetTime();
                 ball.moveBall(delta);
 
                 if(brick.bricksLeft == 0)
                 {
-                    std::cout << "WYGRAŁEŚ!! Kulka spadła Ci " << tryings << " razy.\n";
-                    std::cout << "Wciśnij spację, by zakończyć.\n";
-                    gamePhase = 2;
+                    std::cout << "YOU WON! The ball fell out " << round << " times.\n"
+                              << "Press space to end.\n";
+                    gamePhase = GamePhase::Ended;
                 }
             }
         }
@@ -85,22 +94,22 @@ int main()
         {
             Key key = ctrl.checkKeyPress(window);
 
-            if(key == Key::StartPause)
+            if(key == Key::Pause)
             {
-                if(gamePhase == 2)
+                if(gamePhase == GamePhase::Ended)
                     break;
 
                 ctrl.checkKeyRelease(window, key);
-                gamePhase = 1;
+                gamePhase = GamePhase::Playing;
                 timer = glfwGetTime();
-                std::cout << "\tGRAMY!!\n\n";
+                std::cout << "\t## PLAY ##\n\n";
             }
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
 
     if(brick.bricksLeft != 0)
-        std::cout << "PRZERWANO GRĘ\n\n";
+        std::cout << "Game was interrupted.\n\n";
 
     glfwTerminate();
     return 0;
