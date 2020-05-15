@@ -169,8 +169,8 @@ GameBrick::GameBrick()
 
 void GameBrick::drawAllBricks(GLuint pID)
 {
-    Colour rowColours[6] = {Colour::Blue, Colour::Green,   Colour::Cyan,
-                            Colour::Red,  Colour::Magenta, Colour::Yellow};
+    Colour rowColours[6] = {Colour::Green,   Colour::Cyan, Colour::Blue,
+                            Colour::Magenta, Colour::Red,  Colour::Yellow};
 
     for(int i = 0; i < 6; ++i)
         for(int j = 0; j < 13; ++j)
@@ -729,7 +729,7 @@ void GameBall::brickScored(GameBrick & brick, int row, int column,
     --brick.bricksLeft;
     collided[row][column].second = true;
     bricksHit.push_back(std::make_pair(row, column));
-    std::cout << "-- Brick shot! " << brick.bricksLeft << " left... --\n";
+    std::cout << "-- Brick hit! " << brick.bricksLeft << " left... --\n";
 }
 
 #pragma endregion

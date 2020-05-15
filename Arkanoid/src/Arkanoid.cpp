@@ -26,7 +26,7 @@ int main()
     GamePaddle paddle;
 
     GamePhase gamePhase = GamePhase::NoPlay;
-    int round = 0;
+    int fallsCount = 0;
     GLfloat timer = 0.0f, pauseTime;
 
     do
@@ -37,10 +37,10 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+        Key key = ctrl.checkKeyPress(window);
+
         if(gamePhase == GamePhase::Playing)
         {
-            Key key = ctrl.checkKeyPress(window);
-
             switch(key)
             {
                 case Key::Pause:
@@ -66,7 +66,7 @@ int main()
             {
                 std::cout << "[[ The ball fell out! Try again. ]]\n";
                 gamePhase = GamePhase::NoPlay;
-                ++round;
+                ++fallsCount;
                 ball.restart();
                 paddle.restart();
             }
@@ -76,34 +76,29 @@ int main()
                 ball.checkCollisionBrick(brick);
                 ball.checkCollisionBoard(board);
 
-                GLfloat delta =
+                GLfloat timeDelta =
                         gamePhase == GamePhase::NoPlay ? pauseTime - timer : glfwGetTime() - timer;
 
                 timer = glfwGetTime();
-                ball.moveBall(delta);
+                ball.moveBall(timeDelta);
 
                 if(brick.bricksLeft == 0)
                 {
-                    std::cout << "YOU WON! The ball fell out " << round << " times.\n"
+                    std::cout << "YOU WON! The ball fell out " << fallsCount << " times.\n"
                               << "Press space to end.\n";
                     gamePhase = GamePhase::Ended;
                 }
             }
         }
-        else
+        else if(key == Key::Pause)
         {
-            Key key = ctrl.checkKeyPress(window);
+            if(gamePhase == GamePhase::Ended)
+                break;
 
-            if(key == Key::Pause)
-            {
-                if(gamePhase == GamePhase::Ended)
-                    break;
-
-                ctrl.checkKeyRelease(window, key);
-                gamePhase = GamePhase::Playing;
-                timer = glfwGetTime();
-                std::cout << "\t## PLAY ##\n\n";
-            }
+            ctrl.checkKeyRelease(window, key);
+            gamePhase = GamePhase::Playing;
+            timer = glfwGetTime();
+            std::cout << "\t## PLAY ##\n\n";
         }
     } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
             && glfwWindowShouldClose(window) == 0);
