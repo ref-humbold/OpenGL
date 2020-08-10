@@ -93,11 +93,9 @@ std::tuple<GLuint, GLuint> loadShaders()
 {
     // Read shaders
 #if READ_FROM_HEADER
-    std::string areaVertexShaderCode =
-            std::string(AreaVertexShader_glsl, AreaVertexShader_glsl_len);
-    std::string earthVertexShaderCode =
-            std::string(EarthVertexShader_glsl, EarthVertexShader_glsl_len);
-    std::string fragmentShaderCode = std::string(FragmentShader_glsl, FragmentShader_glsl_len);
+    const std::string & areaVertexShaderCode = AreaVertexShader_glsl;
+    const std::string & earthVertexShaderCode = EarthVertexShader_glsl;
+    const std::string & fragmentShaderCode = FragmentShader_glsl;
 #else
     std::string areaVertexShaderCode = readShader("../shaders/AreaVertexShader.glsl"s);
     std::string earthVertexShaderCode = readShader("../shaders/EarthVertexShader.glsl"s);
