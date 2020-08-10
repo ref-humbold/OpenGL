@@ -1,6 +1,6 @@
 #include "GLSLloader.hpp"
 
-#define READ_FROM_HEADER false
+#define READ_FROM_HEADER true
 
 #if READ_FROM_HEADER
 #include "shaders/FragmentShader_glsl.hpp"
@@ -92,8 +92,8 @@ GLuint loadShaders()
 {
     // Read shaders
 #if READ_FROM_HEADER
-    std::string vertexShaderCode = std::string(VertexShader_glsl, VertexShader_glsl_len);
-    std::string fragmentShaderCode = std::string(FragmentShader_glsl, FragmentShader_glsl_len);
+    const std::string & vertexShaderCode = VertexShader_glsl;
+    const std::string & fragmentShaderCode = FragmentShader_glsl;
 #else
     std::string vertexShaderCode = readShader("../shaders/VertexShader.glsl"s);
     std::string fragmentShaderCode = readShader("../shaders/FragmentShader.glsl"s);
