@@ -14,13 +14,6 @@ struct shader_exception : std::runtime_error
     }
 };
 
-GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
-                     const std::string & shaderName);
-
-GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
-
-std::string readShader(const std::string & filePath);
-
 GLuint loadShaders();
 
 #endif
