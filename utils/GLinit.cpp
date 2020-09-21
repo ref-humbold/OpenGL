@@ -48,7 +48,7 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
 
     addGlfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "Memory Game", nullptr, nullptr);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, "PROGRAM NAME", nullptr, nullptr);
 
     if(window == nullptr)
     {

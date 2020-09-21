@@ -49,7 +49,7 @@ IncludeCategories:
   # C standard library (C style)
   - Regex: '^<(std(arg|def|int|io)|assert|(u|w)char|ctype|errno|fenv|float|inttypes|limits|locale
       |math|setjmp|signal|string|time|wctype)\.h>'
-    Priority: 2
+    Priority: 3
   # C++ standard library
   - Regex: '^<(
       ios(fwd)?|(i|o|io|f|s)stream|streambuf|iomanip|exception|stdexcept|system_error|new|memory
@@ -58,16 +58,16 @@ IncludeCategories:
       |complex|chrono|functional|limits|locale|numeric|random|ratio|regex|type(info|index|_traits)
       |utility|valarray
     )>'
-    Priority: 3
+    Priority: 4
   # All other headers (C++ style)
   - Regex: '^<.*>'
-    Priority: 4
+    Priority: 5
   # All other headers (C style)
   - Regex: '^<.*\.(h|hpp)>'
-    Priority: 5
+    Priority: 6
   # All custom headers
   - Regex: '^".*"'
-    Priority: 6
+    Priority: 7
 IncludeIsMainRegex: '$'
 IndentCaseLabels: true
 IndentPPDirectives: None
