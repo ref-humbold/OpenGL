@@ -2,14 +2,9 @@
 #define GLSL_LOADER_HPP_
 
 #include <cstdlib>
-#include <cstring>
 #include <exception>
-#include <fstream>
-#include <iostream>
 #include <stdexcept>
-#include <algorithm>
 #include <string>
-#include <vector>
 #include <GL/glew.h>
 
 struct shader_exception : std::runtime_error

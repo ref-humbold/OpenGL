@@ -1,4 +1,9 @@
 #include "GLSLloader.hpp"
+#include <cstring>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 #define READ_FROM_HEADER true
 
