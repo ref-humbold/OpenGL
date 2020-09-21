@@ -66,7 +66,7 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
     }
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // black
 
     GLuint programID = loadShaders();
 

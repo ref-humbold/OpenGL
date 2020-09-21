@@ -7,7 +7,6 @@
 #include <tuple>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "GLSLloader.hpp"
 
 struct gl_exception : std::runtime_error
 {
@@ -15,10 +14,6 @@ struct gl_exception : std::runtime_error
     {
     }
 };
-
-void createVertexArray();
-
-void glfwHints();
 
 std::tuple<GLFWwindow *, GLuint> initializeGL();
 
