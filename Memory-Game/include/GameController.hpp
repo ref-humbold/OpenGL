@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <random>
 #include <set>
 #include <vector>
 #include <GL/glew.h>
@@ -70,13 +71,17 @@ private:
     void drawCards(GLuint programID, Colour colour, glm::vec2 transformation, int frameOffset);
     void drawSign(GLuint programID, Sign sign, glm::vec2 transformation);
 
-    const int coloursCount = 8, signsCount = 4;
+    static constexpr int coloursCount = 8, signsCount = 4;
     const std::pair<int, int> size;
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
     std::vector<glm::vec2> transforms;
     std::map<int, std::pair<Colour, Sign>> cards;
     std::set<int> visible;
+    std::default_random_engine rand_eng;
+    std::uniform_int_distribution<int> colours_distrib;
+    std::uniform_int_distribution<int> signs_distrib;
+    std::uniform_int_distribution<int> fields_distrib;
 };
 
 #endif
