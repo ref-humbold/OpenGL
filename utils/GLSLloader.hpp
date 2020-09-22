@@ -7,9 +7,9 @@
 #include <string>
 #include <GL/glew.h>
 
-struct shader_exception : std::runtime_error
+struct shader_error : std::runtime_error
 {
-    explicit shader_exception(const std::string & s) : std::runtime_error(s)
+    explicit shader_error(const std::string & s) : std::runtime_error(s)
     {
     }
 };
