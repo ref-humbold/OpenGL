@@ -44,7 +44,7 @@ namespace
 std::tuple<GLFWwindow *, GLuint> initializeGL()
 {
     if(!glfwInit())
-        throw gl_exception("Failed to initialize GLFW"s);
+        throw gl_error("Failed to initialize GLFW"s);
 
     addGlfwHints();
 
@@ -53,7 +53,7 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
     if(window == nullptr)
     {
         glfwTerminate();
-        throw gl_exception("Failed to open a new window"s);
+        throw gl_error("Failed to open a new window"s);
     }
 
     glfwMakeContextCurrent(window);
@@ -62,7 +62,7 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
     if(glewInit() != GLEW_OK)
     {
         glfwTerminate();
-        throw gl_exception("Failed to initialize GLEW"s);
+        throw gl_error("Failed to initialize GLEW"s);
     }
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
