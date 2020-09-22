@@ -1,9 +1,10 @@
 #ifndef GAME_ELEMENT_HPP_
 #define GAME_ELEMENT_HPP_
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
+#include <random>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -82,6 +83,11 @@ class GamePaddle
 public:
     GamePaddle();
 
+    int reflection()
+    {
+        return reflect_distrib(rand_eng);
+    }
+
     void restart();
     void drawPaddle(GLuint pID);
     void moveLeft(GLfloat delta);
@@ -99,6 +105,8 @@ private:
     glm::mat2 rotateMatrix;
     glm::vec2 transformVector;
     GLfloat velocity;
+    std::default_random_engine rand_eng;
+    std::uniform_int_distribution<int> reflect_distrib;
 };
 
 class GameBall
@@ -140,6 +148,9 @@ private:
     GLfloat velocityDistance;
     bool startingShot;
     std::vector<std::vector<std::pair<bool, bool>>> collided;
+    std::default_random_engine rand_eng;
+    std::uniform_int_distribution<int> velocity_distrib;
+    std::uniform_int_distribution<int> angle_distrib;
 };
 
 #endif

@@ -8,7 +8,7 @@ enum class GamePhase : int
 {
     NoPlay,
     Playing,
-    Ended,
+    Ended
 };
 
 int main()
@@ -17,7 +17,6 @@ int main()
     GLuint programID;
 
     std::tie(window, programID) = initializeGL();
-    srand(time(nullptr));
 
     GameController ctrl;
     GameBoard board;

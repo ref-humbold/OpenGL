@@ -277,7 +277,8 @@ GamePaddle::GamePaddle()
       scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
       rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
       transformVector{glm::vec2(0.0f, -0.95f)},
-      velocity{1.0f}
+      velocity{1.0f},
+      reflect_distrib{-8, 8}
 {
     vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
     colorBufferPaddle = createVertexBuffer(cbDataPaddle, sizeof(cbDataPaddle));
@@ -353,14 +354,17 @@ GameBall::GameBall()
       radius{glm::length(scaleMatrix * glm::vec2(0.13660254f, 0.13660254f))},
       separator{1.25f * radius},
       velocityDistance{50.0f * radius},
-      startingShot{true}
+      startingShot{true},
+      velocity_distrib{-10, 10},
+      angle_distrib{2, 6}
 {
     vertexBufferBall = createVertexBuffer(vbDataBall, sizeof(vbDataBall));
     colorBufferBall = createVertexBuffer(cbDataBall, sizeof(cbDataBall));
     vertexBufferCross = createVertexBuffer(vbDataCross, sizeof(vbDataCross));
     colorBufferCross = createVertexBuffer(cbDataCross, sizeof(cbDataCross));
 
-    velocity = velocityDistance * glm::normalize(glm::vec2((-10.0f + rand() % 21) / 10.0f, 1.0f));
+    velocity =
+            velocityDistance * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
     collided.resize(7);
 
     for(int i = 0; i < 5; ++i)
@@ -374,7 +378,8 @@ void GameBall::restart()
 {
     transformVector = glm::vec2(0.0f, -0.9f);
     startingShot = true;
-    velocity = velocityDistance * glm::normalize(glm::vec2((-10.0f + rand() % 21) / 10.0f, 1.0f));
+    velocity =
+            velocityDistance * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
 }
 
 void GameBall::drawBall(GLuint pID)
@@ -479,7 +484,7 @@ void GameBall::checkCollisionPaddle(GamePaddle & paddle)
     if(isInRange(transformVector[0], padPosX - 0.06f, padPosX + 0.06f) && dist <= separator
        && !collided[6][0].first)
     {
-        GLfloat rnd = rand() % 2 == 0 ? (1 + rand() % 10) * 0.005f : -(1 + rand() % 8) * 0.005f;
+        GLfloat rnd = paddle.reflection() * 0.005f;
 
         normalVector += glm::normalize(glm::vec2(rnd, 1.0f));
         collided[6][0].second = true;
@@ -698,7 +703,7 @@ void GameBall::checkCollisionBrick(GameBrick & brick)
 
 void GameBall::moveBall(GLfloat delta)
 {
-    float rotationAngle = (2 + rand() % 5) * M_PI / 8.0f;
+    float rotationAngle = angle_distrib(rand_eng) * M_PI / 8.0f;
 
     rotateMatrix = glm::mat2(glm::vec2(cos(rotationAngle), sin(rotationAngle)),
                              glm::vec2(-sin(rotationAngle), cos(rotationAngle)));
