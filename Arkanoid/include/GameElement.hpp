@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <random>
 #include <vector>
 #include <GL/glew.h>
@@ -27,16 +28,26 @@ enum class Colour : int
 class GameBoard
 {
 public:
-    std::vector<glm::vec2> normalVectors;
+    enum class BorderPlace : int
+    {
+        LeftBottom,
+        LeftTop,
+        Top,
+        RightTop,
+        RightBottom
+    };
 
     GameBoard();
 
     void drawBackground(GLuint pID);
-    void drawBorderTriangles(GLuint pID);
-    void countNormalVectors();
+    void drawBorders(GLuint pID);
+
+    std::map<BorderPlace, glm::vec2> normalVectors;
 
 private:
+    void drawBorderTriangles(GLuint pID);
     void drawOneTriangle(GLuint pID);
+    void countNormalVectors();
 
     const GLfloat vbDataHexagon[16];
     const GLfloat cbDataHexagon[24];
@@ -55,12 +66,13 @@ private:
 class GameBrick
 {
 public:
-    bool isVisible[6][13];
-    int bricksLeft;
-
     GameBrick();
 
-    void drawAllBricks(GLuint pID);
+    void drawAll(GLuint pID);
+
+    static constexpr int rowsNumber = 6, columnsNumber = 13;
+    bool isVisible[rowsNumber][columnsNumber];
+    int bricksLeft;
 
 private:
     void drawRect(GLuint pID, Colour colour);
@@ -89,11 +101,27 @@ public:
     }
 
     void restart();
-    void drawPaddle(GLuint pID);
-    void moveLeft(GLfloat delta);
-    void moveRight(GLfloat delta);
-    GLfloat getPosX();
-    GLfloat getSurf();
+    void draw(GLuint pID);
+
+    void moveLeft(GLfloat delta)
+    {
+        transformVector[0] = std::max(-0.4f, transformVector[0] - velocity * delta);
+    }
+
+    void moveRight(GLfloat delta)
+    {
+        transformVector[0] = std::min(0.4f, transformVector[0] + velocity * delta);
+    }
+
+    GLfloat getPosX()
+    {
+        return transformVector[0];
+    }
+
+    GLfloat getSurfaceY()
+    {
+        return transformVector[1] + 0.01f;
+    }
 
 private:
     const GLfloat vbDataPaddle[20];
@@ -115,17 +143,22 @@ public:
     GameBall();
 
     void restart();
-    void drawBall(GLuint pID);
-    void drawCross(GLuint pID);
-    bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR);
-    GLfloat countDistance(glm::vec2 pt, glm::vec2 nl, glm::vec2 pl);
+    void draw(GLuint pID);
     bool checkOutside();
-    void checkCollisionBoard(GameBoard & board);
-    void checkCollisionPaddle(GamePaddle & paddle);
-    void checkCollisionBrick(GameBrick & brick);
-    void moveBall(GLfloat delta);
+    void checkCollision(GameBoard & board);
+    void checkCollision(GamePaddle & paddle);
+    void checkCollision(GameBrick & brick);
+    void move(GLfloat delta);
 
 private:
+    bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR)
+    {
+        return minR <= value && value <= maxR;
+    }
+
+    void drawBall(GLuint pID);
+    void drawCross(GLuint pID);
+    GLfloat distance(glm::vec2 point, glm::vec2 lineVector, glm::vec2 linePoint);
     void brickScored(GameBrick & brick, int row, int column,
                      std::vector<std::pair<int, int>> & bricksHit);
 

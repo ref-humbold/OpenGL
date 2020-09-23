@@ -4,12 +4,10 @@ void GameController::drawGame(GLuint pID, GameBoard & board, GameBall & ball, Ga
                               GamePaddle & paddle)
 {
     board.drawBackground(pID);
-    ball.drawBall(pID);
-    ball.drawCross(pID);
-    brick.drawAllBricks(pID);
-    paddle.drawPaddle(pID);
-    board.drawBorderTriangles(pID);
-    board.countNormalVectors();
+    ball.draw(pID);
+    brick.drawAll(pID);
+    paddle.draw(pID);
+    board.drawBorders(pID);
 }
 
 Key GameController::checkKeyPress(GLFWwindow * window)

@@ -71,15 +71,15 @@ int main()
             }
             else
             {
-                ball.checkCollisionPaddle(paddle);
-                ball.checkCollisionBrick(brick);
-                ball.checkCollisionBoard(board);
+                ball.checkCollision(paddle);
+                ball.checkCollision(brick);
+                ball.checkCollision(board);
 
                 GLfloat timeDelta =
                         gamePhase == GamePhase::NoPlay ? pauseTime - timer : glfwGetTime() - timer;
 
                 timer = glfwGetTime();
-                ball.moveBall(timeDelta);
+                ball.move(timeDelta);
 
                 if(brick.bricksLeft == 0)
                 {

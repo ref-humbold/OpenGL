@@ -41,7 +41,6 @@ GameBoard::GameBoard()
     colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
     vertexBufferTriangle = createVertexBuffer(vbDataTriangle, sizeof(vbDataTriangle));
     colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
-    normalVectors.resize(5);
 }
 
 void GameBoard::drawBackground(GLuint pID)
@@ -71,6 +70,12 @@ void GameBoard::drawBackground(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
+void GameBoard::drawBorders(GLuint pID)
+{
+    drawBorderTriangles(pID);
+    countNormalVectors();
+}
+
 void GameBoard::drawBorderTriangles(GLuint pID)
 {
     // left bottom
@@ -98,34 +103,6 @@ void GameBoard::drawBorderTriangles(GLuint pID)
     drawOneTriangle(pID);
 }
 
-void GameBoard::countNormalVectors()
-{
-    glm::vec2 normal = glm::vec2(1.0f, 0.57735f);
-
-    // left bottom
-    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    normalVectors[0] = glm::normalize(rotateMatrix * scaleMatrix * normal);
-
-    // left top
-    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
-    normalVectors[1] = glm::normalize(rotateMatrix * scaleMatrix * normal);
-
-    // top
-    normalVectors[2] = glm::normalize(glm::vec2(0.0f, -1.0f));
-
-    // right top
-    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
-    normalVectors[3] = glm::normalize(rotateMatrix * scaleMatrix * normal);
-
-    // right bottom
-    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    normalVectors[4] = glm::normalize(rotateMatrix * scaleMatrix * normal);
-}
-
 void GameBoard::drawOneTriangle(GLuint pID)
 {
     loadBuffer(vertexBufferTriangle, colorBufferTriangle);
@@ -144,6 +121,38 @@ void GameBoard::drawOneTriangle(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
+void GameBoard::countNormalVectors()
+{
+    glm::vec2 normal = glm::vec2(1.0f, 0.57735f);
+
+    // left bottom
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    normalVectors.emplace(GameBoard::BorderPlace::LeftBottom,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // left top
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    normalVectors.emplace(GameBoard::BorderPlace::LeftTop,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // top
+    normalVectors.emplace(GameBoard::BorderPlace::Top, glm::normalize(glm::vec2(0.0f, -1.0f)));
+
+    // right top
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    normalVectors.emplace(GameBoard::BorderPlace::RightTop,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // right bottom
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    normalVectors.emplace(GameBoard::BorderPlace::RightBottom,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+}
+
 #pragma endregion
 #pragma region GameBrick
 
@@ -154,7 +163,7 @@ GameBrick::GameBrick()
                 {true, true, true, true, true, true, true, true, true, true, true, true, true},
                 {false, true, true, true, true, true, true, true, true, true, true, true, false},
                 {false, true, true, true, true, true, true, true, true, true, true, true, false}},
-      bricksLeft{74},
+      bricksLeft{rowsNumber * columnsNumber - 4},
       vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
       cbDataRect{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
       cbDataRectBorder{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
@@ -167,13 +176,13 @@ GameBrick::GameBrick()
     colorBufferRectBorder = createVertexBuffer(cbDataRectBorder, sizeof(cbDataRectBorder));
 }
 
-void GameBrick::drawAllBricks(GLuint pID)
+void GameBrick::drawAll(GLuint pID)
 {
-    Colour rowColours[6] = {Colour::Green,   Colour::Cyan, Colour::Blue,
-                            Colour::Magenta, Colour::Red,  Colour::Yellow};
+    Colour rowColours[rowsNumber] = {Colour::Green,   Colour::Cyan, Colour::Blue,
+                                     Colour::Magenta, Colour::Red,  Colour::Yellow};
 
-    for(int i = 0; i < 6; ++i)
-        for(int j = 0; j < 13; ++j)
+    for(int i = 0; i < rowsNumber; ++i)
+        for(int j = 0; j < columnsNumber; ++j)
         {
             transformVector = glm::vec2(0.1f * (j - 6), 0.6f + 0.05f * i);
 
@@ -290,7 +299,7 @@ void GamePaddle::restart()
     velocity = 1.0f;
 }
 
-void GamePaddle::drawPaddle(GLuint pID)
+void GamePaddle::draw(GLuint pID)
 {
     loadBuffer(vertexBufferPaddle, colorBufferPaddle);
 
@@ -306,26 +315,6 @@ void GamePaddle::drawPaddle(GLuint pID)
 
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
-}
-
-void GamePaddle::moveLeft(GLfloat delta)
-{
-    transformVector[0] = std::max(-0.4f, transformVector[0] - velocity * delta);
-}
-
-void GamePaddle::moveRight(GLfloat delta)
-{
-    transformVector[0] = std::min(0.4f, transformVector[0] + velocity * delta);
-}
-
-GLfloat GamePaddle::getPosX()
-{
-    return transformVector[0];
-}
-
-GLfloat GamePaddle::getSurf()
-{
-    return transformVector[1] + 0.01f;
 }
 
 #pragma endregion
@@ -382,54 +371,10 @@ void GameBall::restart()
             velocityDistance * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
 }
 
-void GameBall::drawBall(GLuint pID)
+void GameBall::draw(GLuint pID)
 {
-    loadBuffer(vertexBufferBall, colorBufferBall);
-
-    GLint scaleMat = glGetUniformLocation(pID, "scaleMat");
-    GLint rotateMat = glGetUniformLocation(pID, "rotateMat");
-    GLint transformVec = glGetUniformLocation(pID, "transformVec");
-
-    glUniformMatrix2fv(scaleMat, 1, GL_FALSE, &scaleMatrix[0][0]);
-    glUniformMatrix2fv(rotateMat, 1, GL_FALSE, &rotateMatrix[0][0]);
-    glUniform2fv(transformVec, 1, &transformVector[0]);
-
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 14);
-
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
-}
-
-void GameBall::drawCross(GLuint pID)
-{
-    loadBuffer(vertexBufferCross, colorBufferCross);
-
-    GLint scaleMat = glGetUniformLocation(pID, "scaleMat");
-    GLint rotateMat = glGetUniformLocation(pID, "rotateMat");
-    GLint transformVec = glGetUniformLocation(pID, "transformVec");
-
-    glUniformMatrix2fv(scaleMat, 1, GL_FALSE, &scaleMatrix[0][0]);
-    glUniformMatrix2fv(rotateMat, 1, GL_FALSE, &rotateMatrix[0][0]);
-    glUniform2fv(transformVec, 1, &transformVector[0]);
-
-    glDrawArrays(GL_LINES, 0, 2);
-    glDrawArrays(GL_LINES, 2, 2);
-
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
-}
-
-bool GameBall::isInRange(GLfloat value, GLfloat minR, GLfloat maxR)
-{
-    return minR <= value && value <= maxR;
-}
-
-GLfloat GameBall::countDistance(glm::vec2 pt, glm::vec2 nl, glm::vec2 pl)
-{
-    glm::vec2 nvl = glm::normalize(nl), ptd = pl - pt;
-    GLfloat dotProduct = glm::dot(ptd, nvl);
-
-    return glm::length(ptd - nvl * dotProduct);
+    drawBall(pID);
+    drawCross(pID);
 }
 
 bool GameBall::checkOutside()
@@ -440,46 +385,45 @@ bool GameBall::checkOutside()
            || transformVector[1] <= 2.0f * transformVector[0] - 2.0f;
 }
 
-void GameBall::checkCollisionBoard(GameBoard & board)
+void GameBall::checkCollision(GameBoard & board)
 {
-    if(countDistance(transformVector, glm::vec2(0.57735f, -1.0f), glm::vec2(-1.0f, 0.0f))
-               <= separator
+    if(distance(transformVector, glm::vec2(0.57735f, -1.0f), glm::vec2(-1.0f, 0.0f)) <= separator
        && !collided[5][0].first)
     {
-        normalVector += board.normalVectors[0];
+        normalVector += board.normalVectors[GameBoard::BorderPlace::LeftBottom];
         collided[5][0].second = true;
     }
-    else if(countDistance(transformVector, glm::vec2(0.57735f, 1.0f), glm::vec2(-1.0f, 0.0f))
+    else if(distance(transformVector, glm::vec2(0.57735f, 1.0f), glm::vec2(-1.0f, 0.0f))
                     <= separator
             && !collided[5][1].first)
     {
-        normalVector += board.normalVectors[1];
+        normalVector += board.normalVectors[GameBoard::BorderPlace::LeftTop];
         collided[5][1].second = true;
     }
     else if(std::abs(0.975f - transformVector[1]) <= separator && !collided[5][2].first)
     {
-        normalVector += board.normalVectors[2];
+        normalVector += board.normalVectors[GameBoard::BorderPlace::Top];
         collided[5][2].second = true;
     }
-    else if(countDistance(transformVector, glm::vec2(-0.57735f, 1.0f), glm::vec2(1.0f, 0.0f))
+    else if(distance(transformVector, glm::vec2(-0.57735f, 1.0f), glm::vec2(1.0f, 0.0f))
                     <= separator
             && !collided[5][3].first)
     {
-        normalVector += board.normalVectors[3];
+        normalVector += board.normalVectors[GameBoard::BorderPlace::RightTop];
         collided[5][3].second = true;
     }
-    else if(countDistance(transformVector, glm::vec2(-0.57735f, -1.0f), glm::vec2(1.0f, 0.0f))
+    else if(distance(transformVector, glm::vec2(-0.57735f, -1.0f), glm::vec2(1.0f, 0.0f))
                     <= separator
             && !collided[5][4].first)
     {
-        normalVector += board.normalVectors[4];
+        normalVector += board.normalVectors[GameBoard::BorderPlace::RightBottom];
         collided[5][4].second = true;
     }
 }
 
-void GameBall::checkCollisionPaddle(GamePaddle & paddle)
+void GameBall::checkCollision(GamePaddle & paddle)
 {
-    GLfloat padPosX = paddle.getPosX(), dist = std::abs(paddle.getSurf() - transformVector[1]);
+    GLfloat padPosX = paddle.getPosX(), dist = std::abs(paddle.getSurfaceY() - transformVector[1]);
 
     if(isInRange(transformVector[0], padPosX - 0.06f, padPosX + 0.06f) && dist <= separator
        && !collided[6][0].first)
@@ -491,7 +435,7 @@ void GameBall::checkCollisionPaddle(GamePaddle & paddle)
     }
 }
 
-void GameBall::checkCollisionBrick(GameBrick & brick)
+void GameBall::checkCollision(GameBrick & brick)
 {
     std::vector<std::pair<int, int>> bricksHit;
 
@@ -701,7 +645,7 @@ void GameBall::checkCollisionBrick(GameBrick & brick)
         brick.isVisible[b.first][b.second] = false;
 }
 
-void GameBall::moveBall(GLfloat delta)
+void GameBall::move(GLfloat delta)
 {
     float rotationAngle = angle_distrib(rand_eng) * M_PI / 8.0f;
 
@@ -726,6 +670,51 @@ void GameBall::moveBall(GLfloat delta)
             e.first = e.second;
             e.second = false;
         }
+}
+
+void GameBall::drawBall(GLuint pID)
+{
+    loadBuffer(vertexBufferBall, colorBufferBall);
+
+    GLint scaleMat = glGetUniformLocation(pID, "scaleMat");
+    GLint rotateMat = glGetUniformLocation(pID, "rotateMat");
+    GLint transformVec = glGetUniformLocation(pID, "transformVec");
+
+    glUniformMatrix2fv(scaleMat, 1, GL_FALSE, &scaleMatrix[0][0]);
+    glUniformMatrix2fv(rotateMat, 1, GL_FALSE, &rotateMatrix[0][0]);
+    glUniform2fv(transformVec, 1, &transformVector[0]);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 14);
+
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+}
+
+void GameBall::drawCross(GLuint pID)
+{
+    loadBuffer(vertexBufferCross, colorBufferCross);
+
+    GLint scaleMat = glGetUniformLocation(pID, "scaleMat");
+    GLint rotateMat = glGetUniformLocation(pID, "rotateMat");
+    GLint transformVec = glGetUniformLocation(pID, "transformVec");
+
+    glUniformMatrix2fv(scaleMat, 1, GL_FALSE, &scaleMatrix[0][0]);
+    glUniformMatrix2fv(rotateMat, 1, GL_FALSE, &rotateMatrix[0][0]);
+    glUniform2fv(transformVec, 1, &transformVector[0]);
+
+    glDrawArrays(GL_LINES, 0, 2);
+    glDrawArrays(GL_LINES, 2, 2);
+
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);
+}
+
+GLfloat GameBall::distance(glm::vec2 point, glm::vec2 lineVector, glm::vec2 linePoint)
+{
+    glm::vec2 normLineVector = glm::normalize(lineVector), pointsDiff = linePoint - point;
+    GLfloat dotProduct = glm::dot(pointsDiff, normLineVector);
+
+    return glm::length(pointsDiff - normLineVector * dotProduct);
 }
 
 void GameBall::brickScored(GameBrick & brick, int row, int column,
