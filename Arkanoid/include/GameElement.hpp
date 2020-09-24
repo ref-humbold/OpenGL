@@ -179,11 +179,10 @@ private:
         return minR <= value && value <= maxR;
     }
 
+    void setCollided();
     void drawBall(GLuint pID);
     void drawCross(GLuint pID);
-    GLfloat distance(glm::vec2 point, glm::vec2 lineVector, glm::vec2 linePoint);
-    void brickScored(GameBrick & brick, int row, int column,
-                     std::vector<std::pair<int, int>> & bricksHit);
+    void brickScored(GameBrick & brick, int row, int column);
 
     const GLfloat vbDataBall[28];
     const GLfloat cbDataBall[42];
@@ -205,7 +204,7 @@ private:
     bool startingShot;
     Collision collidedPaddle;
     std::map<GameBoard::BorderPlace, Collision> collidedBoard;
-    std::vector<std::vector<std::pair<bool, bool>>> collidedBricks;
+    std::vector<std::vector<Collision>> collidedBricks;
     std::default_random_engine rand_eng;
     std::uniform_int_distribution<int> velocity_distrib;
     std::uniform_int_distribution<int> angle_distrib;
