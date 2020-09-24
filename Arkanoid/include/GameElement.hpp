@@ -205,7 +205,7 @@ private:
     bool startingShot;
     Collision collidedPaddle;
     std::map<GameBoard::BorderPlace, Collision> collidedBoard;
-    std::vector<std::vector<std::pair<bool, bool>>> collided;
+    std::vector<std::vector<std::pair<bool, bool>>> collidedBricks;
     std::default_random_engine rand_eng;
     std::uniform_int_distribution<int> velocity_distrib;
     std::uniform_int_distribution<int> angle_distrib;

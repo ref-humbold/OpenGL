@@ -377,12 +377,16 @@ GameBall::GameBall()
 
     velocity =
             velocityDistance * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
-    collided.resize(7);
 
-    for(int i = 0; i < 5; ++i)
-        collided[i].resize(13, std::make_pair(false, false));
+    collidedBoard.emplace(GameBoard::BorderPlace::LeftBottom, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::LeftTop, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::Top, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::RightTop, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::RightBottom, Collision());
+    collidedBricks.resize(6);
 
-    collided[5].resize(5, std::make_pair(false, false));
+    for(int i = 0; i < 6; ++i)
+        collidedBricks[i].resize(13, std::make_pair(false, false));
 }
 
 void GameBall::restart()
@@ -410,34 +414,34 @@ bool GameBall::checkOutside()
 void GameBall::checkCollision(GameBoard & board)
 {
     if(board.distance(transformVector, GameBoard::BorderPlace::LeftBottom) <= separator
-       && !collided[5][0].first)
+       && !collidedBoard[GameBoard::BorderPlace::LeftBottom].previous)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::LeftBottom];
-        collided[5][0].second = true;
+        collidedBoard[GameBoard::BorderPlace::LeftBottom].current = true;
     }
     else if(board.distance(transformVector, GameBoard::BorderPlace::LeftTop) <= separator
-            && !collided[5][1].first)
+            && !collidedBoard[GameBoard::BorderPlace::LeftTop].previous)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::LeftTop];
-        collided[5][1].second = true;
+        collidedBoard[GameBoard::BorderPlace::LeftTop].current = true;
     }
     else if(board.distance(transformVector, GameBoard::BorderPlace::Top) <= separator
-            && !collided[5][2].first)
+            && !collidedBoard[GameBoard::BorderPlace::Top].previous)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::Top];
-        collided[5][2].second = true;
+        collidedBoard[GameBoard::BorderPlace::Top].current = true;
     }
     else if(board.distance(transformVector, GameBoard::BorderPlace::RightTop) <= separator
-            && !collided[5][3].first)
+            && !collidedBoard[GameBoard::BorderPlace::RightTop].previous)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::RightTop];
-        collided[5][3].second = true;
+        collidedBoard[GameBoard::BorderPlace::RightTop].current = true;
     }
     else if(board.distance(transformVector, GameBoard::BorderPlace::RightBottom) <= separator
-            && !collided[5][4].first)
+            && !collidedBoard[GameBoard::BorderPlace::RightBottom].previous)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::RightBottom];
-        collided[5][4].second = true;
+        collidedBoard[GameBoard::BorderPlace::RightBottom].current = true;
     }
 }
 
@@ -492,8 +496,8 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPos[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPos[0] + 0.6f) * 10.0f + 0.5);
 
-            if(isInRange(row, 0, 5) && isInRange(column, 0, 12) && !collided[row][column].first
-               && brick.isVisible[row][column])
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].first && brick.isVisible[row][column])
             {
                 int closeBorder = 0;
 
@@ -531,8 +535,8 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if(isInRange(row, 0, 5) && isInRange(column, 0, 12) && !collided[row][column].first
-               && brick.isVisible[row][column])
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].first && brick.isVisible[row][column])
             {
                 normalVector += glm::normalize(glm::vec2(0.0f, -1.0f));
                 brickScored(brick, row, column, bricksHit);
@@ -546,8 +550,8 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if(isInRange(row, 0, 5) && isInRange(column, 0, 12) && !collided[row][column].first
-               && brick.isVisible[row][column])
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].first && brick.isVisible[row][column])
             {
                 normalVector += glm::normalize(glm::vec2(0.0f, 1.0f));
                 brickScored(brick, row, column, bricksHit);
@@ -561,8 +565,8 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if(isInRange(row, 0, 5) && isInRange(column, 0, 12) && !collided[row][column].first
-               && brick.isVisible[row][column])
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].first && brick.isVisible[row][column])
             {
                 normalVector += glm::normalize(glm::vec2(1.0f, 0.0f));
                 brickScored(brick, row, column, bricksHit);
@@ -576,8 +580,8 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if(isInRange(row, 0, 5) && isInRange(column, 0, 12) && !collided[row][column].first
-               && brick.isVisible[row][column])
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].first && brick.isVisible[row][column])
             {
                 normalVector += glm::normalize(glm::vec2(-1.0f, 0.0f));
                 brickScored(brick, row, column, bricksHit);
@@ -591,11 +595,11 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if((row == 0 && isInRange(column, 0, 11) && !collided[row][column].first
+            if((row == 0 && isInRange(column, 0, 11) && !collidedBricks[row][column].first
                 && brick.isVisible[row][column] && !brick.isVisible[row][column + 1])
-               || (isInRange(row, 1, 5) && isInRange(column, 0, 11) && !collided[row][column].first
-                   && brick.isVisible[row][column] && !brick.isVisible[row][column + 1]
-                   && !brick.isVisible[row - 1][column]))
+               || (isInRange(row, 1, 5) && isInRange(column, 0, 11)
+                   && !collidedBricks[row][column].first && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column + 1] && !brick.isVisible[row - 1][column]))
             {
                 normalVector += velocity[1] < 0 ? glm::normalize(glm::vec2(1.0f, 0.0f))
                                                 : glm::normalize(glm::vec2(1.0f, -1.0f));
@@ -610,11 +614,11 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if((row == 5 && isInRange(column, 0, 11) && !collided[row][column].first
+            if((row == 5 && isInRange(column, 0, 11) && !collidedBricks[row][column].first
                 && brick.isVisible[row][column] && !brick.isVisible[row][column + 1])
-               || (isInRange(row, 0, 4) && isInRange(column, 0, 11) && !collided[row][column].first
-                   && brick.isVisible[row][column] && !brick.isVisible[row][column + 1]
-                   && !brick.isVisible[row + 1][column]))
+               || (isInRange(row, 0, 4) && isInRange(column, 0, 11)
+                   && !collidedBricks[row][column].first && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column + 1] && !brick.isVisible[row + 1][column]))
             {
                 normalVector += velocity[1] > 0 ? glm::normalize(glm::vec2(1.0f, 0.0f))
                                                 : glm::normalize(glm::vec2(1.0f, 1.0f));
@@ -629,11 +633,11 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if((row == 0 && isInRange(column, 1, 12) && !collided[row][column].first
+            if((row == 0 && isInRange(column, 1, 12) && !collidedBricks[row][column].first
                 && brick.isVisible[row][column] && !brick.isVisible[row][column - 1])
-               || (isInRange(row, 1, 5) && isInRange(column, 1, 12) && !collided[row][column].first
-                   && brick.isVisible[row][column] && !brick.isVisible[row][column - 1]
-                   && !brick.isVisible[row - 1][column]))
+               || (isInRange(row, 1, 5) && isInRange(column, 1, 12)
+                   && !collidedBricks[row][column].first && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column - 1] && !brick.isVisible[row - 1][column]))
             {
                 normalVector += velocity[1] < 0 ? glm::normalize(glm::vec2(-1.0f, 0.0f))
                                                 : glm::normalize(glm::vec2(-1.0f, -1.0f));
@@ -648,11 +652,11 @@ void GameBall::checkCollision(GameBrick & brick)
             int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
             int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
 
-            if((row == 5 && isInRange(column, 1, 12) && !collided[row][column].first
+            if((row == 5 && isInRange(column, 1, 12) && !collidedBricks[row][column].first
                 && brick.isVisible[row][column] && !brick.isVisible[row][column - 1])
-               || (isInRange(row, 0, 4) && isInRange(column, 1, 12) && !collided[row][column].first
-                   && brick.isVisible[row][column] && !brick.isVisible[row][column - 1]
-                   && !brick.isVisible[row + 1][column]))
+               || (isInRange(row, 0, 4) && isInRange(column, 1, 12)
+                   && !collidedBricks[row][column].first && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column - 1] && !brick.isVisible[row + 1][column]))
             {
                 normalVector += velocity[1] > 0 ? glm::normalize(glm::vec2(-1.0f, 0.0f))
                                                 : glm::normalize(glm::vec2(-1.0f, 1.0f));
@@ -686,7 +690,10 @@ void GameBall::move(GLfloat delta)
 
     collidedPaddle.shift();
 
-    for(auto & vc : collided)
+    for(auto && e : collidedBoard)
+        e.second.shift();
+
+    for(auto & vc : collidedBricks)
         for(auto & e : vc)
         {
             e.first = e.second;
@@ -743,7 +750,7 @@ void GameBall::brickScored(GameBrick & brick, int row, int column,
                            std::vector<std::pair<int, int>> & bricksHit)
 {
     --brick.bricksLeft;
-    collided[row][column].second = true;
+    collidedBricks[row][column].second = true;
     bricksHit.push_back(std::make_pair(row, column));
     std::cout << "-- Brick hit! " << brick.bricksLeft << " left... --\n";
 }
