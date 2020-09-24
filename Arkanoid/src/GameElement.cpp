@@ -356,7 +356,6 @@ GameBall::GameBall()
         collided[i].resize(13, std::make_pair(false, false));
 
     collided[5].resize(5, std::make_pair(false, false));
-    collided[6].resize(1, std::make_pair(false, false));
 }
 
 void GameBall::restart()
@@ -422,12 +421,12 @@ void GameBall::checkCollision(GamePaddle & paddle)
     GLfloat padPosX = paddle.getPosX(), dist = std::abs(paddle.getSurfaceY() - transformVector[1]);
 
     if(isInRange(transformVector[0], padPosX - 0.06f, padPosX + 0.06f) && dist <= separator
-       && !collided[6][0].first)
+       && !collidedPaddle.previous)
     {
         GLfloat rnd = paddle.reflection() * 0.005f;
 
         normalVector += glm::normalize(glm::vec2(rnd, 1.0f));
-        collided[6][0].second = true;
+        collidedPaddle.current = true;
     }
 }
 
@@ -659,6 +658,8 @@ void GameBall::move(GLfloat delta)
 
     transformVector += velocity * delta;
     normalVector = glm::vec2(0.0f, 0.0f);
+
+    collidedPaddle.shift();
 
     for(auto & vc : collided)
         for(auto & e : vc)

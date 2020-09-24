@@ -150,6 +150,22 @@ public:
     void move(GLfloat delta);
 
 private:
+    struct Collision
+    {
+        bool previous;
+        bool current;
+
+        Collision() : previous{false}, current{false}
+        {
+        }
+
+        void shift()
+        {
+            previous = current;
+            current = false;
+        }
+    };
+
     bool isInRange(GLfloat value, GLfloat minR, GLfloat maxR)
     {
         return minR <= value && value <= maxR;
@@ -179,6 +195,7 @@ private:
     GLfloat separator;
     GLfloat velocityDistance;
     bool startingShot;
+    Collision collidedPaddle;
     std::vector<std::vector<std::pair<bool, bool>>> collided;
     std::default_random_engine rand_eng;
     std::uniform_int_distribution<int> velocity_distrib;
