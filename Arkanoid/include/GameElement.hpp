@@ -31,12 +31,19 @@ public:
 
     void drawBackground(GLuint pID);
     void drawBorders(GLuint pID);
+    GLfloat distance(const glm::vec2 & point, BorderPlace place);
 
     std::map<BorderPlace, glm::vec2> normalVectors;
 
 private:
+    glm::vec2 orthogonal(const glm::vec2 & v)
+    {
+        return glm::vec2(-v[1], v[0]);
+    }
+
     void drawOneTriangle(GLuint pID);
     void countNormalVectors();
+    void countInnerSides();
 
     const GLfloat vbDataHexagon[16];
     const GLfloat cbDataHexagon[24];
@@ -50,6 +57,7 @@ private:
     glm::mat2 scaleMatrix;
     glm::mat2 rotateMatrix;
     glm::vec2 transformVector;
+    std::map<BorderPlace, std::pair<glm::vec2, glm::vec2>> innerSides;
 };
 
 class GameBrick
@@ -196,6 +204,7 @@ private:
     GLfloat velocityDistance;
     bool startingShot;
     Collision collidedPaddle;
+    std::map<GameBoard::BorderPlace, Collision> collidedBoard;
     std::vector<std::vector<std::pair<bool, bool>>> collided;
     std::default_random_engine rand_eng;
     std::uniform_int_distribution<int> velocity_distrib;

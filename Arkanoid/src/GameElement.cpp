@@ -43,6 +43,7 @@ GameBoard::GameBoard()
     colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
 
     countNormalVectors();
+    countInnerSides();
 }
 
 void GameBoard::drawBackground(GLuint pID)
@@ -99,6 +100,15 @@ void GameBoard::drawBorders(GLuint pID)
     drawOneTriangle(pID);
 }
 
+GLfloat GameBoard::distance(const glm::vec2 & point, GameBoard::BorderPlace place)
+{
+    glm::vec2 normLineVector = glm::normalize(innerSides[place].first);
+    glm::vec2 pointsDiff = innerSides[place].second - point;
+    GLfloat dotProduct = glm::dot(pointsDiff, normLineVector);
+
+    return glm::length(pointsDiff - normLineVector * dotProduct);
+}
+
 void GameBoard::drawOneTriangle(GLuint pID)
 {
     loadBuffer(vertexBufferTriangle, colorBufferTriangle);
@@ -124,31 +134,48 @@ void GameBoard::countNormalVectors()
     // left bottom
     scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
     rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    normalVectors.emplace(GameBoard::BorderPlace::LeftBottom,
+    normalVectors.emplace(BorderPlace::LeftBottom,
                           glm::normalize(rotateMatrix * scaleMatrix * normal));
 
     // left top
     scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
     rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
-    normalVectors.emplace(GameBoard::BorderPlace::LeftTop,
+    normalVectors.emplace(BorderPlace::LeftTop,
                           glm::normalize(rotateMatrix * scaleMatrix * normal));
 
     // top
-    normalVectors.emplace(GameBoard::BorderPlace::Top, glm::normalize(glm::vec2(0.0f, -1.0f)));
+    normalVectors.emplace(BorderPlace::Top, glm::normalize(glm::vec2(0.0f, -1.0f)));
 
     // right top
     scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
     rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
-    normalVectors.emplace(GameBoard::BorderPlace::RightTop,
+    normalVectors.emplace(BorderPlace::RightTop,
                           glm::normalize(rotateMatrix * scaleMatrix * normal));
 
     // right bottom
     scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
     rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
-    normalVectors.emplace(GameBoard::BorderPlace::RightBottom,
+    normalVectors.emplace(BorderPlace::RightBottom,
                           glm::normalize(rotateMatrix * scaleMatrix * normal));
 }
 
+void GameBoard::countInnerSides()
+{
+    innerSides.emplace(BorderPlace::LeftBottom,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::LeftBottom]),
+                                      glm::vec2(-1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::LeftTop,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::LeftTop]),
+                                      glm::vec2(-1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::Top, std::make_pair(orthogonal(normalVectors[BorderPlace::Top]),
+                                                        glm::vec2(0.0f, 0.975f)));
+    innerSides.emplace(BorderPlace::RightTop,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::RightTop]),
+                                      glm::vec2(1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::RightBottom,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::RightBottom]),
+                                      glm::vec2(1.0f, 0.0f)));
+}
 #pragma endregion
 #pragma region GameBrick
 
@@ -382,33 +409,31 @@ bool GameBall::checkOutside()
 
 void GameBall::checkCollision(GameBoard & board)
 {
-    if(distance(transformVector, glm::vec2(0.57735f, -1.0f), glm::vec2(-1.0f, 0.0f)) <= separator
+    if(board.distance(transformVector, GameBoard::BorderPlace::LeftBottom) <= separator
        && !collided[5][0].first)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::LeftBottom];
         collided[5][0].second = true;
     }
-    else if(distance(transformVector, glm::vec2(0.57735f, 1.0f), glm::vec2(-1.0f, 0.0f))
-                    <= separator
+    else if(board.distance(transformVector, GameBoard::BorderPlace::LeftTop) <= separator
             && !collided[5][1].first)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::LeftTop];
         collided[5][1].second = true;
     }
-    else if(std::abs(0.975f - transformVector[1]) <= separator && !collided[5][2].first)
+    else if(board.distance(transformVector, GameBoard::BorderPlace::Top) <= separator
+            && !collided[5][2].first)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::Top];
         collided[5][2].second = true;
     }
-    else if(distance(transformVector, glm::vec2(-0.57735f, 1.0f), glm::vec2(1.0f, 0.0f))
-                    <= separator
+    else if(board.distance(transformVector, GameBoard::BorderPlace::RightTop) <= separator
             && !collided[5][3].first)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::RightTop];
         collided[5][3].second = true;
     }
-    else if(distance(transformVector, glm::vec2(-0.57735f, -1.0f), glm::vec2(1.0f, 0.0f))
-                    <= separator
+    else if(board.distance(transformVector, GameBoard::BorderPlace::RightBottom) <= separator
             && !collided[5][4].first)
     {
         normalVector += board.normalVectors[GameBoard::BorderPlace::RightBottom];
