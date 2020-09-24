@@ -15,16 +15,6 @@ GLuint createVertexBuffer(const GLfloat vbData[], size_t size);
 
 void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID);
 
-enum class Colour : int
-{
-    Red,
-    Green,
-    Blue,
-    Cyan,
-    Magenta,
-    Yellow
-};
-
 class GameBoard
 {
 public:
@@ -45,7 +35,6 @@ public:
     std::map<BorderPlace, glm::vec2> normalVectors;
 
 private:
-    void drawBorderTriangles(GLuint pID);
     void drawOneTriangle(GLuint pID);
     void countNormalVectors();
 
@@ -75,6 +64,16 @@ public:
     int bricksLeft;
 
 private:
+    enum class Colour : int
+    {
+        Red,
+        Green,
+        Blue,
+        Cyan,
+        Magenta,
+        Yellow
+    };
+
     void drawRect(GLuint pID, Colour colour);
     void drawRectBorder(GLuint pID);
 
@@ -95,13 +94,13 @@ class GamePaddle
 public:
     GamePaddle();
 
+    void restart();
+    void draw(GLuint pID);
+
     int reflection()
     {
         return reflect_distrib(rand_eng);
     }
-
-    void restart();
-    void draw(GLuint pID);
 
     void moveLeft(GLfloat delta)
     {

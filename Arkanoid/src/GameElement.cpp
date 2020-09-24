@@ -41,6 +41,8 @@ GameBoard::GameBoard()
     colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
     vertexBufferTriangle = createVertexBuffer(vbDataTriangle, sizeof(vbDataTriangle));
     colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
+
+    countNormalVectors();
 }
 
 void GameBoard::drawBackground(GLuint pID)
@@ -71,12 +73,6 @@ void GameBoard::drawBackground(GLuint pID)
 }
 
 void GameBoard::drawBorders(GLuint pID)
-{
-    drawBorderTriangles(pID);
-    countNormalVectors();
-}
-
-void GameBoard::drawBorderTriangles(GLuint pID)
 {
     // left bottom
     scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
@@ -194,7 +190,7 @@ void GameBrick::drawAll(GLuint pID)
         }
 }
 
-void GameBrick::drawRect(GLuint pID, Colour colour)
+void GameBrick::drawRect(GLuint pID, GameBrick::Colour colour)
 {
     switch(colour)
     {
