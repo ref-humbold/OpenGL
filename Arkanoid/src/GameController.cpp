@@ -1,17 +1,13 @@
 #include "GameController.hpp"
 
-using namespace glm;
-
 void GameController::drawGame(GLuint pID, GameBoard & board, GameBall & ball, GameBrick & brick,
                               GamePaddle & paddle)
 {
     board.drawBackground(pID);
-    ball.drawBall(pID);
-    ball.drawCross(pID);
-    brick.drawAllBricks(pID);
-    paddle.drawPaddle(pID);
-    board.drawBorderTriangles(pID);
-    board.countNormalVectors();
+    ball.draw(pID);
+    brick.drawAll(pID);
+    paddle.draw(pID);
+    board.drawBorders(pID);
 }
 
 Key GameController::checkKeyPress(GLFWwindow * window)
@@ -19,10 +15,12 @@ Key GameController::checkKeyPress(GLFWwindow * window)
     int action = GLFW_PRESS;
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == action)
-        return Key::StartPause;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
+        return Key::Pause;
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == action)
         return Key::MoveLeft;
-    else if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
+
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == action)
         return Key::MoveRight;
 
     return Key::None;

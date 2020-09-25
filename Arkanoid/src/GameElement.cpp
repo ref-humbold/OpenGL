@@ -1,51 +1,56 @@
 #include "GameElement.hpp"
 
-using namespace glm;
-
 GLuint createVertexBuffer(const GLfloat vbData[], size_t size)
 {
     GLuint bufferID;
+
     glGenBuffers(1, &bufferID);
     glBindBuffer(GL_ARRAY_BUFFER, bufferID);
     glBufferData(GL_ARRAY_BUFFER, size, vbData, GL_STATIC_DRAW);
-
     return bufferID;
 }
 
-void loadBuffer(GLuint vb, GLuint cb)
+void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID)
 {
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, cb);
+    glBindBuffer(GL_ARRAY_BUFFER, colourBufferID);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 }
 
 #pragma region GameBoard
 
+// 0.57735 ~~ sqrt(3) / 3
+// 0.34641 ~~ sqrt(3) / 5
+
 GameBoard::GameBoard()
-    : vbDataHexagon{0.0f,  0.0f, 0.4f,  0.0f,      0.2f, 0.34641f,  -0.2f, 0.34641f,
+    : borders{BorderPlace::LeftBottom, BorderPlace::LeftTop, BorderPlace::Top,
+              BorderPlace::RightTop, BorderPlace::RightBottom},
+      vbDataHexagon{0.0f,  0.0f, 0.4f,  0.0f,      0.2f, 0.34641f,  -0.2f, 0.34641f,
                     -0.4f, 0.0f, -0.2f, -0.34641f, 0.2f, -0.34641f, 0.4f,  0.0f},
       cbDataHexagon{0.0f, 0.6f, 0.6f,  0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f,
                     0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f},
       vbDataTriangle{0.0f, 0.0f, 0.0f, 1.0f, 0.57735f, 0.0f},
       cbDataTriangle{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-      rotateMatrix{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-      transformVector{vec2(0.0f, 0.0f)}
+      scaleMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      transformVector{glm::vec2(0.0f, 0.0f)}
 {
     vertexBufferHexagon = createVertexBuffer(vbDataHexagon, sizeof(vbDataHexagon));
     colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
     vertexBufferTriangle = createVertexBuffer(vbDataTriangle, sizeof(vbDataTriangle));
     colorBufferTriangle = createVertexBuffer(cbDataTriangle, sizeof(cbDataTriangle));
-    normVecs.resize(5);
+
+    countNormalVectors();
+    countInnerSides();
 }
 
 void GameBoard::drawBackground(GLuint pID)
 {
-    scaleMatrix = mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f));
+    scaleMatrix = glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f));
 
     loadBuffer(vertexBufferHexagon, colorBufferHexagon);
 
@@ -56,7 +61,8 @@ void GameBoard::drawBackground(GLuint pID)
     for(int j = -30; j <= 30; ++j)
         for(int i = -9; i <= 9; ++i)
         {
-            transformVector = scaleMatrix * vec2(1.2f * i + 0.6f * abs(j % 2), 0.34641f * j);
+            transformVector =
+                    scaleMatrix * glm::vec2(1.2f * i + 0.6f * std::abs(j % 2), 0.34641f * j);
 
             glUniformMatrix2fv(scaleMat, 1, GL_FALSE, &scaleMatrix[0][0]);
             glUniformMatrix2fv(rotateMat, 1, GL_FALSE, &rotateMatrix[0][0]);
@@ -69,76 +75,40 @@ void GameBoard::drawBackground(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
-void GameBoard::drawBorderTriangles(GLuint pID)
+void GameBoard::drawBorders(GLuint pID)
 {
     // left bottom
-
-    scaleMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    transformVector = vec2(-1.0f, -1.0f);
-
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    transformVector = glm::vec2(-1.0f, -1.0f);
     drawOneTriangle(pID);
 
     // left top
-
-    scaleMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, -1.0f));
-    transformVector = vec2(-1.0f, 1.0f);
-
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    transformVector = glm::vec2(-1.0f, 1.0f);
     drawOneTriangle(pID);
 
     // right top
-
-    scaleMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, -1.0f));
-    transformVector = vec2(1.0f, 1.0f);
-
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    transformVector = glm::vec2(1.0f, 1.0f);
     drawOneTriangle(pID);
 
     // right bottom
-
-    scaleMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    transformVector = vec2(1.0f, -1.0f);
-
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    transformVector = glm::vec2(1.0f, -1.0f);
     drawOneTriangle(pID);
 }
 
-void GameBoard::countNormalVectors()
+GLfloat GameBoard::distance(const glm::vec2 & point, GameBoard::BorderPlace place)
 {
-    vec2 normal = vec2(1.0f, 0.57735f);
+    glm::vec2 normLineVector = glm::normalize(innerSides[place].first);
+    glm::vec2 pointsDiff = innerSides[place].second - point;
+    GLfloat dotProduct = glm::dot(pointsDiff, normLineVector);
 
-    // left bottom
-
-    scaleMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-
-    normVecs[0] = normalize(rotateMatrix * scaleMatrix * normal);
-
-    // left top
-
-    scaleMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, -1.0f));
-
-    normVecs[1] = normalize(rotateMatrix * scaleMatrix * normal);
-
-    // top
-
-    normVecs[2] = normalize(vec2(0.0f, -1.0f));
-
-    // right top
-
-    scaleMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, -1.0f));
-
-    normVecs[3] = normalize(rotateMatrix * scaleMatrix * normal);
-
-    // right bottom
-
-    scaleMatrix = mat2(vec2(-1.0f, 0.0f), vec2(0.0f, 1.0f));
-    rotateMatrix = mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f));
-
-    normVecs[4] = normalize(rotateMatrix * scaleMatrix * normal);
+    return glm::length(pointsDiff - normLineVector * dotProduct);
 }
 
 void GameBoard::drawOneTriangle(GLuint pID)
@@ -159,83 +129,131 @@ void GameBoard::drawOneTriangle(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
+void GameBoard::countNormalVectors()
+{
+    glm::vec2 normal = glm::vec2(1.0f, 0.57735f);
+
+    // left bottom
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    normalVectors.emplace(BorderPlace::LeftBottom,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // left top
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    normalVectors.emplace(BorderPlace::LeftTop,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // top
+    normalVectors.emplace(BorderPlace::Top, glm::normalize(glm::vec2(0.0f, -1.0f)));
+
+    // right top
+    scaleMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, -1.0f));
+    normalVectors.emplace(BorderPlace::RightTop,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+
+    // right bottom
+    scaleMatrix = glm::mat2(glm::vec2(-1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    rotateMatrix = glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f));
+    normalVectors.emplace(BorderPlace::RightBottom,
+                          glm::normalize(rotateMatrix * scaleMatrix * normal));
+}
+
+void GameBoard::countInnerSides()
+{
+    innerSides.emplace(BorderPlace::LeftBottom,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::LeftBottom]),
+                                      glm::vec2(-1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::LeftTop,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::LeftTop]),
+                                      glm::vec2(-1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::Top, std::make_pair(orthogonal(normalVectors[BorderPlace::Top]),
+                                                        glm::vec2(0.0f, 0.9875f)));
+    innerSides.emplace(BorderPlace::RightTop,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::RightTop]),
+                                      glm::vec2(1.0f, 0.0f)));
+    innerSides.emplace(BorderPlace::RightBottom,
+                       std::make_pair(orthogonal(normalVectors[BorderPlace::RightBottom]),
+                                      glm::vec2(1.0f, 0.0f)));
+}
 #pragma endregion
 #pragma region GameBrick
 
 GameBrick::GameBrick()
-    : vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
+    : isVisible{{true, true, true, true, true, true, true, true, true, true, true, true, true},
+                {true, true, true, true, true, true, true, true, true, true, true, true, true},
+                {true, true, true, true, true, true, true, true, true, true, true, true, true},
+                {true, true, true, true, true, true, true, true, true, true, true, true, true},
+                {false, true, true, true, true, true, true, true, true, true, true, true, false},
+                {false, true, true, true, true, true, true, true, true, true, true, true, false}},
+      bricksLeft{rowsNumber * columnsNumber - 4},
+      vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
       cbDataRect{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
       cbDataRectBorder{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
-      rotateMatrix{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-      transformVector{vec2(0.0f, 0.0f)}
+      scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
+      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      transformVector{glm::vec2(0.0f, 0.0f)}
 {
     vertexBufferRect = createVertexBuffer(vbDataRect, sizeof(vbDataRect));
     colorBufferRect = createVertexBuffer(cbDataRect, sizeof(cbDataRect));
     colorBufferRectBorder = createVertexBuffer(cbDataRectBorder, sizeof(cbDataRectBorder));
-
-    bricksLeft = 74;
-    isVisible.resize(6);
-
-    for(auto & vc : isVisible)
-        vc.resize(13, true);
-
-    isVisible[4][0] = false;
-    isVisible[4][12] = false;
-    isVisible[5][0] = false;
-    isVisible[5][12] = false;
 }
 
-void GameBrick::drawAllBricks(GLuint pID)
+void GameBrick::drawAll(GLuint pID)
 {
-    for(int col = 0; col <= 5; ++col)
-        for(int i = 0; i <= 12; ++i)
-        {
-            transformVector = vec2(0.1f * (i - 6), 0.6f + 0.05f * col);
+    Colour rowColours[rowsNumber] = {Colour::Green,   Colour::Cyan, Colour::Blue,
+                                     Colour::Magenta, Colour::Red,  Colour::Yellow};
 
-            if(isVisible[col][i])
+    for(int i = 0; i < rowsNumber; ++i)
+        for(int j = 0; j < columnsNumber; ++j)
+        {
+            transformVector = glm::vec2(0.1f * (j - 6), 0.6f + 0.05f * i);
+
+            if(isVisible[i][j])
             {
-                drawRect(pID, col + 1);
+                drawRect(pID, rowColours[i]);
                 drawRectBorder(pID);
             }
         }
 }
 
-void GameBrick::drawRect(GLuint pID, int col)
+void GameBrick::drawRect(GLuint pID, GameBrick::Colour colour)
 {
-    switch(col)
+    switch(colour)
     {
-        case 1:  // blue
+        case Colour::Blue:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 == 2 ? 1.0f : 0.0f;
 
             break;
 
-        case 2:  // green
+        case Colour::Green:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 == 1 ? 1.0f : 0.0f;
 
             break;
 
-        case 3:  // cyan
+        case Colour::Cyan:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 != 0 ? 1.0f : 0.0f;
 
             break;
 
-        case 4:  // red
+        case Colour::Red:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 == 0 ? 1.0f : 0.0f;
 
             break;
 
-        case 5:  // magenta
+        case Colour::Magenta:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 != 1 ? 1.0f : 0.0f;
 
             break;
 
-        case 6:  // yellow
+        case Colour::Yellow:
             for(int i = 0; i < 12; ++i)
                 cbDataRect[i] = i % 3 != 2 ? 1.0f : 0.0f;
 
@@ -290,22 +308,23 @@ GamePaddle::GamePaddle()
     : vbDataPaddle{0.0f, 0.0f, 0.4f, -0.05f, 0.6f, 0.1f, -0.6f, 0.1f, -0.4f, -0.05f},
       cbDataPaddle{1.0f, 1.0f, 1.0f, 0.8f, 0.8f, 0.8f, 0.2f, 0.2f,
                    0.2f, 0.2f, 0.2f, 0.2f, 0.8f, 0.8f, 0.8f},
-      scaleMatrix{mat2(vec2(0.1f, 0.0f), vec2(0.0f, 0.1f))},
-      rotateMatrix{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-      transformVector{vec2(0.0f, -0.95f)},
-      velocity{1.0f}
+      scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
+      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      reflect_distrib{-8, 8}
 {
     vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
     colorBufferPaddle = createVertexBuffer(cbDataPaddle, sizeof(cbDataPaddle));
+
+    restart();
 }
 
 void GamePaddle::restart()
 {
-    transformVector = vec2(0.0f, -0.95f);
+    transformVector = glm::vec2(0.0f, -0.95f);
     velocity = 1.0f;
 }
 
-void GamePaddle::drawPaddle(GLuint pID)
+void GamePaddle::draw(GLuint pID)
 {
     loadBuffer(vertexBufferPaddle, colorBufferPaddle);
 
@@ -323,28 +342,11 @@ void GamePaddle::drawPaddle(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
-void GamePaddle::moveLeft(GLfloat delta)
-{
-    transformVector[0] = max(-0.4f, transformVector[0] - velocity * delta);
-}
-
-void GamePaddle::moveRight(GLfloat delta)
-{
-    transformVector[0] = min(0.4f, transformVector[0] + velocity * delta);
-}
-
-GLfloat GamePaddle::getPosX()
-{
-    return transformVector[0];
-}
-
-GLfloat GamePaddle::getSurf()
-{
-    return transformVector[1] + 0.01f;
-}
-
 #pragma endregion
 #pragma region GameBall
+
+// 0.18660254 ~~ (2 + sqrt(3)) / 20
+// 0.13660254 ~~ (1 + sqrt(3)) / 20
 
 GameBall::GameBall()
     : vbDataBall{0.0f,         0.0f,         0.05f,        0.18660254f,  0.13660254f,  0.13660254f,
@@ -359,37 +361,276 @@ GameBall::GameBall()
       vbDataCross{0.13660254f, 0.13660254f,  -0.13660254f, -0.13660254f,
                   0.13660254f, -0.13660254f, -0.13660254f, 0.13660254f},
       cbDataCross{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{mat2(vec2(0.08f, 0.0f), vec2(0.0f, 0.08f))},
-      rotateMatrix{mat2(vec2(1.0f, 0.0f), vec2(0.0f, 1.0f))},
-      transformVector{vec2(0.0f, -0.9f)},
-      vNorm{vec2(0.0f, 0.0f)},
-      angleMult{0},
-      radius{length(scaleMatrix * vec2(0.13660254f, 0.13660254f))},
+      scaleMatrix{glm::mat2(glm::vec2(0.08f, 0.0f), glm::vec2(0.0f, 0.08f))},
+      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      normalVector{glm::vec2(0.0f, 0.0f)},
+      radius{glm::length(scaleMatrix * glm::vec2(0.13660254f, 0.13660254f))},
       separator{1.25f * radius},
-      velocityDistance{50.0f * radius},
-      startingShot{true}
+      velocity_distrib{-10, 10},
+      angle_distrib{2, 6}
 {
     vertexBufferBall = createVertexBuffer(vbDataBall, sizeof(vbDataBall));
     colorBufferBall = createVertexBuffer(cbDataBall, sizeof(cbDataBall));
     vertexBufferCross = createVertexBuffer(vbDataCross, sizeof(vbDataCross));
     colorBufferCross = createVertexBuffer(cbDataCross, sizeof(cbDataCross));
 
-    velocity = velocityDistance * normalize(vec2((-10.0f + rand() % 21) / 10.0f, 1.0f));
-    collided.resize(7);
-
-    for(int i = 0; i < 5; ++i)
-        collided[i].resize(13, std::make_pair(false, false));
-
-    collided[5].resize(5, std::make_pair(false, false));
-    collided[6].resize(1, std::make_pair(false, false));
+    restart();
+    setCollided();
 }
 
 void GameBall::restart()
 {
-    transformVector = vec2(0.0f, -0.9f);
-    startingShot = true;
-    velocity = velocityDistance * normalize(vec2((-10.0f + rand() % 21) / 10.0f, 1.0f));
-    angleMult = 0;
+    transformVector = glm::vec2(0.0f, -0.9f);
+    velocity = 50.0f * radius * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
+}
+
+void GameBall::setCollided()
+{
+    collidedBoard.emplace(GameBoard::BorderPlace::LeftBottom, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::LeftTop, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::Top, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::RightTop, Collision());
+    collidedBoard.emplace(GameBoard::BorderPlace::RightBottom, Collision());
+}
+
+void GameBall::checkCollision(GameBoard & board)
+{
+    for(auto && border : board.borders)
+        if(checkBorderCollision(board, border))
+            break;
+}
+
+void GameBall::checkCollision(GamePaddle & paddle)
+{
+    GLfloat position = paddle.getPositionX();
+
+    if(isInRange(transformVector[0], position - 0.06f, position + 0.06f)
+       && std::abs(paddle.getSurfaceY() - transformVector[1]) <= separator
+       && !collidedPaddle.previous)
+    {
+        normalVector += glm::normalize(glm::vec2(paddle.reflection(), 1.0f));
+        collidedPaddle.current = true;
+    }
+}
+
+void GameBall::checkCollision(GameBrick & brick)
+{
+    if(transformVector[1] >= 0.525f)
+    {
+        GLfloat brickBorders[4];
+        glm::vec2 brickCorners[4];
+        GLfloat brickDist[8];
+        glm::vec2 brPos = glm::vec2(std::floor(10 * transformVector[0] + 0.5f) * 0.1f,
+                                    std::floor(20 * transformVector[1] + 0.5f) * 0.05f);
+
+        brickBorders[0] = brPos[1] + 0.025f;  // up
+        brickBorders[1] = brPos[1] - 0.025f;  // down
+        brickBorders[2] = brPos[0] - 0.05f;  // left
+        brickBorders[3] = brPos[0] + 0.05f;  // right
+
+        brickCorners[0] = glm::vec2(brickBorders[2], brickBorders[0]);  // left up
+        brickCorners[1] = glm::vec2(brickBorders[2], brickBorders[1]);  // left down
+        brickCorners[2] = glm::vec2(brickBorders[3], brickBorders[0]);  // right up
+        brickCorners[3] = glm::vec2(brickBorders[3], brickBorders[1]);  // right down
+
+        brickDist[0] = std::abs(brickBorders[0] - transformVector[1]);
+        brickDist[1] = std::abs(brickBorders[1] - transformVector[1]);
+        brickDist[2] = std::abs(brickBorders[2] - transformVector[0]);
+        brickDist[3] = std::abs(brickBorders[3] - transformVector[0]);
+
+        brickDist[4] = glm::distance(brickCorners[0], transformVector);
+        brickDist[5] = glm::distance(brickCorners[1], transformVector);
+        brickDist[6] = glm::distance(brickCorners[2], transformVector);
+        brickDist[7] = glm::distance(brickCorners[3], transformVector);
+
+        if(brPos[1] > 0.55f)
+        {
+            int row = (int)std::floor((brPos[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPos[0] + 0.6f) * 10.0f + 0.5);
+
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].previous && brick.isVisible[row][column])
+            {
+                int closeBorder = 0;
+
+                for(int i = 0; i < 4; ++i)
+                    if(brickDist[i] < 1.0f)
+                        closeBorder = i;
+
+                switch(closeBorder)
+                {
+                    case 0:
+                        normalVector += glm::normalize(glm::vec2(0.0f, 1.0f));
+                        break;
+
+                    case 1:
+                        normalVector += glm::normalize(glm::vec2(0.0f, -1.0f));
+                        break;
+
+                    case 2:
+                        normalVector += glm::normalize(glm::vec2(-1.0f, 0.0f));
+                        break;
+
+                    case 3:
+                        normalVector += glm::normalize(glm::vec2(1.0f, 0.0f));
+                        break;
+                }
+
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[0] <= separator)  // up
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(0.0f, 0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].previous && brick.isVisible[row][column])
+            {
+                normalVector += glm::normalize(glm::vec2(0.0f, -1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[1] <= separator)  // down
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(0.0f, -0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].previous && brick.isVisible[row][column])
+            {
+                normalVector += glm::normalize(glm::vec2(0.0f, 1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[2] <= separator)  // left
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(-0.1f, 0.0f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].previous && brick.isVisible[row][column])
+            {
+                normalVector += glm::normalize(glm::vec2(1.0f, 0.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[3] <= separator)  // right
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(0.1f, 0.0f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if(isInRange(row, 0, 5) && isInRange(column, 0, 12)
+               && !collidedBricks[row][column].previous && brick.isVisible[row][column])
+            {
+                normalVector += glm::normalize(glm::vec2(-1.0f, 0.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[4] <= radius)  // left up
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(-0.1f, 0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if((row == 0 && isInRange(column, 0, 11) && !collidedBricks[row][column].previous
+                && brick.isVisible[row][column] && !brick.isVisible[row][column + 1])
+               || (isInRange(row, 1, 5) && isInRange(column, 0, 11)
+                   && !collidedBricks[row][column].previous && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column + 1] && !brick.isVisible[row - 1][column]))
+            {
+                normalVector += velocity[1] < 0 ? glm::normalize(glm::vec2(1.0f, 0.0f))
+                                                : glm::normalize(glm::vec2(1.0f, -1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[5] <= radius)  // left down
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(-0.1f, -0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if((row == 5 && isInRange(column, 0, 11) && !collidedBricks[row][column].previous
+                && brick.isVisible[row][column] && !brick.isVisible[row][column + 1])
+               || (isInRange(row, 0, 4) && isInRange(column, 0, 11)
+                   && !collidedBricks[row][column].previous && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column + 1] && !brick.isVisible[row + 1][column]))
+            {
+                normalVector += velocity[1] > 0 ? glm::normalize(glm::vec2(1.0f, 0.0f))
+                                                : glm::normalize(glm::vec2(1.0f, 1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[6] <= radius)  // right up
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(0.1f, 0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if((row == 0 && isInRange(column, 1, 12) && !collidedBricks[row][column].previous
+                && brick.isVisible[row][column] && !brick.isVisible[row][column - 1])
+               || (isInRange(row, 1, 5) && isInRange(column, 1, 12)
+                   && !collidedBricks[row][column].previous && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column - 1] && !brick.isVisible[row - 1][column]))
+            {
+                normalVector += velocity[1] < 0 ? glm::normalize(glm::vec2(-1.0f, 0.0f))
+                                                : glm::normalize(glm::vec2(-1.0f, -1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+
+        if(brickDist[7] <= radius)  // right down
+        {
+            glm::vec2 brPosC = brPos + glm::vec2(0.1f, -0.05f);
+
+            int row = (int)std::floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
+            int column = (int)std::floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
+
+            if((row == 5 && isInRange(column, 1, 12) && !collidedBricks[row][column].previous
+                && brick.isVisible[row][column] && !brick.isVisible[row][column - 1])
+               || (isInRange(row, 0, 4) && isInRange(column, 1, 12)
+                   && !collidedBricks[row][column].previous && brick.isVisible[row][column]
+                   && !brick.isVisible[row][column - 1] && !brick.isVisible[row + 1][column]))
+            {
+                normalVector += velocity[1] > 0 ? glm::normalize(glm::vec2(-1.0f, 0.0f))
+                                                : glm::normalize(glm::vec2(-1.0f, 1.0f));
+                brickScored(brick, row, column);
+            }
+        }
+    }
+}
+
+void GameBall::move(GLfloat delta)
+{
+    float rotationAngle = angle_distrib(rand_eng) * M_PI / 8.0f;
+
+    rotateMatrix = glm::mat2(glm::vec2(cos(rotationAngle), sin(rotationAngle)),
+                             glm::vec2(-sin(rotationAngle), cos(rotationAngle)));
+
+    if(normalVector[0] != 0.0f || normalVector[1] != 0.0f)
+        velocity = glm::reflect(velocity, glm::normalize(normalVector));
+
+    transformVector += velocity * delta;
+    normalVector = glm::vec2(0.0f, 0.0f);
+    shiftCollisions();
 }
 
 void GameBall::drawBall(GLuint pID)
@@ -429,330 +670,36 @@ void GameBall::drawCross(GLuint pID)
     glDisableVertexAttribArray(0);
 }
 
-bool GameBall::isInRange(GLfloat value, GLfloat minR, GLfloat maxR)
+void GameBall::shiftCollisions()
 {
-    return minR <= value && value <= maxR;
+    collidedPaddle.shift();
+
+    for(auto && c : collidedBoard)
+        c.second.shift();
+
+    for(size_t i = 0; i < GameBrick::rowsNumber; ++i)
+        for(size_t j = 0; j < GameBrick::columnsNumber; ++j)
+            collidedBricks[i][j].shift();
 }
 
-GLfloat GameBall::countDistance(vec2 pt, vec2 nl, vec2 pl)
+bool GameBall::checkBorderCollision(GameBoard & board, GameBoard::BorderPlace place)
 {
-    vec2 nvl = normalize(nl), ptd = pl - pt;
-    GLfloat ilosk = dot(ptd, nvl);
+    if(board.distance(transformVector, place) <= separator && !collidedBoard[place].previous)
+    {
+        normalVector += board.normalVectors[place];
+        collidedBoard[place].current = true;
+        return true;
+    }
 
-    return length(ptd - nvl * ilosk);
+    return false;
 }
 
-bool GameBall::checkOutside()
+void GameBall::brickScored(GameBrick & brick, int row, int column)
 {
-    return transformVector[1] <= -1.0f || transformVector[1] <= -2.0f * transformVector[0] - 2.0f
-           || transformVector[1] >= 2.0f * transformVector[0] + 2.0f
-           || transformVector[1] >= -2.0f * transformVector[0] + 2.0f
-           || transformVector[1] <= 2.0f * transformVector[0] - 2.0f;
-}
-
-void GameBall::checkCollisionBoard(GameBoard & board)
-{
-    if(countDistance(transformVector, vec2(0.57735f, -1.0f), vec2(-1.0f, 0.0f)) <= separator
-       && !collided[5][0].first)
-    {
-        vNorm += board.normVecs[0];
-        collided[5][0].second = true;
-    }
-    else if(countDistance(transformVector, vec2(0.57735f, 1.0f), vec2(-1.0f, 0.0f)) <= separator
-            && !collided[5][1].first)
-    {
-        vNorm += board.normVecs[1];
-        collided[5][1].second = true;
-    }
-    else if(abs(0.975f - transformVector[1]) <= separator && !collided[5][2].first)
-    {
-        vNorm += board.normVecs[2];
-        collided[5][2].second = true;
-    }
-    else if(countDistance(transformVector, vec2(-0.57735f, 1.0f), vec2(1.0f, 0.0f)) <= separator
-            && !collided[5][3].first)
-    {
-        vNorm += board.normVecs[3];
-        collided[5][3].second = true;
-    }
-    else if(countDistance(transformVector, vec2(-0.57735f, -1.0f), vec2(1.0f, 0.0f)) <= separator
-            && !collided[5][4].first)
-    {
-        vNorm += board.normVecs[4];
-        collided[5][4].second = true;
-    }
-}
-
-void GameBall::checkCollisionPaddle(GamePaddle & paddle)
-{
-    GLfloat padPosX = paddle.getPosX(), dist = abs(paddle.getSurf() - transformVector[1]);
-
-    if(isInRange(transformVector[0], padPosX - 0.06f, padPosX + 0.06f) && dist <= separator
-       && !collided[6][0].first)
-    {
-        GLfloat rnd = rand() % 2 == 0 ? (1 + rand() % 10) * 0.005f : -(1 + rand() % 8) * 0.005f;
-
-        vNorm += normalize(vec2(rnd, 1.0f));
-        collided[6][0].second = true;
-    }
-}
-
-void GameBall::checkCollisionBrick(GameBrick & brick)
-{
-    std::vector<std::pair<GLfloat, GLfloat>> bricksHit;
-
-    auto getBrickPos = [](vec2 v) -> vec2 {
-        return vec2(floor(10 * v[0] + 0.5f) * 0.1f, floor(20 * v[1] + 0.5f) * 0.05f);
-    };
-
-    auto brickScored = [](GameBrick & brick, int br, int bc,
-                          std::vector<std::pair<GLfloat, GLfloat>> & bricksHit) -> void {
-        --brick.bricksLeft;
-        bricksHit.push_back(std::make_pair(br, bc));
-        std::cout << "TRAFIŁEŚ CEGŁĘ!! Zostało: " << brick.bricksLeft << "...\n\n";
-    };
-
-    if(transformVector[1] >= 0.525f)
-    {
-        GLfloat brickBorders[4];
-        vec2 brickCorners[4];
-        GLfloat brickDist[8];
-        vec2 brPos = getBrickPos(transformVector);
-
-        brickBorders[0] = brPos[1] + 0.025f;  // up
-        brickBorders[1] = brPos[1] - 0.025f;  // down
-        brickBorders[2] = brPos[0] - 0.05f;  // left
-        brickBorders[3] = brPos[0] + 0.05f;  // right
-
-        brickCorners[0] = vec2(brickBorders[2], brickBorders[0]);  // left up
-        brickCorners[1] = vec2(brickBorders[2], brickBorders[1]);  // left down
-        brickCorners[2] = vec2(brickBorders[3], brickBorders[0]);  // right up
-        brickCorners[3] = vec2(brickBorders[3], brickBorders[1]);  // right down
-
-        brickDist[0] = abs(brickBorders[0] - transformVector[1]);
-        brickDist[1] = abs(brickBorders[1] - transformVector[1]);
-        brickDist[2] = abs(brickBorders[2] - transformVector[0]);
-        brickDist[3] = abs(brickBorders[3] - transformVector[0]);
-
-        brickDist[4] = distance(brickCorners[0], transformVector);
-        brickDist[5] = distance(brickCorners[1], transformVector);
-        brickDist[6] = distance(brickCorners[2], transformVector);
-        brickDist[7] = distance(brickCorners[3], transformVector);
-
-        if(brPos[1] > 0.55f)
-        {
-            int rw = (int)floor((brPos[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPos[0] + 0.6f) * 10.0f + 0.5);
-
-            if(isInRange(rw, 0, 5) && isInRange(cl, 0, 12) && !collided[rw][cl].first
-               && brick.isVisible[rw][cl])
-            {
-                GLfloat minim = 1.0f;
-                int minidx = 0;
-
-                for(int i = 0; i < 4; ++i)
-                    if(brickDist[i] < minim)
-                        minidx = i;
-
-                switch(minidx)
-                {
-                    case 0:
-                        vNorm += normalize(vec2(0.0f, 1.0f));
-                        break;
-
-                    case 1:
-                        vNorm += normalize(vec2(0.0f, -1.0f));
-                        break;
-
-                    case 2:
-                        vNorm += normalize(vec2(-1.0f, 0.0f));
-                        break;
-
-                    case 3:
-                        vNorm += normalize(vec2(1.0f, 0.0f));
-                        break;
-                }
-
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[0] <= separator)  // up
-        {
-            vec2 brPosC = brPos + vec2(0.0f, 0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if(isInRange(rw, 0, 5) && isInRange(cl, 0, 12) && !collided[rw][cl].first
-               && brick.isVisible[rw][cl])
-            {
-                vNorm += normalize(vec2(0.0f, -1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[1] <= separator)  // down
-        {
-            vec2 brPosC = brPos + vec2(0.0f, -0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if(isInRange(rw, 0, 5) && isInRange(cl, 0, 12) && !collided[rw][cl].first
-               && brick.isVisible[rw][cl])
-            {
-                vNorm += normalize(vec2(0.0f, 1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[2] <= separator)  // left
-        {
-            vec2 brPosC = brPos + vec2(-0.1f, 0.0f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if(isInRange(rw, 0, 5) && isInRange(cl, 0, 12) && !collided[rw][cl].first
-               && brick.isVisible[rw][cl])
-            {
-                vNorm += normalize(vec2(1.0f, 0.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[3] <= separator)  // right
-        {
-            vec2 brPosC = brPos + vec2(0.1f, 0.0f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if(isInRange(rw, 0, 5) && isInRange(cl, 0, 12) && !collided[rw][cl].first
-               && brick.isVisible[rw][cl])
-            {
-                vNorm += normalize(vec2(-1.0f, 0.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[4] <= radius)  // left up
-        {
-            vec2 brPosC = brPos + vec2(-0.1f, 0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if((rw == 0 && isInRange(cl, 0, 11) && !collided[rw][cl].first
-                && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl + 1])
-               || (isInRange(rw, 1, 5) && isInRange(cl, 0, 11) && !collided[rw][cl].first
-                   && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl + 1]
-                   && !brick.isVisible[rw - 1][cl]))
-            {
-                vNorm += velocity[1] < 0 ? normalize(vec2(1.0f, 0.0f))
-                                         : normalize(vec2(1.0f, -1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[5] <= radius)  // left down
-        {
-            vec2 brPosC = brPos + vec2(-0.1f, -0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if((rw == 5 && isInRange(cl, 0, 11) && !collided[rw][cl].first
-                && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl + 1])
-               || (isInRange(rw, 0, 4) && isInRange(cl, 0, 11) && !collided[rw][cl].first
-                   && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl + 1]
-                   && !brick.isVisible[rw + 1][cl]))
-            {
-                vNorm +=
-                        velocity[1] > 0 ? normalize(vec2(1.0f, 0.0f)) : normalize(vec2(1.0f, 1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[6] <= radius)  // right up
-        {
-            vec2 brPosC = brPos + vec2(0.1f, 0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if((rw == 0 && isInRange(cl, 1, 12) && !collided[rw][cl].first
-                && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl - 1])
-               || (isInRange(rw, 1, 5) && isInRange(cl, 1, 12) && !collided[rw][cl].first
-                   && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl - 1]
-                   && !brick.isVisible[rw - 1][cl]))
-            {
-                vNorm += velocity[1] < 0 ? normalize(vec2(-1.0f, 0.0f))
-                                         : normalize(vec2(-1.0f, -1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-
-        if(brickDist[7] <= radius)  // right down
-        {
-            vec2 brPosC = brPos + vec2(0.1f, -0.05f);
-
-            int rw = (int)floor((brPosC[1] - 0.6f) * 20.0f + 0.5);
-            int cl = (int)floor((brPosC[0] + 0.6f) * 10.0f + 0.5);
-
-            if((rw == 5 && isInRange(cl, 1, 12) && !collided[rw][cl].first
-                && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl - 1])
-               || (isInRange(rw, 0, 4) && isInRange(cl, 1, 12) && !collided[rw][cl].first
-                   && brick.isVisible[rw][cl] && !brick.isVisible[rw][cl - 1]
-                   && !brick.isVisible[rw + 1][cl]))
-            {
-                vNorm += velocity[1] > 0 ? normalize(vec2(-1.0f, 0.0f))
-                                         : normalize(vec2(-1.0f, 1.0f));
-                collided[rw][cl].second = true;
-                brickScored(brick, rw, cl, bricksHit);
-            }
-        }
-    }
-
-    for(auto & b : bricksHit)
-        brick.isVisible[b.first][b.second] = false;
-}
-
-void GameBall::moveBall(GLfloat delta)
-{
-    angleMult = (angleMult + 1) % 8;
-
-    float rad = angleMult * M_PI / 8.0f;
-
-    rotateMatrix = mat2(vec2(cos(rad), sin(rad)), vec2(-sin(rad), cos(rad)));
-
-    if(startingShot)
-    {
-        delta = 0.0f;
-        startingShot = false;
-    }
-
-    if(vNorm[0] != 0.0f || vNorm[1] != 0.0f)
-        velocity = reflect(velocity, normalize(vNorm));
-
-    transformVector += velocity * delta;
-    vNorm = vec2(0.0f, 0.0f);
-
-    for(auto & vc : collided)
-        for(auto & e : vc)
-        {
-            e.first = e.second;
-            e.second = false;
-        }
+    --brick.bricksLeft;
+    brick.isVisible[row][column] = false;
+    collidedBricks[row][column].current = true;
+    std::cout << "-- Brick hit! " << brick.bricksLeft << " left... --\n";
 }
 
 #pragma endregion

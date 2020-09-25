@@ -7,15 +7,12 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include "GameElement.hpp"
-
-using namespace glm;
 
 enum class Key : int
 {
     None = GLFW_KEY_UNKNOWN,
-    StartPause = GLFW_KEY_SPACE,
+    Pause = GLFW_KEY_SPACE,
     MoveLeft = GLFW_KEY_LEFT,
     MoveRight = GLFW_KEY_RIGHT
 };

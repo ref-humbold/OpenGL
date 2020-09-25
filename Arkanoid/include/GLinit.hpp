@@ -8,9 +8,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-struct gl_error : std::runtime_error
+struct gl_exception : std::runtime_error
 {
-    explicit gl_error(const std::string & s) : std::runtime_error(s)
+    explicit gl_exception(const std::string & s) : std::runtime_error(s)
     {
     }
 };

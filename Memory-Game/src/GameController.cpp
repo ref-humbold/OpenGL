@@ -11,7 +11,10 @@ GameController::GameController(int rows, int columns)
               -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,  // cross
               0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
               -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
-      }
+      },
+      colours_distrib{0, coloursCount - 1},
+      signs_distrib{0, signsCount - 1},
+      fields_distrib{0, fieldsCount - 1}
 {
     for(int y = -rows + 1; y <= rows; y += 2)
         for(int x = -columns + 1; x <= columns; x += 2)
@@ -26,7 +29,6 @@ GameController::GameController(int rows, int columns)
 
 void GameController::restart()
 {
-    srand(time(nullptr));
     visible.clear();
     cards.clear();
 
@@ -40,8 +42,8 @@ void GameController::restart()
 
         do
         {
-            colour = static_cast<Colour>(rand() % coloursCount);
-            sign = static_cast<Sign>(rand() % signsCount);
+            colour = static_cast<Colour>(colours_distrib(rand_eng));
+            sign = static_cast<Sign>(signs_distrib(rand_eng));
         } while(sameCardsRatio < std::count_if(
                         std::begin(cards), std::end(cards),
                         [=](const auto & c) {
@@ -49,11 +51,11 @@ void GameController::restart()
                         }));
 
         do
-            index1 = rand() % fieldsCount;
+            index1 = fields_distrib(rand_eng);
         while(cards.find(index1) != cards.end());
 
         do
-            index2 = rand() % fieldsCount;
+            index2 = fields_distrib(rand_eng);
         while(cards.find(index2) != cards.end() || index2 == index1);
 
         cards.emplace(index1, std::make_pair(colour, sign));

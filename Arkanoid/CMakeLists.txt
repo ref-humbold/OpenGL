@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(Arkanoid VERSION 2.0)
+project(Arkanoid VERSION 2.1)
 
 # PROPERTIES
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")

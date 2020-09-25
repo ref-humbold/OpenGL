@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <iostream>
-#include <vector>
 #include "GLinit.hpp"
 #include "GameController.hpp"
 #include "Parameters.hpp"
@@ -81,7 +80,7 @@ int main(int argc, char * argv[])
                     }
 
                     if(state.cardPairsLeft == 0)
-                        std::cout << "You won in " << state.round << " rounds\n";
+                        std::cout << "You won in " << state.round << " rounds.\n";
                     else
                     {
                         ++state.round;
@@ -107,7 +106,7 @@ int main(int argc, char * argv[])
             && glfwWindowShouldClose(window) == 0);
 
     if(state.cardPairsLeft > 0)
-        std::cout << "Game was interrupted\n\n";
+        std::cout << "Game was interrupted.\n\n";
 
     glfwTerminate();
     return 0;
