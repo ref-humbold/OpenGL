@@ -107,7 +107,7 @@ public:
 
     int reflection()
     {
-        return reflect_distrib(rand_eng);
+        return reflect_distrib(rand_eng) * 0.005f;
     }
 
     void moveLeft(GLfloat delta)
@@ -120,7 +120,7 @@ public:
         transformVector[0] = std::min(0.4f, transformVector[0] + velocity * delta);
     }
 
-    GLfloat getPosX()
+    GLfloat getPositionX()
     {
         return transformVector[0];
     }
@@ -204,7 +204,7 @@ private:
     bool startingShot;
     Collision collidedPaddle;
     std::map<GameBoard::BorderPlace, Collision> collidedBoard;
-    std::vector<std::vector<Collision>> collidedBricks;
+    Collision collidedBricks[GameBrick::rowsNumber][GameBrick::columnsNumber];
     std::default_random_engine rand_eng;
     std::uniform_int_distribution<int> velocity_distrib;
     std::uniform_int_distribution<int> angle_distrib;

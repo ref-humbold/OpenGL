@@ -406,10 +406,6 @@ void GameBall::setCollided()
     collidedBoard.emplace(GameBoard::BorderPlace::Top, Collision());
     collidedBoard.emplace(GameBoard::BorderPlace::RightTop, Collision());
     collidedBoard.emplace(GameBoard::BorderPlace::RightBottom, Collision());
-    collidedBricks.resize(GameBrick::rowsNumber);
-
-    for(auto && c : collidedBricks)
-        c.resize(GameBrick::columnsNumber, Collision());
 }
 
 void GameBall::checkCollision(GameBoard & board)
@@ -448,14 +444,13 @@ void GameBall::checkCollision(GameBoard & board)
 
 void GameBall::checkCollision(GamePaddle & paddle)
 {
-    GLfloat padPosX = paddle.getPosX(), dist = std::abs(paddle.getSurfaceY() - transformVector[1]);
+    GLfloat position = paddle.getPositionX();
 
-    if(isInRange(transformVector[0], padPosX - 0.06f, padPosX + 0.06f) && dist <= separator
+    if(isInRange(transformVector[0], position - 0.06f, position + 0.06f)
+       && std::abs(paddle.getSurfaceY() - transformVector[1]) <= separator
        && !collidedPaddle.previous)
     {
-        GLfloat rnd = paddle.reflection() * 0.005f;
-
-        normalVector += glm::normalize(glm::vec2(rnd, 1.0f));
+        normalVector += glm::normalize(glm::vec2(paddle.reflection(), 1.0f));
         collidedPaddle.current = true;
     }
 }
@@ -689,9 +684,9 @@ void GameBall::move(GLfloat delta)
     for(auto && e : collidedBoard)
         e.second.shift();
 
-    for(auto & vc : collidedBricks)
-        for(auto & e : vc)
-            e.shift();
+    for(size_t i = 0; i < GameBrick::rowsNumber; ++i)
+        for(size_t j = 0; j < GameBrick::columnsNumber; ++j)
+            collidedBricks[i][j].shift();
 }
 
 void GameBall::drawBall(GLuint pID)
