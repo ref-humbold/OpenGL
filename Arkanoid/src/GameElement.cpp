@@ -27,7 +27,9 @@ void loadBuffer(GLuint vertexBufferID, GLuint colourBufferID)
 // 0.34641 ~~ sqrt(3) / 5
 
 GameBoard::GameBoard()
-    : vbDataHexagon{0.0f,  0.0f, 0.4f,  0.0f,      0.2f, 0.34641f,  -0.2f, 0.34641f,
+    : borders{BorderPlace::LeftBottom, BorderPlace::LeftTop, BorderPlace::Top,
+              BorderPlace::RightTop, BorderPlace::RightBottom},
+      vbDataHexagon{0.0f,  0.0f, 0.4f,  0.0f,      0.2f, 0.34641f,  -0.2f, 0.34641f,
                     -0.4f, 0.0f, -0.2f, -0.34641f, 0.2f, -0.34641f, 0.4f,  0.0f},
       cbDataHexagon{0.0f, 0.6f, 0.6f,  0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f,
                     0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f},
@@ -168,7 +170,7 @@ void GameBoard::countInnerSides()
                        std::make_pair(orthogonal(normalVectors[BorderPlace::LeftTop]),
                                       glm::vec2(-1.0f, 0.0f)));
     innerSides.emplace(BorderPlace::Top, std::make_pair(orthogonal(normalVectors[BorderPlace::Top]),
-                                                        glm::vec2(0.0f, 0.975f)));
+                                                        glm::vec2(0.0f, 0.9875f)));
     innerSides.emplace(BorderPlace::RightTop,
                        std::make_pair(orthogonal(normalVectors[BorderPlace::RightTop]),
                                       glm::vec2(1.0f, 0.0f)));
@@ -308,12 +310,12 @@ GamePaddle::GamePaddle()
                    0.2f, 0.2f, 0.2f, 0.2f, 0.8f, 0.8f, 0.8f},
       scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
       rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
-      transformVector{glm::vec2(0.0f, -0.95f)},
-      velocity{1.0f},
       reflect_distrib{-8, 8}
 {
     vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
     colorBufferPaddle = createVertexBuffer(cbDataPaddle, sizeof(cbDataPaddle));
+
+    restart();
 }
 
 void GamePaddle::restart()
@@ -364,7 +366,6 @@ GameBall::GameBall()
       normalVector{glm::vec2(0.0f, 0.0f)},
       radius{glm::length(scaleMatrix * glm::vec2(0.13660254f, 0.13660254f))},
       separator{1.25f * radius},
-      velocityDistance{50.0f * radius},
       velocity_distrib{-10, 10},
       angle_distrib{2, 6}
 {
@@ -380,23 +381,7 @@ GameBall::GameBall()
 void GameBall::restart()
 {
     transformVector = glm::vec2(0.0f, -0.9f);
-    startingShot = true;
-    velocity =
-            velocityDistance * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
-}
-
-void GameBall::draw(GLuint pID)
-{
-    drawBall(pID);
-    drawCross(pID);
-}
-
-bool GameBall::checkOutside()
-{
-    return transformVector[1] <= -1.0f || transformVector[1] <= -2.0f * transformVector[0] - 2.0f
-           || transformVector[1] >= 2.0f * transformVector[0] + 2.0f
-           || transformVector[1] >= -2.0f * transformVector[0] + 2.0f
-           || transformVector[1] <= 2.0f * transformVector[0] - 2.0f;
+    velocity = 50.0f * radius * glm::normalize(glm::vec2(velocity_distrib(rand_eng) / 10.0f, 1.0f));
 }
 
 void GameBall::setCollided()
@@ -410,36 +395,9 @@ void GameBall::setCollided()
 
 void GameBall::checkCollision(GameBoard & board)
 {
-    if(board.distance(transformVector, GameBoard::BorderPlace::LeftBottom) <= separator
-       && !collidedBoard[GameBoard::BorderPlace::LeftBottom].previous)
-    {
-        normalVector += board.normalVectors[GameBoard::BorderPlace::LeftBottom];
-        collidedBoard[GameBoard::BorderPlace::LeftBottom].current = true;
-    }
-    else if(board.distance(transformVector, GameBoard::BorderPlace::LeftTop) <= separator
-            && !collidedBoard[GameBoard::BorderPlace::LeftTop].previous)
-    {
-        normalVector += board.normalVectors[GameBoard::BorderPlace::LeftTop];
-        collidedBoard[GameBoard::BorderPlace::LeftTop].current = true;
-    }
-    else if(board.distance(transformVector, GameBoard::BorderPlace::Top) <= separator
-            && !collidedBoard[GameBoard::BorderPlace::Top].previous)
-    {
-        normalVector += board.normalVectors[GameBoard::BorderPlace::Top];
-        collidedBoard[GameBoard::BorderPlace::Top].current = true;
-    }
-    else if(board.distance(transformVector, GameBoard::BorderPlace::RightTop) <= separator
-            && !collidedBoard[GameBoard::BorderPlace::RightTop].previous)
-    {
-        normalVector += board.normalVectors[GameBoard::BorderPlace::RightTop];
-        collidedBoard[GameBoard::BorderPlace::RightTop].current = true;
-    }
-    else if(board.distance(transformVector, GameBoard::BorderPlace::RightBottom) <= separator
-            && !collidedBoard[GameBoard::BorderPlace::RightBottom].previous)
-    {
-        normalVector += board.normalVectors[GameBoard::BorderPlace::RightBottom];
-        collidedBoard[GameBoard::BorderPlace::RightBottom].current = true;
-    }
+    for(auto && border : board.borders)
+        if(checkBorderCollision(board, border))
+            break;
 }
 
 void GameBall::checkCollision(GamePaddle & paddle)
@@ -667,26 +625,12 @@ void GameBall::move(GLfloat delta)
     rotateMatrix = glm::mat2(glm::vec2(cos(rotationAngle), sin(rotationAngle)),
                              glm::vec2(-sin(rotationAngle), cos(rotationAngle)));
 
-    if(startingShot)
-    {
-        delta = 0.0f;
-        startingShot = false;
-    }
-
     if(normalVector[0] != 0.0f || normalVector[1] != 0.0f)
         velocity = glm::reflect(velocity, glm::normalize(normalVector));
 
     transformVector += velocity * delta;
     normalVector = glm::vec2(0.0f, 0.0f);
-
-    collidedPaddle.shift();
-
-    for(auto && e : collidedBoard)
-        e.second.shift();
-
-    for(size_t i = 0; i < GameBrick::rowsNumber; ++i)
-        for(size_t j = 0; j < GameBrick::columnsNumber; ++j)
-            collidedBricks[i][j].shift();
+    shiftCollisions();
 }
 
 void GameBall::drawBall(GLuint pID)
@@ -724,6 +668,30 @@ void GameBall::drawCross(GLuint pID)
 
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
+}
+
+void GameBall::shiftCollisions()
+{
+    collidedPaddle.shift();
+
+    for(auto && c : collidedBoard)
+        c.second.shift();
+
+    for(size_t i = 0; i < GameBrick::rowsNumber; ++i)
+        for(size_t j = 0; j < GameBrick::columnsNumber; ++j)
+            collidedBricks[i][j].shift();
+}
+
+bool GameBall::checkBorderCollision(GameBoard & board, GameBoard::BorderPlace place)
+{
+    if(board.distance(transformVector, place) <= separator && !collidedBoard[place].previous)
+    {
+        normalVector += board.normalVectors[place];
+        collidedBoard[place].current = true;
+        return true;
+    }
+
+    return false;
 }
 
 void GameBall::brickScored(GameBrick & brick, int row, int column)

@@ -33,6 +33,7 @@ public:
     void drawBorders(GLuint pID);
     GLfloat distance(const glm::vec2 & point, BorderPlace place);
 
+    const BorderPlace borders[5];
     std::map<BorderPlace, glm::vec2> normalVectors;
 
 private:
@@ -149,9 +150,18 @@ class GameBall
 public:
     GameBall();
 
+    void draw(GLuint pID)
+    {
+        drawBall(pID);
+        drawCross(pID);
+    }
+
+    bool checkOutside()
+    {
+        return transformVector[1] <= -1.0f;
+    }
+
     void restart();
-    void draw(GLuint pID);
-    bool checkOutside();
     void checkCollision(GameBoard & board);
     void checkCollision(GamePaddle & paddle);
     void checkCollision(GameBrick & brick);
@@ -182,6 +192,8 @@ private:
     void setCollided();
     void drawBall(GLuint pID);
     void drawCross(GLuint pID);
+    void shiftCollisions();
+    bool checkBorderCollision(GameBoard & board, GameBoard::BorderPlace place);
     void brickScored(GameBrick & brick, int row, int column);
 
     const GLfloat vbDataBall[28];
@@ -196,12 +208,10 @@ private:
     glm::mat2 scaleMatrix;
     glm::mat2 rotateMatrix;
     glm::vec2 transformVector;
-    glm::vec2 velocity;
     glm::vec2 normalVector;
+    glm::vec2 velocity;
     GLfloat radius;
     GLfloat separator;
-    GLfloat velocityDistance;
-    bool startingShot;
     Collision collidedPaddle;
     std::map<GameBoard::BorderPlace, Collision> collidedBoard;
     Collision collidedBricks[GameBrick::rowsNumber][GameBrick::columnsNumber];
