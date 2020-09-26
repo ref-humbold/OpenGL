@@ -16,9 +16,7 @@ enum class Colour : int
     Magenta = 4,
     Yellow = 5,
     Orange = 6,
-    Purple = 7,
-    Black = 10,
-    Gray = 11
+    Purple = 7
 };
 
 enum class Sign : int
@@ -40,17 +38,19 @@ public:
         return colour == card.colour && sign == card.sign;
     }
 
-    void setVisible()
+    bool matches(Colour c, Sign s) const
     {
-        visible = true;
+        return colour == c && sign == s;
     }
 
-    void draw(GLuint programID, bool isCurrent, bool hasFrame);
+    void draw(GLuint programID, bool isCurrent, bool hasFrame) const;
+
+    bool visible;
 
 private:
-    void drawCard(GLuint programID, bool isVisible);
-    void drawSign(GLuint programID);
-    void drawFrame(GLuint programID);
+    void drawCard(GLuint programID, bool isVisible) const;
+    void drawSign(GLuint programID) const;
+    void drawFrame(GLuint programID) const;
 
     const GLfloat vertexBufferData[42];
     GLuint vertexBuffer;
@@ -59,7 +59,6 @@ private:
 
     Colour colour;
     Sign sign;
-    bool visible;
 };
 
 #endif

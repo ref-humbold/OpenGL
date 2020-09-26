@@ -2,7 +2,8 @@
 
 GameCard::GameCard(const std::pair<int, int> & size, const std::pair<int, int> & place,
                    Colour colour, Sign sign)
-    : vertexBufferData{
+    : visible{false},
+      vertexBufferData{
               -0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,  // card
               -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,  // frame
               0.0f,  0.7f,  0.0f,  -0.7f,  // pipe
@@ -10,18 +11,17 @@ GameCard::GameCard(const std::pair<int, int> & size, const std::pair<int, int> &
               0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
               -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
       },
-      scaleVector{0.8f / size.first, 0.8f / size.second},
-      transformVector{1 - size.first + 2*(place.first -1), 1 - size.second + 2*(place.second -1)},
+      scaleVector{0.8f / size.second, 0.8f / size.first},
+      transformVector{1 - size.second + 2 * place.second, 1 - size.first + 2 * place.first},
       colour{colour},
-      sign{sign},
-      visible{false}
+      sign{sign}
 {
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
 }
 
-void GameCard::draw(GLuint programID, bool isCurrent, bool hasFrame)
+void GameCard::draw(GLuint programID, bool isCurrent, bool hasFrame) const
 {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -35,7 +35,7 @@ void GameCard::draw(GLuint programID, bool isCurrent, bool hasFrame)
     glDisableVertexAttribArray(0);
 }
 
-void GameCard::drawCard(GLuint programID, bool isVisible)
+void GameCard::drawCard(GLuint programID, bool isVisible) const
 {
     GLint scale = glGetUniformLocation(programID, "scale");
     GLint transform = glGetUniformLocation(programID, "transform");
@@ -90,7 +90,7 @@ void GameCard::drawCard(GLuint programID, bool isVisible)
     drawSign(programID);
 }
 
-void GameCard::drawSign(GLuint programID)
+void GameCard::drawSign(GLuint programID) const
 {
     GLint scale = glGetUniformLocation(programID, "scale");
     GLint transform = glGetUniformLocation(programID, "transform");
@@ -121,7 +121,7 @@ void GameCard::drawSign(GLuint programID)
     }
 }
 
-void GameCard::drawFrame(GLuint programID)
+void GameCard::drawFrame(GLuint programID) const
 {
     GLint scale = glGetUniformLocation(programID, "scale");
     GLint transform = glGetUniformLocation(programID, "transform");

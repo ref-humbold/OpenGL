@@ -4,39 +4,22 @@
 GameController::GameController(int rows, int columns)
     : fieldsCount{rows * columns},
       size{std::make_pair(rows, columns)},
-      vertexBufferData{
-              -0.9f, -0.9f, 0.9f,  -0.9f, 0.9f, 0.9f,  -0.9f, 0.9f,  // card
-              -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,  // frame
-              0.0f,  0.7f,  0.0f,  -0.7f,  // pipe
-              -0.7f, -0.7f, 0.7f,  0.7f,  0.7f, -0.7f, -0.7f, 0.7f,  // cross
-              0.0f,  0.7f,  -0.7f, -0.7f, 0.7f, -0.7f,  // triangle
-              -0.7f, 0.0f,  0.0f,  0.7f,  0.7f, 0.0f,  0.0f,  -0.7f  // square
-      },
       colours_distrib{0, coloursCount - 1},
       signs_distrib{0, signsCount - 1},
       fields_distrib{0, fieldsCount - 1}
 {
-    for(int y = -rows + 1; y <= rows; y += 2)
-        for(int x = -columns + 1; x <= columns; x += 2)
-            transforms.push_back(glm::vec2(x, y));
-
     restart();
-
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
 }
 
 void GameController::restart()
 {
-    visible.clear();
     cards.clear();
 
     int sameCardsRatio = 1 + fieldsCount / (coloursCount * signsCount);
 
-    for(int i = 0; i < fieldsCount / 2; ++i)
+    for(int i = 0; i < fieldsCount; i += 2)
     {
-        int index1, index2;
+        std::pair<int, int> place1, place2;
         Colour colour;
         Sign sign;
 
@@ -46,42 +29,30 @@ void GameController::restart()
             sign = static_cast<Sign>(signs_distrib(rand_eng));
         } while(sameCardsRatio < std::count_if(
                         std::begin(cards), std::end(cards),
-                        [=](const auto & c) {
-                            return c.second.first == colour && c.second.second == sign;
-                        }));
+                        [=](const auto & c) { return c.second.matches(colour, sign); }));
 
         do
-            index1 = fields_distrib(rand_eng);
-        while(cards.find(index1) != cards.end());
+        {
+            int ix = fields_distrib(rand_eng);
+            place1 = std::make_pair(ix / size.second, ix % size.second);
+        } while(cards.find(place1) != cards.end());
 
         do
-            index2 = fields_distrib(rand_eng);
-        while(cards.find(index2) != cards.end() || index2 == index1);
+        {
+            int ix = fields_distrib(rand_eng);
+            place2 = std::make_pair(ix / size.second, ix % size.second);
+        } while(cards.find(place2) != cards.end() || place2 == place1);
 
-        cards.emplace(index1, std::make_pair(colour, sign));
-        cards.emplace(index2, std::make_pair(colour, sign));
+        cards.emplace(place1, GameCard(size, place1, colour, sign));
+        cards.emplace(place2, GameCard(size, place2, colour, sign));
     }
 }
 
-void GameController::drawGame(GLuint programID, int currentIndex,
-                              const std::pair<int, int> & visibleIndices)
+void GameController::drawGame(GLuint programID, const std::pair<int, int> & currentPlace,
+                              const VisiblePlaces & visiblePlaces)
 {
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-    drawCards(programID, Colour::Gray, transforms[currentIndex], 4);
-
-    for(int i = 0; i < size.first * size.second; i++)
-        if(isVisible(i) || i == visibleIndices.first || i == visibleIndices.second)
-        {
-            drawCards(programID, cards.at(i).first, transforms[i], 0);
-            drawSign(programID, cards.at(i).second, transforms[i]);
-        }
-        else
-            drawCards(programID, Colour::Black, transforms[i], 0);
-
-    glDisableVertexAttribArray(0);
+    for(auto && e : cards)
+        e.second.draw(programID, visiblePlaces.contains(e.first), e.first == currentPlace);
 }
 
 Key GameController::checkKeyPress(GLFWwindow * window)
@@ -114,123 +85,37 @@ void GameController::checkKeyRelease(GLFWwindow * window, Key key)
         while(glfwGetKey(window, static_cast<int>(key)) != GLFW_RELEASE);
 }
 
-int GameController::moveFrame(Key key, int currentIndex)
+std::pair<int, int> GameController::moveFrame(Key key, const std::pair<int, int> & currentPlace)
 {
-    int row = currentIndex / size.second, column = currentIndex % size.second;
+    std::pair<int, int> nextPlace;
+    int row = currentPlace.first, column = currentPlace.second;
 
     switch(key)
     {
         case Key::MoveUp:
-            currentIndex = ((row + 1) % size.first) * size.second + column;
+            nextPlace = std::make_pair((row + 1) % size.first, column);
             break;
 
         case Key::MoveDown:
-            currentIndex = ((row - 1 + size.first) % size.first) * size.second + column;
+            nextPlace = std::make_pair((row - 1 + size.first) % size.first, column);
             break;
 
         case Key::MoveLeft:
-            currentIndex = row * size.second + (column - 1 + size.second) % size.second;
+            nextPlace = std::make_pair(row, (column - 1 + size.second) % size.second);
             break;
 
         case Key::MoveRight:
-            currentIndex = row * size.second + (column + 1) % size.second;
+            nextPlace = std::make_pair(row, (column + 1) % size.second);
             break;
 
         default:
             break;
     }
 
-    return currentIndex;
+    return nextPlace;
 }
 
-bool GameController::checkSame(const std::pair<int, int> & visibleIndices)
+bool GameController::checkSame(const VisiblePlaces & visiblePlaces)
 {
-    return cards.at(visibleIndices.first) == cards.at(visibleIndices.second);
-}
-
-void GameController::drawCards(GLuint programID, Colour colour, glm::vec2 transformation,
-                               int frameOffset)
-{
-    GLint scale = glGetUniformLocation(programID, "scale");
-    GLint transform = glGetUniformLocation(programID, "transform");
-    GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
-
-    glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation[0], transformation[1]);
-
-    switch(colour)
-    {
-        case Colour::Red:
-            glUniform3f(fragmentColor, 1.0f, 0.0f, 0.0f);
-            break;
-
-        case Colour::Green:
-            glUniform3f(fragmentColor, 0.0f, 1.0f, 0.0f);
-            break;
-
-        case Colour::Blue:
-            glUniform3f(fragmentColor, 0.0f, 0.0f, 1.0f);
-            break;
-
-        case Colour::Cyan:
-            glUniform3f(fragmentColor, 0.0f, 1.0f, 1.0f);
-            break;
-
-        case Colour::Magenta:
-            glUniform3f(fragmentColor, 1.0f, 0.0f, 1.0f);
-            break;
-
-        case Colour::Yellow:
-            glUniform3f(fragmentColor, 1.0f, 1.0f, 0.0f);
-            break;
-
-        case Colour::Orange:
-            glUniform3f(fragmentColor, 1.0f, 0.66f, 0.0f);
-            break;
-
-        case Colour::Purple:
-            glUniform3f(fragmentColor, 0.66f, 0.0f, 0.66f);
-            break;
-
-        case Colour::Black:
-            glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
-            break;
-
-        case Colour::Gray:
-            glUniform3f(fragmentColor, 0.5f, 0.5f, 0.5f);
-            break;
-    }
-
-    glDrawArrays(GL_TRIANGLE_FAN, frameOffset, 4);
-}
-
-void GameController::drawSign(GLuint programID, Sign sign, glm::vec2 transformation)
-{
-    GLint scale = glGetUniformLocation(programID, "scale");
-    GLint transform = glGetUniformLocation(programID, "transform");
-    GLint fragmentColor = glGetUniformLocation(programID, "fragmentColor");
-
-    glUniform2f(scale, 0.8f / size.second, 0.8f / size.first);
-    glUniform2f(transform, transformation[0], transformation[1]);
-    glUniform3f(fragmentColor, 0.0f, 0.0f, 0.0f);
-
-    switch(sign)
-    {
-        case Sign::Pipe:
-            glDrawArrays(GL_LINES, 8, 2);
-            break;
-
-        case Sign::Cross:
-            glDrawArrays(GL_LINES, 10, 2);
-            glDrawArrays(GL_LINES, 12, 2);
-            break;
-
-        case Sign::Triangle:
-            glDrawArrays(GL_LINE_LOOP, 14, 3);
-            break;
-
-        case Sign::Square:
-            glDrawArrays(GL_LINE_LOOP, 17, 4);
-            break;
-    }
+    return cards.at(*visiblePlaces.first).matches(cards.at(*visiblePlaces.second));
 }

@@ -13,10 +13,10 @@ struct GameState
 
     void restart()
     {
-        currentIndex = 0;
         round = 1;
         cardPairsLeft = cardsCount / 2;
-        visibleIndices = std::make_pair(-1, -1);
+        currentPlace = std::make_pair(0, 0);
+        visiblePlaces = VisiblePlaces();
         std::cout << "\n## NEW GAME ##\n";
     }
 
@@ -26,8 +26,9 @@ struct GameState
     }
 
     const int cardsCount;
-    int currentIndex, round, cardPairsLeft;
-    std::pair<int, int> visibleIndices;
+    int round, cardPairsLeft;
+    std::pair<int, int> currentPlace;
+    VisiblePlaces visiblePlaces;
 };
 
 int main(int argc, char * argv[])
@@ -47,7 +48,7 @@ int main(int argc, char * argv[])
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
-        ctrl.drawGame(programID, state.currentIndex, state.visibleIndices);
+        ctrl.drawGame(programID, state.currentPlace, state.visiblePlaces);
         glfwSwapBuffers(window);
         glfwPollEvents();
 
@@ -59,22 +60,22 @@ int main(int argc, char * argv[])
             {
                 ctrl.checkKeyRelease(window, key);
 
-                if(state.visibleIndices.second >= 0)
-                    state.visibleIndices = std::make_pair(-1, -1);
+                if(state.visiblePlaces.second)
+                    state.visiblePlaces = VisiblePlaces();
             }
 
-            if(key == Key::Select && !ctrl.isVisible(state.currentIndex))
+            if(key == Key::Select && !ctrl.cardAt(state.currentPlace).visible)
             {
-                if(state.visibleIndices.first == -1)
-                    state.visibleIndices.first = state.currentIndex;
-                else if(state.visibleIndices.first != state.currentIndex)
+                if(!state.visiblePlaces.first)
+                    state.visiblePlaces.first = state.currentPlace;
+                else if(state.visiblePlaces.first.value() != state.currentPlace)
                 {
-                    state.visibleIndices.second = state.currentIndex;
+                    state.visiblePlaces.second = state.currentPlace;
 
-                    if(ctrl.checkSame(state.visibleIndices))
+                    if(ctrl.checkSame(state.visiblePlaces))
                     {
-                        ctrl.setVisible(state.visibleIndices.first);
-                        ctrl.setVisible(state.visibleIndices.second);
+                        ctrl.cardAt(state.visiblePlaces.first.value()).visible = true;
+                        ctrl.cardAt(state.visiblePlaces.second.value()).visible = true;
                         --state.cardPairsLeft;
                         std::cout << "-- Matched! --\n";
                     }
@@ -89,7 +90,7 @@ int main(int argc, char * argv[])
                 }
             }
             else if(key != Key::None && key != Key::Select)
-                state.currentIndex = ctrl.moveFrame(key, state.currentIndex);
+                state.currentPlace = ctrl.moveFrame(key, state.currentPlace);
         }
         else
         {
