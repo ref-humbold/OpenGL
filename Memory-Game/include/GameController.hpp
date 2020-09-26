@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "GameCard.hpp"
 
 enum class Key : int
 {
@@ -19,28 +20,6 @@ enum class Key : int
     MoveDown = GLFW_KEY_DOWN,
     MoveLeft = GLFW_KEY_LEFT,
     MoveRight = GLFW_KEY_RIGHT
-};
-
-enum class Colour : int
-{
-    Red = 0,
-    Green = 1,
-    Blue = 2,
-    Cyan = 3,
-    Magenta = 4,
-    Yellow = 5,
-    Orange = 6,
-    Purple = 7,
-    Black = 10,
-    Gray = 11
-};
-
-enum class Sign : int
-{
-    Pipe = 0,
-    Cross = 1,
-    Triangle = 2,
-    Square = 3
 };
 
 class GameController
