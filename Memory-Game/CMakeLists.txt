@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(Memory-Game VERSION 2.0.200430)
+project(Memory-Game VERSION 2.1.200926)
 
 # PROPERTIES
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
