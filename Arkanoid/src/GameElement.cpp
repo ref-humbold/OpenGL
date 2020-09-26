@@ -35,9 +35,9 @@ GameBoard::GameBoard()
                     0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f, 0.0f, 0.0f, 0.25f},
       vbDataTriangle{0.0f, 0.0f, 0.0f, 1.0f, 0.57735f, 0.0f},
       cbDataTriangle{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
-      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
-      transformVector{glm::vec2(0.0f, 0.0f)}
+      scaleMatrix{{1.0f, 0.0f}, {0.0f, 1.0f}},
+      rotateMatrix{{1.0f, 0.0f}, {0.0f, 1.0f}},
+      transformVector{0.0f, 0.0f}
 {
     vertexBufferHexagon = createVertexBuffer(vbDataHexagon, sizeof(vbDataHexagon));
     colorBufferHexagon = createVertexBuffer(cbDataHexagon, sizeof(cbDataHexagon));
@@ -192,9 +192,9 @@ GameBrick::GameBrick()
       vbDataRect{0.5f, 0.25f, 0.5f, -0.25f, -0.5f, -0.25f, -0.5f, 0.25f},
       cbDataRect{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
       cbDataRectBorder{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
-      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
-      transformVector{glm::vec2(0.0f, 0.0f)}
+      scaleMatrix{{0.1f, 0.0f}, {0.0f, 0.1f}},
+      rotateMatrix{{1.0f, 0.0f}, {0.0f, 1.0f}},
+      transformVector{0.0f, 0.0f}
 {
     vertexBufferRect = createVertexBuffer(vbDataRect, sizeof(vbDataRect));
     colorBufferRect = createVertexBuffer(cbDataRect, sizeof(cbDataRect));
@@ -308,8 +308,8 @@ GamePaddle::GamePaddle()
     : vbDataPaddle{0.0f, 0.0f, 0.4f, -0.05f, 0.6f, 0.1f, -0.6f, 0.1f, -0.4f, -0.05f},
       cbDataPaddle{1.0f, 1.0f, 1.0f, 0.8f, 0.8f, 0.8f, 0.2f, 0.2f,
                    0.2f, 0.2f, 0.2f, 0.2f, 0.8f, 0.8f, 0.8f},
-      scaleMatrix{glm::mat2(glm::vec2(0.1f, 0.0f), glm::vec2(0.0f, 0.1f))},
-      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
+      scaleMatrix{{0.1f, 0.0f}, {0.0f, 0.1f}},
+      rotateMatrix{{1.0f, 0.0f}, {0.0f, 1.0f}},
       reflect_distrib{-8, 8}
 {
     vertexBufferPaddle = createVertexBuffer(vbDataPaddle, sizeof(vbDataPaddle));
@@ -361,9 +361,9 @@ GameBall::GameBall()
       vbDataCross{0.13660254f, 0.13660254f,  -0.13660254f, -0.13660254f,
                   0.13660254f, -0.13660254f, -0.13660254f, 0.13660254f},
       cbDataCross{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-      scaleMatrix{glm::mat2(glm::vec2(0.08f, 0.0f), glm::vec2(0.0f, 0.08f))},
-      rotateMatrix{glm::mat2(glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 1.0f))},
-      normalVector{glm::vec2(0.0f, 0.0f)},
+      scaleMatrix{{0.08f, 0.0f}, {0.0f, 0.08f}},
+      rotateMatrix{{1.0f, 0.0f}, {0.0f, 1.0f}},
+      normalVector{0.0f, 0.0f},
       radius{glm::length(scaleMatrix * glm::vec2(0.13660254f, 0.13660254f))},
       separator{1.25f * radius},
       velocity_distrib{-10, 10},
