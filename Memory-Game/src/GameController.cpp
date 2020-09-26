@@ -87,32 +87,25 @@ void GameController::checkKeyRelease(GLFWwindow * window, Key key)
 
 std::pair<int, int> GameController::moveFrame(Key key, const std::pair<int, int> & currentPlace)
 {
-    std::pair<int, int> nextPlace;
     int row = currentPlace.first, column = currentPlace.second;
 
     switch(key)
     {
         case Key::MoveUp:
-            nextPlace = std::make_pair((row + 1) % size.first, column);
-            break;
+            return {(row + 1) % size.first, column};
 
         case Key::MoveDown:
-            nextPlace = std::make_pair((row - 1 + size.first) % size.first, column);
-            break;
+            return {(row - 1 + size.first) % size.first, column};
 
         case Key::MoveLeft:
-            nextPlace = std::make_pair(row, (column - 1 + size.second) % size.second);
-            break;
+            return {row, (column - 1 + size.second) % size.second};
 
         case Key::MoveRight:
-            nextPlace = std::make_pair(row, (column + 1) % size.second);
-            break;
+            return {row, (column + 1) % size.second};
 
         default:
-            break;
+            return currentPlace;
     }
-
-    return nextPlace;
 }
 
 bool GameController::checkSame(const VisiblePlaces & visiblePlaces)
