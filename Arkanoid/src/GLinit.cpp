@@ -72,5 +72,5 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
 
     createVertexArray();
     addGlfwSettings();
-    return std::make_tuple(window, programID);
+    return {window, programID};
 }

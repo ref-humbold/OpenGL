@@ -39,7 +39,7 @@ public:
 private:
     glm::vec2 orthogonal(const glm::vec2 & v)
     {
-        return glm::vec2(-v[1], v[0]);
+        return {-v[1], v[0]};
     }
 
     void drawOneTriangle(GLuint pID);
