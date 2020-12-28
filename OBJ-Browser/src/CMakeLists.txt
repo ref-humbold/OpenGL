@@ -11,16 +11,16 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
-    GLSLloader.cpp
-    FileReader.cpp
-    Camera.cpp
-    GraphicObject.cpp
-    ObjBrowser.cpp)
+    "Camera.cpp"
+    "FileReader.cpp"
+    "GLSLloader.cpp"
+    "GraphicObject.cpp"
+    "ObjBrowser.cpp")
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(ObjBrowser ${SOURCES})
-target_link_libraries(ObjBrowser
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
+add_executable(${EXE_NAME} ${SOURCES})
+target_link_libraries(${EXE_NAME}
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}
