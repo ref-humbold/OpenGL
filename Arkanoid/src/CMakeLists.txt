@@ -11,16 +11,16 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
-    GLinit.cpp
-    GLSLloader.cpp
-    GameElement.cpp
-    GameController.cpp
-    Arkanoid.cpp)
+    "Arkanoid.cpp"
+    "GameController.cpp"
+    "GameElement.cpp"
+    "GLinit.cpp"
+    "GLSLloader.cpp")
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(Arkanoid ${SOURCES})
-target_link_libraries(Arkanoid
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
+add_executable(${EXE_NAME} ${SOURCES})
+target_link_libraries(${EXE_NAME}
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}

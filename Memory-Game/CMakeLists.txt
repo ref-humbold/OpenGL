@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.11)
-project(Memory-Game VERSION 2.1.200926)
+project(Memory-Game VERSION 2.1.201228)
 
 # PROPERTIES
+set(EXE_NAME MemoryGame)
+
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 set(SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 set(EXE_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/bin")
@@ -11,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -O2")
 
 # SOURCES
-include_directories("${INCLUDE_DIR}")
+include_directories(${INCLUDE_DIR})
 
 # OUTPUT
-add_subdirectory("${SRC_DIR}")
+add_subdirectory(${SRC_DIR})

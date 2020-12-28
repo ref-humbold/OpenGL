@@ -11,17 +11,17 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
-    GLSLloader.cpp
-    Area.cpp
-    Earth.cpp
-    Detailing.cpp
-    Camera.cpp
-    TerrainMap.cpp)
+    "Area.cpp"
+    "Camera.cpp"
+    "Detailing.cpp"
+    "Earth.cpp"
+    "GLSLloader.cpp"
+    "TerrainMap.cpp")
 
 # OUTPUT
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(TerrainMap ${SOURCES})
-target_link_libraries(TerrainMap
+add_executable(${EXE_NAME} ${SOURCES})
+target_link_libraries(${EXE_NAME}
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}

@@ -11,18 +11,18 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
-    DeadlyBubbles.cpp
-    GLSLloader.cpp
-    GameAquarium.cpp
-    GameBubble.cpp
-    GamePlayer.cpp
-    GameController.cpp
-    Parameters.cpp)
+    "DeadlyBubbles.cpp"
+    "GameAquarium.cpp"
+    "GameBubble.cpp"
+    "GameController.cpp"
+    "GamePlayer.cpp"
+    "GLSLloader.cpp"
+    "Parameters.cpp")
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(DeadlyBubbles ${SOURCES})
-target_link_libraries(DeadlyBubbles
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
+add_executable(${EXE_NAME} ${SOURCES})
+target_link_libraries(${EXE_NAME}
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}
