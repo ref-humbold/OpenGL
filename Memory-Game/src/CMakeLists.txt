@@ -11,16 +11,16 @@ include_directories(${OPENGL_INCLUDE_DIR}
 
 # SOURCES
 set(SOURCES
-    GLinit.cpp
-    GLSLloader.cpp
-    GameController.cpp
-    Parameters.cpp
-    MemoryGame.cpp)
+    "GameController.cpp"
+    "GLinit.cpp"
+    "GLSLloader.cpp"
+    "MemoryGame.cpp"
+    "Parameters.cpp")
 
 # OUTPUT
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
-add_executable(MemoryGame ${SOURCES})
-target_link_libraries(MemoryGame
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
+add_executable(${EXE_NAME} ${SOURCES})
+target_link_libraries(${EXE_NAME}
                       glfw
                       OpenGL::GL
                       ${GLEW_LIBRARIES}
