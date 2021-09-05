@@ -7,7 +7,6 @@
 #include "shaders/VertexShader_glsl.hpp"
 #endif
 
-using namespace glm;
 using namespace std::string_literals;
 
 GLuint compileShader(GLenum shaderType, const std::string & shaderCode,

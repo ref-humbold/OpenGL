@@ -1,23 +1,21 @@
 #include "GraphicObject.hpp"
 
-using namespace glm;
-
 void GraphicObject::createBuffers()
 {
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vbData.size() * sizeof(vec3), &vbData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vbData.size() * sizeof(glm::vec3), &vbData[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &textureBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
-    glBufferData(GL_ARRAY_BUFFER, tbData.size() * sizeof(vec2), &tbData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, tbData.size() * sizeof(glm::vec2), &tbData[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &normalBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glBufferData(GL_ARRAY_BUFFER, nbData.size() * sizeof(vec3), &nbData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nbData.size() * sizeof(glm::vec3), &nbData[0], GL_STATIC_DRAW);
 }
 
-void GraphicObject::draw(GLuint pID, mat4 cameraMat, mat4 clipMat)
+void GraphicObject::draw(GLuint pID, glm::mat4 cameraMat, glm::mat4 clipMat)
 {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

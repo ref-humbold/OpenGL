@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include "GraphicObject.hpp"
 
-using namespace glm;
-
 GraphicObject readOBJ(const char * filename);
 
 #endif

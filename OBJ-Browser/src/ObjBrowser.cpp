@@ -1,6 +1,6 @@
-#include <cstdlib>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
@@ -14,10 +14,9 @@
 #include "GLSLloader.hpp"
 #include "GraphicObject.hpp"
 
-using namespace glm;
 using namespace std::string_literals;
 
-bool vecDifferent(vec3 v1, vec3 v2)
+bool vecDifferent(glm::vec3 v1, glm::vec3 v2)
 {
     return v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2];
 }
@@ -139,7 +138,7 @@ int main(int argc, char * argv[])
     Camera camera(window);
     auto objIter = objects.begin();
     int iterationClicked = 0;
-    vec3 mouseBegin, mouseEnd;
+    glm::vec3 mouseBegin, mouseEnd;
     bool mouseClicked = false;
 
     do
@@ -204,11 +203,11 @@ int main(int argc, char * argv[])
 
             if(vecDifferent(mouseBegin, mouseEnd))
             {
-                vec3 normBegin = normalize(mouseBegin);
-                vec3 normEnd = normalize(mouseEnd);
-                GLfloat cosine = dot(normBegin, normEnd);
-                GLfloat angleRad = acos(min(cosine, 1.0f));
-                vec3 axis = normalize(cross(normBegin, normEnd));
+                glm::vec3 normBegin = glm::normalize(mouseBegin);
+                glm::vec3 normEnd = glm::normalize(mouseEnd);
+                GLfloat cosine = glm::dot(normBegin, normEnd);
+                GLfloat angleRad = acos(glm::min(cosine, 1.0f));
+                glm::vec3 axis = glm::normalize(glm::cross(normBegin, normEnd));
 
                 camera.viewRotate(angleRad, axis);
                 mouseBegin = mouseEnd;

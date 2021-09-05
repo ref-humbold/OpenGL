@@ -10,24 +10,24 @@ void Camera::viewScale(GLfloat zoom)
     fov *= zoom;
     fov = std::min(fov, PI_CONST / 2);
     fov = std::max(fov, PI_CONST / 6);
-    proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
+    proj = glm::perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
 }
 
-void Camera::viewRotate(GLfloat angleRad, vec3 axis)
+void Camera::viewRotate(GLfloat angleRad, glm::vec3 axis)
 {
-    vec4 axisObj4 = inverse(view) * vec4(axis[0], axis[1], axis[2], 0.0f);
-    vec3 axisObj = vec3(axisObj4[0], axisObj4[1], axisObj4[2]);
+    glm::vec4 axisObj4 = inverse(view) * glm::vec4(axis[0], axis[1], axis[2], 0.0f);
+    glm::vec3 axisObj = glm::vec3(axisObj4[0], axisObj4[1], axisObj4[2]);
 
-    view = view * toMat4(angleAxis(angleRad, axisObj));
+    view = view * glm::toMat4(angleAxis(angleRad, axisObj));
 }
 
-vec3 Camera::getMousePos(GLFWwindow * window)
+glm::vec3 Camera::getMousePos(GLFWwindow * window)
 {
     double x, y;
 
     glfwGetCursorPos(window, &x, &y);
 
-    vec3 res = vec3(2.0f * x / windowW - 1.0f, -(2.0f * y / windowH - 1.0f), 0.0f);
+    glm::vec3 res = glm::vec3(2.0f * x / windowW - 1.0f, -(2.0f * y / windowH - 1.0f), 0.0f);
     GLfloat length = res[0] * res[0] + res[1] * res[1];
 
     if(length <= 1.0f)

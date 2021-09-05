@@ -1,16 +1,16 @@
 #include "FileReader.hpp"
 #include <cstdio>
+#include <algorithm>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
 #include <string>
 #include <vector>
 
-vec3 normalVec(vec3 vt1, vec3 vt2, vec3 vt3)
+glm::vec3 normalVec(glm::vec3 vt1, glm::vec3 vt2, glm::vec3 vt3)
 {
-    vec3 vt12 = vt2 - vt1;
-    vec3 vt13 = vt3 - vt1;
+    glm::vec3 vt12 = vt2 - vt1;
+    glm::vec3 vt13 = vt3 - vt1;
 
     return normalize(cross(vt12, vt13));
 }
@@ -69,15 +69,15 @@ GraphicObject readOBJ(const char * filename)
     if(file == nullptr)
         throw std::runtime_error("Cannot open OBJ file.");
 
-    std::vector<vec3> vertRead;
-    std::vector<vec2> uvRead;
-    std::vector<vec3> normRead;
+    std::vector<glm::vec3> vertRead;
+    std::vector<glm::vec2> uvRead;
+    std::vector<glm::vec3> normRead;
     std::vector<GLuint> vertIndices;
     std::vector<GLuint> uvIndices;
     std::vector<GLuint> normIndices;
-    std::vector<vec3> vertices;
-    std::vector<vec2> uvs;
-    std::vector<vec3> normals;
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec2> uvs;
+    std::vector<glm::vec3> normals;
 
     while(true)
     {
@@ -98,23 +98,23 @@ GraphicObject readOBJ(const char * filename)
         if(line[0] == "v")
         {
             if(line.size() >= 4)
-                vertRead.push_back(vec3(stof(line[1]), stof(line[2]), stof(line[3])));
+                vertRead.push_back(glm::vec3(stof(line[1]), stof(line[2]), stof(line[3])));
             else if(line.size() == 3)
-                vertRead.push_back(vec3(stof(line[1]), stof(line[2]), 0.0f));
+                vertRead.push_back(glm::vec3(stof(line[1]), stof(line[2]), 0.0f));
             else
                 throw std::runtime_error("Invalid vertex coordinates.");
         }
         else if(line[0] == "vt")
         {
             if(line.size() >= 3)
-                uvRead.push_back(vec2(stof(line[1]), stof(line[2])));
+                uvRead.push_back(glm::vec2(stof(line[1]), stof(line[2])));
             else
                 throw std::runtime_error("Invalid texture coordinates.");
         }
         else if(line[0] == "vn")
         {
             if(line.size() >= 4)
-                normRead.push_back(vec3(stof(line[1]), stof(line[2]), stof(line[3])));
+                normRead.push_back(glm::vec3(stof(line[1]), stof(line[2]), stof(line[3])));
             else
                 throw std::runtime_error("Invalid normal vector coordinates.");
         }
@@ -128,8 +128,8 @@ GraphicObject readOBJ(const char * filename)
             std::transform(line.begin() + 1, line.begin() + 4, indx.begin(),
                            [](const std::string & s) { return parse(s, "/"); });
 
-            vec3 countedNormal = normalVec(vertRead[indx[0][0] - 1], vertRead[indx[1][0] - 1],
-                                           vertRead[indx[2][0] - 1]);
+            glm::vec3 countedNormal = normalVec(vertRead[indx[0][0] - 1], vertRead[indx[1][0] - 1],
+                                                vertRead[indx[2][0] - 1]);
 
             if(std::any_of(indx.begin(), indx.end(), [](const std::vector<GLuint> & vc) {
                    return vc.size() < 3 || vc[2] == 0;

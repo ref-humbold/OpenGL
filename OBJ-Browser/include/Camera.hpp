@@ -3,10 +3,10 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include <cstdlib>
 #include <cmath>
-#include <iostream>
+#include <cstdlib>
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,8 +15,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "GraphicObject.hpp"
-
-using namespace glm;
 
 enum class Key : int
 {
@@ -31,8 +29,8 @@ class Camera
 private:
     static constexpr GLfloat PI_CONST = M_PI;
 
-    mat4 view;
-    mat4 proj;
+    glm::mat4 view;
+    glm::mat4 proj;
     GLfloat fov;
     GLfloat persBegin;
     GLfloat persLength;
@@ -43,14 +41,15 @@ public:
     explicit Camera(GLFWwindow * window) : fov{PI_CONST / 4}, persBegin{2}, persLength{16}
     {
         glfwGetWindowSize(window, &windowW, &windowH);
-        view = lookAt(vec3(0.0f, 0.0f, 8.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-        proj = perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
+        view = glm::lookAt(glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                           glm::vec3(0.0f, 1.0f, 0.0f));
+        proj = glm::perspective(fov, (1.0f * windowW) / windowH, persBegin, persLength);
     }
 
     void drawObject(GLuint pID, GraphicObject & grobj);
     void viewScale(GLfloat zoom);
-    void viewRotate(GLfloat angleRad, vec3 axis);
-    vec3 getMousePos(GLFWwindow * window);
+    void viewRotate(GLfloat angleRad, glm::vec3 axis);
+    glm::vec3 getMousePos(GLFWwindow * window);
     std::vector<Key> checkKeyPress(GLFWwindow * window, const std::vector<Key> & keys);
     bool checkMouseAction(GLFWwindow * window, int action);
 };
