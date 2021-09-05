@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <iostream>
 #include <stdexcept>
@@ -11,7 +12,7 @@
 #include <glm/glm.hpp>
 #include "Camera.hpp"
 #include "FileReader.hpp"
-#include "GLSLloader.hpp"
+#include "GLinit.hpp"
 #include "GraphicObject.hpp"
 
 using namespace std::string_literals;
@@ -58,54 +59,12 @@ void checkFile(const char * filename)
         throw std::runtime_error(filename + " is not an OBJ file."s);
 }
 
-void createVertexArray()
-{
-    GLuint vertexArrayID;
-    glGenVertexArrays(1, &vertexArrayID);
-    glBindVertexArray(vertexArrayID);
-}
-
-void glfwHints()
-{
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-}
-
 int main(int argc, char * argv[])
 {
-    if(!glfwInit())
-        throw std::runtime_error("FAILED TO INITIALIZE GLFW");
+    GLFWwindow * window;
+    GLuint programID;
 
-    glfwHints();
-
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "ObjectBrowser", nullptr, nullptr);
-
-    if(window == nullptr)
-    {
-        glfwTerminate();
-        throw std::runtime_error("FAILED TO OPEN A NEW WINDOW");
-    }
-
-    glfwMakeContextCurrent(window);
-    glewExperimental = true;
-
-    if(glewInit() != GLEW_OK)
-        throw std::runtime_error("FAILED TO INITIALIZE GLEW");
-
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-    GLuint programID = loadShaders();
-
-    createVertexArray();
-
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    std::tie(window, programID) = initializeGL();
 
     std::vector<GraphicObject> objects;
     int objBegin = 1;

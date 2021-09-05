@@ -13,6 +13,7 @@ include_directories(${OPENGL_INCLUDE_DIR}
 set(SOURCES
     "Camera.cpp"
     "FileReader.cpp"
+    "GLinit.cpp"
     "GLSLloader.cpp"
     "GraphicObject.cpp"
     "ObjBrowser.cpp")
