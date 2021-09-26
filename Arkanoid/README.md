@@ -1,12 +1,12 @@
-# Memory-Game
-Simple memory game in C++ & OpenGL
+# Arkanoid
+Simple arkanoid game in C++ & OpenGL
 
 ## About
-Memory game is a small single-player game written in C++ language with OpenGL. Your goal is to match all the pairs of cards in the smallest number of moves.
+Arkanoid is a small single-player game written in C++ language with OpenGL. Your goal is to control ball motions with a paddle and break all the bricks. Do not let the ball fall out and hit the bottom edge! (But if this happens, you can try again).
 
 ### Keys in use
-*up*, *down*, *left*, *right* : choose next card to open \
-*space* : open the chosen card; start new game when finished
+*left*, *right* : move the paddle
+*space* : start/pause/resume the game
 *esc* : close the game
 
 -----
@@ -48,8 +48,5 @@ $ make
 ## How to run?
 Game can be run directly using the executable file in the `bin` root directory:
 ```sh
-$ /path-to-project-directory/bin/MemoryGame [-r rows] [-c columns]
+$ /path-to-project-directory/bin/Arkanoid
 ```
-
-**`-r`** `rows` : number of rows, must be between 1 and 12 (default 4) \
-**`-c`** `columns` : number of columns, must be between 1 and 12 (default 4)
