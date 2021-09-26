@@ -23,7 +23,7 @@ namespace
         GLint result = GL_FALSE;
         int infoLogLength;
 
-        std::cerr << ".::. Compiling shader : " << shaderName << "\n";
+        std::cerr << "[I] Compiling shader : " << shaderName << "\n";
 
         // Compile shader
         const char * shaderCodePointer = shaderCode.c_str();
@@ -54,7 +54,7 @@ namespace
         // Link the program
         GLuint programID = glCreateProgram();
 
-        std::cerr << ".::. Linking program\n";
+        std::cerr << "[I] Linking program\n";
         glAttachShader(programID, vertexShaderID);
         glAttachShader(programID, fragmentShaderID);
         glLinkProgram(programID);
@@ -81,7 +81,7 @@ namespace
         std::string shaderCode;
         std::ifstream shaderStream(filePath, std::ios::in);
 
-        std::cerr << ".::. Reading shader : " << filePath << "\n";
+        std::cerr << "[I] Reading shader : " << filePath << "\n";
 
         if(!shaderStream.is_open())
             throw shader_error("Impossible to open "s + filePath);
@@ -121,7 +121,7 @@ GLuint loadShaders()
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
 
-    std::cerr << ".::. Shaders loaded!\n";
+    std::cerr << "[I] Shaders loaded!\n";
 
     return programID;
 }

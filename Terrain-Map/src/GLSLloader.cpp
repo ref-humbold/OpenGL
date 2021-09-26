@@ -18,7 +18,7 @@ GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
     GLint result = GL_FALSE;
     int infoLogLength;
 
-    std::cerr << ".::. Compiling shader : " << shaderName << "\n";
+    std::cerr << "[I] Compiling shader : " << shaderName << "\n";
 
     // Compile shader
     const char * shaderCodePointer = shaderCode.c_str();
@@ -49,7 +49,7 @@ GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
     // Link the program
     GLuint programID = glCreateProgram();
 
-    std::cerr << ".::. Linking program\n";
+    std::cerr << "[I] Linking program\n";
     glAttachShader(programID, vertexShaderID);
     glAttachShader(programID, fragmentShaderID);
     glLinkProgram(programID);
@@ -75,7 +75,7 @@ std::string readShader(const std::string & filePath)
     std::string shaderCode;
     std::ifstream shaderStream(filePath, std::ios::in);
 
-    std::cerr << ".::. Reading shader : " << filePath << "\n";
+    std::cerr << "[I] Reading shader : " << filePath << "\n";
 
     if(!shaderStream.is_open())
         throw std::runtime_error("Impossible to open "s + filePath);
@@ -122,7 +122,7 @@ std::tuple<GLuint, GLuint> loadShaders()
     glDeleteShader(earthVertexShaderID);
     glDeleteShader(fragmentShaderID);
 
-    std::cerr << ".::. Shaders loaded!\n";
+    std::cerr << "[I] Shaders loaded!\n";
 
     return std::make_tuple(areaProgramID, earthProgramID);
 }
