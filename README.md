@@ -9,5 +9,9 @@ Software projects written with OpenGL library.
 
 ----
 
-For more detailed instructions see README files in each project:
+For more detailed instructions see README files in each subproject:
+* [Arkanoid](Arkanoid/README.md)
+* [Deadly-Bubbles](Deadly-Bubbles/README.md)
 * [Memory-Game](Memory-Game/README.md)
+* [OBJ-Browser](OBJ-Browser/README.md)
+* [Terrain-Map](Terrain-Map/README.md)
