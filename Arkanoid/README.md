@@ -5,8 +5,8 @@ Simple arkanoid game in C++ & OpenGL
 Arkanoid is a small single-player game written in C++ language with OpenGL. Your goal is to control ball motions with a paddle and break all the bricks. Do not let the ball fall out and hit the bottom edge! (But if this happens, you can try again).
 
 ### Keys in use
-*left*, *right* : move the paddle
-*space* : start/pause/resume the game
+*left*, *right* : move the paddle \
+*space* : start/pause/resume the game \
 *esc* : close the game
 
 -----
