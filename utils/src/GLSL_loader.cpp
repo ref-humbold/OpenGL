@@ -1,4 +1,4 @@
-#include "GLSLloader.hpp"
+#include "GLSL_loader.hpp"
 #include <cstring>
 #include <algorithm>
 #include <fstream>
@@ -7,7 +7,7 @@
 #define READ_FROM_HEADER true
 
 #if READ_FROM_HEADER
-#include "GLshaders.hpp"
+#include "GLSL_shaders.hpp"
 #endif
 
 using namespace std::string_literals;

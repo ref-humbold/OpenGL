@@ -1,6 +1,6 @@
-#include "GLinit.hpp"
+#include "GL_init.hpp"
 #include <string>
-#include "GLSLloader.hpp"
+#include "GLSL_loader.hpp"
 
 #define GLFW_TRANSPARENCY false
 #define GLFW_3D false
