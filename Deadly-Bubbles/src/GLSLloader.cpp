@@ -1,4 +1,9 @@
 #include "GLSLloader.hpp"
+#include <cstring>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 #define READ_FROM_HEADER true
 
@@ -7,85 +12,89 @@
 #include "shaders/VertexShader_glsl.hpp"
 #endif
 
-using namespace glm;
 using namespace std::string_literals;
 
-GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
-                     const std::string & shaderName)
+namespace
 {
-    GLuint shaderID = glCreateShader(shaderType);
-    GLint result = GL_FALSE;
-    int infoLogLength;
-
-    std::cerr << "[I] Compiling shader : " << shaderName << "\n";
-
-    // Compile shader
-    const char * shaderCodePointer = shaderCode.c_str();
-
-    glShaderSource(shaderID, 1, &shaderCodePointer, nullptr);
-    glCompileShader(shaderID);
-
-    // Check shader
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
-    glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-    if(infoLogLength > 0)
+    GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
+                         const std::string & shaderName)
     {
-        std::string shaderErrorMessage(infoLogLength + 1, '\0');
+        GLuint shaderID = glCreateShader(shaderType);
+        GLint result = GL_FALSE;
+        int infoLogLength;
 
-        glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
-        throw std::runtime_error(shaderErrorMessage);
+        std::cerr << "[I] Compiling shader : " << shaderName << "\n";
+
+        // Compile shader
+        const char * shaderCodePointer = shaderCode.c_str();
+
+        glShaderSource(shaderID, 1, &shaderCodePointer, nullptr);
+        glCompileShader(shaderID);
+
+        // Check shader
+        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
+        glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+        if(infoLogLength > 0)
+        {
+            std::string shaderErrorMessage(infoLogLength + 1, '\0');
+
+            glGetShaderInfoLog(shaderID, infoLogLength, nullptr, &shaderErrorMessage[0]);
+            throw shader_error(shaderErrorMessage);
+        }
+
+        return shaderID;
     }
 
-    return shaderID;
-}
-
-GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
-{
-    GLint result = GL_FALSE;
-    int infoLogLength;
-
-    // Link the program
-    GLuint programID = glCreateProgram();
-
-    std::cerr << "[I] Linking program\n";
-    glAttachShader(programID, vertexShaderID);
-    glAttachShader(programID, fragmentShaderID);
-    glLinkProgram(programID);
-
-    // Check the program
-    glGetProgramiv(programID, GL_LINK_STATUS, &result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLength);
-
-    if(infoLogLength > 0)
+    GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
     {
-        std::string programErrorMessage(infoLogLength + 1, '\0');
+        GLint result = GL_FALSE;
+        int infoLogLength;
 
-        glGetProgramInfoLog(programID, infoLogLength, nullptr, &programErrorMessage[0]);
-        throw std::runtime_error(programErrorMessage);
+        // Link the program
+        GLuint programID = glCreateProgram();
+
+        std::cerr << "[I] Linking program\n";
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glLinkProgram(programID);
+
+        // Check the program
+        glGetProgramiv(programID, GL_LINK_STATUS, &result);
+        glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+        if(infoLogLength > 0)
+        {
+            std::string programErrorMessage(infoLogLength + 1, '\0');
+
+            glGetProgramInfoLog(programID, infoLogLength, nullptr, &programErrorMessage[0]);
+            throw shader_error(programErrorMessage);
+        }
+
+        return programID;
     }
 
-    return programID;
-}
+#if !(READ_FROM_HEADER)
+    std::string readShader(const std::string & filePath)
+    {
+        // Read the shader code from the file
+        std::string shaderCode;
+        std::ifstream shaderStream(filePath, std::ios::in);
 
-std::string readShader(const std::string & filePath)
-{
-    // Read the shader code from the file
-    std::string shaderCode;
-    std::ifstream shaderStream(filePath, std::ios::in);
+        std::cerr << "[I] Reading shader : " << filePath << "\n";
 
-    std::cerr << "[I] Reading shader : " << filePath << "\n";
+        if(!shaderStream.is_open())
+            throw shader_error("Impossible to open "s + filePath);
 
-    if(!shaderStream.is_open())
-        throw std::runtime_error("Impossible to open "s + filePath);
+        std::string line = "";
 
-    std::string line = "";
+        while(getline(shaderStream, line))
+            shaderCode += "\n" + line;
 
-    while(getline(shaderStream, line))
-        shaderCode += "\n" + line;
-
-    shaderStream.close();
-    return shaderCode;
+        shaderStream.close();
+        return shaderCode;
+    }
+#endif
 }
 
 GLuint loadShaders()
