@@ -7,30 +7,67 @@
 #include <string>
 #include <vector>
 #include <GL/glew.h>
+#include "GLSL_shaders.hpp"
 
-struct shader_error : std::runtime_error
+struct ShaderError : std::runtime_error
 {
-    explicit shader_error(const std::string & s) : std::runtime_error(s)
+    explicit ShaderError(const std::string & s) : std::runtime_error(s)
+    {
+    }
+
+    explicit ShaderError(const char * s) : std::runtime_error(s)
     {
     }
 };
 
-class ShaderLoader
+struct GLSL_Shader
 {
-public:
-    ShaderLoader()
+    GLSL_Shader(GLenum type, const std::string & name, const std::string & code)
+        : type{type}, name{name}, code{code}
     {
     }
 
-    ~ShaderLoader() = default;
+    virtual ~GLSL_Shader() = default;
+
+    GLenum type;
+    std::string name;
+    std::string code;
+};
+
+struct GLSL_CompiledShader : public Shader
+{
+    GLSL_CompiledShader(const GLSL_Shader & shader, GLuint id)
+        : GLSL_Shader(shader.type, shader.name, shader.code), id{id}
+    {
+    }
+
+    ~GLSL_CompiledShader() override = default;
+
+    GLuint id;
+};
+
+enum class ShaderSource
+{
+    Header,
+    File
+};
+
+class GLSL_ShaderLoader
+{
+public:
+    explicit GLSL_ShaderLoader(ShaderSource source) : source{source}
+    {
+    }
 
     std::vector<GLuint> loadShaders();
 
 private:
-    GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
-                         const std::string & shaderName);
-    GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
     std::string readShader(const std::string & filePath);
+    GLSL_CompiledShader compileShader(const GLSL_Shader & shader);
+    GLuint linkProgram(const GLSL_CompiledShader & vertexShader,
+                       const GLSL_CompiledShader & fragmentShader);
+
+    ShaderSource source;
 };
 
 #endif

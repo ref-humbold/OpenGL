@@ -6,21 +6,40 @@
 #include <stdexcept>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "GLSL_loader.hpp"
 
-struct gl_error : std::runtime_error
+struct GL_Error : std::runtime_error
 {
-    explicit gl_error(const std::string & s) : std::runtime_error(s)
+    explicit GL_Error(const std::string & s) : std::runtime_error(s)
     {
     }
 };
 
-struct GLProgram
+struct Colour
 {
-    GLProgram(GLFWwindow * window, GLuint programID) : window{window}, programID{programID}
+    Colour(GLclampf red, GLclampf green, GLclampf blue) : red{red}, green{green}, blue{blue}
     {
     }
 
-    ~GLProgram()
+    GLclampf red;
+    GLclampf green;
+    GLclampf blue;
+};
+
+enum class GL_Settings
+{
+    Transparency,
+    ThreeDimensions
+};
+
+struct GL_Program
+{
+    explicit GL_Program(GLFWwindow * window, GLuint programID)
+        : window{window}, programID{programID}
+    {
+    }
+
+    ~GL_Program()
     {
         glfwTerminate();
     }
@@ -29,6 +48,36 @@ struct GLProgram
     GLuint programID;
 };
 
-GLProgram initializeGL();
+class GL_ProgramBuilder
+{
+public:
+    explicit GL_ProgramBuilder(const ShaderLoader & loader)
+        : loader{loader}, backgroundColour{0.0f, 0.0f, 0.0f}
+    {
+    }
+
+    GL_ProgramBuilder & addSettings(GL_Settings settings)
+    {
+        programSettings.push_back(settings);
+        return *this;
+    }
+
+    GL_ProgramBuilder & background(const Colour & colour)
+    {
+        backgroundColour = colour;
+        return *this;
+    }
+
+    GL_Program build(const std::string & programName);
+
+private:
+    void createVertexArray();
+    void addGlfwHints();
+    void addGlfwSettings();
+
+    ShaderLoader loader;
+    std::vector<GL_Settings> programSettings;
+    Colour backgroundColour;
+};
 
 #endif
