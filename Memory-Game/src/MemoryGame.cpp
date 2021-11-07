@@ -33,10 +33,7 @@ struct GameState
 int main(int argc, char * argv[])
 {
     parameters params(argc, argv);
-    GLFWwindow * window;
-    GLuint programID;
-
-    std::tie(window, programID) = initializeGL();
+    GLProgram program = initializeGL();
 
     GameController ctrl(params.rows(), params.columns());
     GameState state(ctrl);
@@ -46,18 +43,18 @@ int main(int argc, char * argv[])
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(programID);
-        ctrl.drawGame(programID, state.currentIndex, state.visibleIndices);
-        glfwSwapBuffers(window);
+        glUseProgram(program.programID);
+        ctrl.drawGame(program.programID, state.currentIndex, state.visibleIndices);
+        glfwSwapBuffers(program.window);
         glfwPollEvents();
 
         if(state.cardPairsLeft > 0)
         {
-            Key key = ctrl.checkKeyPress(window);
+            Key key = ctrl.checkKeyPress(program.window);
 
             if(key != Key::None)
             {
-                ctrl.checkKeyRelease(window, key);
+                ctrl.checkKeyRelease(program.window, key);
 
                 if(state.visibleIndices.second >= 0)
                     state.visibleIndices = std::make_pair(-1, -1);
@@ -93,21 +90,20 @@ int main(int argc, char * argv[])
         }
         else
         {
-            Key key = ctrl.checkKeyPress(window);
+            Key key = ctrl.checkKeyPress(program.window);
 
             if(key == Key::Select)
             {
-                ctrl.checkKeyRelease(window, key);
+                ctrl.checkKeyRelease(program.window, key);
                 ctrl.restart();
                 state.restart();
             }
         }
-    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-            && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(program.window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(program.window) == 0);
 
     if(state.cardPairsLeft > 0)
         std::cout << "Game was interrupted.\n\n";
 
-    glfwTerminate();
     return 0;
 }

@@ -4,7 +4,7 @@
 #include "GameController.hpp"
 #include "GameElement.hpp"
 
-enum class GamePhase : int
+enum class GamePhase
 {
     NoPlay,
     Playing,
@@ -13,10 +13,7 @@ enum class GamePhase : int
 
 int main()
 {
-    GLFWwindow * window;
-    GLuint programID;
-
-    std::tie(window, programID) = initializeGL();
+    GLProgram program = initializeGL();
 
     GameController ctrl;
     GameBoard board;
@@ -31,12 +28,12 @@ int main()
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(programID);
-        ctrl.drawGame(programID, board, ball, brick, paddle);
-        glfwSwapBuffers(window);
+        glUseProgram(program.programID);
+        ctrl.drawGame(program.programID, board, ball, brick, paddle);
+        glfwSwapBuffers(program.window);
         glfwPollEvents();
 
-        Key key = ctrl.checkKeyPress(window);
+        Key key = ctrl.checkKeyPress(program.window);
 
         if(gamePhase == GamePhase::Playing)
         {
@@ -44,7 +41,7 @@ int main()
             {
                 case Key::Pause:
                     pauseTime = glfwGetTime();
-                    ctrl.checkKeyRelease(window, key);
+                    ctrl.checkKeyRelease(program.window, key);
                     std::cout << "\t* PAUSE - press space to continue.\n";
                     gamePhase = GamePhase::NoPlay;
                     break;
@@ -94,17 +91,16 @@ int main()
             if(gamePhase == GamePhase::Ended)
                 break;
 
-            ctrl.checkKeyRelease(window, key);
+            ctrl.checkKeyRelease(program.window, key);
             gamePhase = GamePhase::Playing;
             timer = glfwGetTime();
             std::cout << "\t## PLAY ##\n\n";
         }
-    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-            && glfwWindowShouldClose(window) == 0);
+    } while(glfwGetKey(program.window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(program.window) == 0);
 
     if(brick.bricksLeft != 0)
         std::cout << "Game was interrupted.\n\n";
 
-    glfwTerminate();
     return 0;
 }
