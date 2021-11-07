@@ -6,14 +6,14 @@
 
 using namespace std::string_literals;
 
-void GL_ProgramBuilder::build(const std::string & programName)
+GL_Program GL_ProgramBuilder::build(const std::string & programName)
 {
     if(!glfwInit())
         throw GL_Error("Failed to initialize GLFW"s);
 
     addGlfwHints();
 
-    window = glfwCreateWindow(1024, 768, programName.c_str(), nullptr, nullptr);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, programName.c_str(), nullptr, nullptr);
 
     if(window == nullptr)
     {
@@ -33,10 +33,11 @@ void GL_ProgramBuilder::build(const std::string & programName)
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(backgroundColour.red, backgroundColour.green, backgroundColour.blue, 0.0f);
 
-    programID = loader.loadShaders();
+    std::vector<GLuint> programID = loader.loadShaders();
 
     createVertexArray();
     addGlfwSettings();
+    return GL_Program(window, programID.at(0));
 }
 
 void GL_ProgramBuilder::createVertexArray()
@@ -58,16 +59,16 @@ void GL_ProgramBuilder::addGlfwHints()
 
 void GL_ProgramBuilder::addGlfwSettings()
 {
-    for(auto && s : settings)
+    for(auto && s : programSettings)
         switch(s)
         {
-            case Transparency:
+            case GL_Settings::Transparency:
                 glDisable(GL_CULL_FACE);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 break;
 
-            case ThreeDimensions:
+            case GL_Settings::ThreeDimensions:
                 glShadeModel(GL_SMOOTH);
                 glEnable(GL_DEPTH_TEST);
                 glDepthFunc(GL_LESS);

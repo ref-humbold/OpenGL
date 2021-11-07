@@ -51,7 +51,7 @@ struct GL_Program
 class GL_ProgramBuilder
 {
 public:
-    explicit GL_ProgramBuilder(const ShaderLoader & loader)
+    explicit GL_ProgramBuilder(const GLSL_ShaderLoader & loader)
         : loader{loader}, backgroundColour{0.0f, 0.0f, 0.0f}
     {
     }
@@ -75,7 +75,7 @@ private:
     void addGlfwHints();
     void addGlfwSettings();
 
-    ShaderLoader loader;
+    GLSL_ShaderLoader loader;
     std::vector<GL_Settings> programSettings;
     Colour backgroundColour;
 };

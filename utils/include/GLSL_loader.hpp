@@ -34,7 +34,7 @@ struct GLSL_Shader
     std::string code;
 };
 
-struct GLSL_CompiledShader : public Shader
+struct GLSL_CompiledShader : public GLSL_Shader
 {
     GLSL_CompiledShader(const GLSL_Shader & shader, GLuint id)
         : GLSL_Shader(shader.type, shader.name, shader.code), id{id}

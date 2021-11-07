@@ -8,30 +8,29 @@ using namespace std::string_literals;
 
 std::vector<GLuint> GLSL_ShaderLoader::loadShaders()
 {
-    GLSL_Shader vertexShader;
-    GLSL_Shader fragmentShader;
+    std::string vertexShaderCode;
+    std::string fragmentShaderCode;
 
     // Read shaders
     switch(source)
     {
-        case Header:
-            vertexShader = GLSL_Shader(GL_VERTEX_SHADER, "VertexShader.glsl"s, VertexShader_glsl);
-            fragmentShader =
-                    GLSL_Shader(GL_FRAGMENT_SHADER, "FragmentShader.glsl"s, FragmentShader_glsl);
+        case ShaderSource::Header:
+            vertexShaderCode = VertexShader_glsl;
+            fragmentShaderCode = FragmentShader_glsl;
             break;
 
-        case File:
-            vertexShader = GLSL_Shader(GL_VERTEX_SHADER, "VertexShader.glsl"s,
-                                       readShader("../shaders/VertexShader.glsl"s));
-            fragmentShader = GLSL_Shader(GL_FRAGMENT_SHADER, "FragmentShader.glsl"s,
-                                         readShader("../shaders/FragmentShader.glsl"s));
+        case ShaderSource::File:
+            vertexShaderCode = readShader("../shaders/VertexShader.glsl"s);
+            fragmentShaderCode = readShader("../shaders/FragmentShader.glsl"s);
             break;
     }
 
-    // Create and compile shaders
+    GLSL_Shader vertexShader =
+            GLSL_Shader(GL_VERTEX_SHADER, "VertexShader.glsl"s, vertexShaderCode);
+    GLSL_Shader fragmentShader =
+            GLSL_Shader(GL_FRAGMENT_SHADER, "FragmentShader.glsl"s, fragmentShaderCode);
     GLSL_CompiledShader compiledVertexShader = compileShader(vertexShader);
     GLSL_CompiledShader compiledFragmentShader = compileShader(fragmentShader);
-
     GLuint programID = linkProgram(compiledVertexShader, compiledFragmentShader);
 
     glDetachShader(programID, compiledVertexShader.id);
@@ -45,25 +44,21 @@ std::vector<GLuint> GLSL_ShaderLoader::loadShaders()
     return {programID};
 }
 
-GLSL_CompiledShader GLSL_ShaderLoader::compileShader(const GLSL_Shader & Shader)
+GLSL_CompiledShader GLSL_ShaderLoader::compileShader(const GLSL_Shader & shader)
 {
-    GLuint shaderID = glCreateShader(Shader.type);
-    GLboolean result = GL_FALSE;
-
     std::cerr << "[I] Compiling shader : " << shader.name << "\n";
 
-    // Compile shader
+    GLint result = GL_FALSE;
     const char * shaderCodePointer = shader.code.c_str();
+    GLuint shaderID = glCreateShader(shader.type);
 
     glShaderSource(shaderID, 1, &shaderCodePointer, nullptr);
     glCompileShader(shaderID);
-
-    // Check shader
     glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
 
     if(result == GL_FALSE)
     {
-        GLuint infoLogLength = 0;
+        GLint infoLogLength = 0;
 
         glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
 
@@ -78,27 +73,25 @@ GLSL_CompiledShader GLSL_ShaderLoader::compileShader(const GLSL_Shader & Shader)
             throw ShaderError("Shader compilation failed: "s + shader.name);
     }
 
-    return CompiledShader(shader, shaderID);
+    return GLSL_CompiledShader(shader, shaderID);
 }
 
 GLuint GLSL_ShaderLoader::linkProgram(const GLSL_CompiledShader & vertexShader,
                                       const GLSL_CompiledShader & fragmentShader)
 {
-    GLuint programID = glCreateProgram();
-    GLboolean result = GL_FALSE;
-
-    // Link the program
     std::cerr << "[I] Linking program\n";
+
+    GLuint programID = glCreateProgram();
+    GLint result = GL_FALSE;
+
     glAttachShader(programID, vertexShader.id);
     glAttachShader(programID, fragmentShader.id);
     glLinkProgram(programID);
-
-    // Check the program
     glGetProgramiv(programID, GL_LINK_STATUS, &result);
 
     if(result == GL_FALSE)
     {
-        GLuint infoLogLength = 0;
+        GLint infoLogLength = 0;
 
         glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLength);
 
