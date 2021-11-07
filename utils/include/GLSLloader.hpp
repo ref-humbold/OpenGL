@@ -5,6 +5,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <vector>
 #include <GL/glew.h>
 
 struct shader_error : std::runtime_error
@@ -14,6 +15,22 @@ struct shader_error : std::runtime_error
     }
 };
 
-GLuint loadShaders();
+class ShaderLoader
+{
+public:
+    ShaderLoader()
+    {
+    }
+
+    ~ShaderLoader() = default;
+
+    std::vector<GLuint> loadShaders();
+
+private:
+    GLuint compileShader(GLenum shaderType, const std::string & shaderCode,
+                         const std::string & shaderName);
+    GLuint linkProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
+    std::string readShader(const std::string & filePath);
+};
 
 #endif
