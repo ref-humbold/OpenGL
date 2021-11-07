@@ -15,3 +15,5 @@ For more detailed instructions see README files in each subproject:
 * [Memory-Game](Memory-Game/README.md)
 * [OBJ-Browser](OBJ-Browser/README.md)
 * [Terrain-Map](Terrain-Map/README.md)
+
+Directory `utils` contains common files for initialization of OpenGL.
