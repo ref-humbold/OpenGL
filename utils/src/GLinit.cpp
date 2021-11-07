@@ -1,10 +1,13 @@
 #include "GLinit.hpp"
+#include <string>
 #include "GLSLloader.hpp"
 
 #define GLFW_TRANSPARENCY false
 #define GLFW_3D false
 
 using namespace std::string_literals;
+
+const std::string programName = ""s;
 
 namespace
 {
@@ -41,14 +44,14 @@ namespace
     }
 }
 
-std::tuple<GLFWwindow *, GLuint> initializeGL()
+GLProgram initializeGL()
 {
     if(!glfwInit())
         throw gl_error("Failed to initialize GLFW"s);
 
     addGlfwHints();
 
-    GLFWwindow * window = glfwCreateWindow(1024, 768, "PROGRAM NAME", nullptr, nullptr);
+    GLFWwindow * window = glfwCreateWindow(1024, 768, programName.c_str(), nullptr, nullptr);
 
     if(window == nullptr)
     {
@@ -72,5 +75,5 @@ std::tuple<GLFWwindow *, GLuint> initializeGL()
 
     createVertexArray();
     addGlfwSettings();
-    return {window, programID};
+    return GLProgram(window, programID);
 }

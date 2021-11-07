@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <exception>
 #include <stdexcept>
-#include <tuple>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -15,6 +14,21 @@ struct gl_error : std::runtime_error
     }
 };
 
-std::tuple<GLFWwindow *, GLuint> initializeGL();
+struct GLProgram
+{
+    GLProgram(GLFWwindow * window, GLuint programID) : window{window}, programID{programID}
+    {
+    }
+
+    ~GLProgram()
+    {
+        glfwTerminate();
+    }
+
+    GLFWwindow * window;
+    GLuint programID;
+};
+
+GLProgram initializeGL();
 
 #endif

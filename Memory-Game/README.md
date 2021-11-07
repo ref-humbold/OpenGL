@@ -6,7 +6,7 @@ Memory game is a small single-player game written in C++ language with OpenGL. Y
 
 ### Keys in use
 *up*, *down*, *left*, *right* : choose next card to open \
-*space* : open the chosen card; start new game when finished
+*space* : open the chosen card; start new game when finished \
 *esc* : close the game
 
 -----
