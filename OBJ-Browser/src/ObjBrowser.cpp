@@ -61,10 +61,7 @@ void checkFile(const char * filename)
 
 int main(int argc, char * argv[])
 {
-    GLFWwindow * window;
-    GLuint programID;
-
-    std::tie(window, programID) = initializeGL();
+    GLProgram program = initializeGL();
 
     std::vector<GraphicObject> objects;
     int objBegin = 1;
@@ -94,7 +91,7 @@ int main(int argc, char * argv[])
     }
 
     std::vector<Key> keys = {Key::ItemLeft, Key::ItemRight, Key::ZoomIn, Key::ZoomOut};
-    Camera camera(window);
+    Camera camera(program.window);
     auto objIter = objects.begin();
     int iterationClicked = 0;
     glm::vec3 mouseBegin, mouseEnd;
@@ -103,14 +100,14 @@ int main(int argc, char * argv[])
     do
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(programID);
+        glUseProgram(program.programID);
 
-        camera.drawObject(programID, *objIter);
+        camera.drawObject(program.programID, *objIter);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(program.window);
         glfwPollEvents();
 
-        for(Key k : camera.checkKeyPress(window, keys))
+        for(Key k : camera.checkKeyPress(program.window, keys))
             switch(k)
             {
                 case Key::ItemLeft:
@@ -150,15 +147,15 @@ int main(int argc, char * argv[])
                     break;
             }
 
-        if(!mouseClicked && camera.checkMouseAction(window, GLFW_PRESS))
+        if(!mouseClicked && camera.checkMouseAction(program.window, GLFW_PRESS))
         {
-            mouseBegin = camera.getMousePos(window);
+            mouseBegin = camera.getMousePos(program.window);
             mouseClicked = true;
         }
 
-        if(mouseClicked && camera.checkMouseAction(window, GLFW_PRESS))
+        if(mouseClicked && camera.checkMouseAction(program.window, GLFW_PRESS))
         {
-            mouseEnd = camera.getMousePos(window);
+            mouseEnd = camera.getMousePos(program.window);
 
             if(vecDifferent(mouseBegin, mouseEnd))
             {
@@ -173,12 +170,10 @@ int main(int argc, char * argv[])
             }
         }
 
-        if(camera.checkMouseAction(window, GLFW_RELEASE))
+        if(camera.checkMouseAction(program.window, GLFW_RELEASE))
             mouseClicked = false;
-    } while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-            && glfwWindowShouldClose(window) == 0);
-
-    glfwTerminate();
+    } while(glfwGetKey(program.window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+            && glfwWindowShouldClose(program.window) == 0);
 
     return 0;
 }
