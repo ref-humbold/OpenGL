@@ -1,5 +1,5 @@
-**/build/
-**/buildOut/
+build/
+buildOut/
 
 .vscode
 *.code-workspace
